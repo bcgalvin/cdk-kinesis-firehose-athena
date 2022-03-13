@@ -54,4 +54,13 @@ junit.xml
 .jsii
 tsconfig.json
 !/API.md
+test/.tmp
+test/main.integ.snapshot/asset.*
+test/main.integ.snapshot/**/asset.*
+test/main.integ.snapshot/cdk.out
+test/main.integ.snapshot/**/cdk.out
+test/main.integ.snapshot/manifest.json
+test/main.integ.snapshot/**/manifest.json
+test/main.integ.snapshot/tree.json
+test/main.integ.snapshot/**/tree.json
 !/.github/workflows/upgrade.yml
