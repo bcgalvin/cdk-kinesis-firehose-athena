@@ -1,26 +1,28 @@
 {
   "name": "cdk-kinesis-firehose-athena",
+  "description": "A CDK construct library sample.",
   "repository": {
     "type": "git",
     "url": "https://github.com/bcgalvin/cdk-kinesis-firehose-athena.git"
   },
   "scripts": {
     "build": "npx projen build",
-    "bump": "npx projen bump",
     "clobber": "npx projen clobber",
     "compat": "npx projen compat",
     "compile": "npx projen compile",
     "default": "npx projen default",
     "docgen": "npx projen docgen",
+    "eject": "npx projen eject",
     "eslint": "npx projen eslint",
+    "format": "npx projen format",
     "package": "npx projen package",
-    "publish:github": "npx projen publish:github",
-    "publish:npm": "npx projen publish:npm",
-    "release": "npx projen release",
+    "package-all": "npx projen package-all",
+    "post-compile": "npx projen post-compile",
+    "post-upgrade": "npx projen post-upgrade",
+    "pre-compile": "npx projen pre-compile",
     "test": "npx projen test",
     "test:update": "npx projen test:update",
     "test:watch": "npx projen test:watch",
-    "unbump": "npx projen unbump",
     "upgrade": "npx projen upgrade",
     "upgrade-projen": "npx projen upgrade-projen",
     "watch": "npx projen watch",
@@ -32,42 +34,56 @@
     "organization": false
   },
   "devDependencies": {
-    "@aws-cdk/assert": "^1.95.2",
+    "@aws-cdk/aws-kinesisfirehose-destinations-alpha": "2.16.0-alpha.0",
+    "@types/cfn-response": "^1.0.5",
     "@types/jest": "^27.4.1",
-    "@types/node": "^14.17.0",
-    "@typescript-eslint/eslint-plugin": "^5.14.0",
-    "@typescript-eslint/parser": "^5.14.0",
-    "eslint": "^8.11.0",
+    "@types/node": "^12",
+    "@typescript-eslint/eslint-plugin": "^5",
+    "@typescript-eslint/parser": "^5",
+    "aws-cdk-lib": "2.16.0",
+    "constructs": "10.0.5",
+    "eslint": "^8",
+    "eslint-config-prettier": "^8.5.0",
     "eslint-import-resolver-node": "^0.3.6",
     "eslint-import-resolver-typescript": "^2.5.0",
     "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-prettier": "^4.0.0",
     "jest": "^27.5.1",
-    "jest-junit": "^12",
+    "jest-junit": "^13",
     "jsii": "^1.55.0",
     "jsii-diff": "^1.55.0",
     "jsii-docgen": "^6.1.31",
-    "jsii-pacmak": "^1.55.0",
     "json-schema": "^0.4.0",
-    "npm-check-updates": "^11",
+    "npm-check-updates": "^12",
+    "prettier": "^2.5.1",
     "projen": "^0.52.69",
-    "standard-version": "^9",
     "ts-jest": "^27.1.3",
     "typescript": "^4.6.2"
   },
   "peerDependencies": {
-    "constructs": "^3.2.27"
+    "@aws-cdk/aws-kinesisfirehose-destinations-alpha": "2.16.0-alpha.0",
+    "aws-cdk-lib": "^2.16.0",
+    "constructs": "^10.0.5"
   },
-  "bundledDependencies": [],
+  "dependencies": {
+    "@aws-cdk/aws-kinesisfirehose-destinations-alpha": "2.16.0-alpha.0",
+    "aws-cdk-lib": "2.16.0",
+    "constructs": "10.0.5"
+  },
   "keywords": [
-    "cdk"
+    "athena",
+    "aws-cdk",
+    "cdk",
+    "dynamodb",
+    "kinesis"
   ],
   "main": "lib/index.js",
   "license": "Apache-2.0",
   "version": "0.0.0",
   "jest": {
     "testMatch": [
-      "**/__tests__/**/*.ts?(x)",
-      "**/?(*.)+(spec|test).ts?(x)"
+      "<rootDir>/src/**/__tests__/**/*.ts?(x)",
+      "<rootDir>/(test|src)/**/?(*.)+(spec|test).ts?(x)"
     ],
     "clearMocks": true,
     "collectCoverage": true,
@@ -75,6 +91,7 @@
       "json",
       "lcov",
       "clover",
+      "cobertura",
       "text"
     ],
     "coverageDirectory": "coverage",
