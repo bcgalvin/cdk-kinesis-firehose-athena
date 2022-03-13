@@ -48,13 +48,13 @@ export class DynamoSeeder extends Construct {
       kinesisStream: stream,
     });
     table.addGlobalSecondaryIndex({
-      indexName: 'gsi',
+      indexName: 'GSI1',
       partitionKey: {
-        name: 'PK1',
+        name: 'GSI1PK',
         type: AttributeType.STRING,
       },
       sortKey: {
-        name: 'SK1',
+        name: 'GSI1SK',
         type: AttributeType.STRING,
       },
       projectionType: ProjectionType.ALL,

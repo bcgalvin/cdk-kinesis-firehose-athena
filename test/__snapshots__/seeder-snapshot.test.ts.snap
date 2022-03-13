@@ -385,25 +385,25 @@ Object {
             "AttributeType": "S",
           },
           Object {
-            "AttributeName": "PK1",
+            "AttributeName": "GSI1PK",
             "AttributeType": "S",
           },
           Object {
-            "AttributeName": "SK1",
+            "AttributeName": "GSI1SK",
             "AttributeType": "S",
           },
         ],
         "BillingMode": "PAY_PER_REQUEST",
         "GlobalSecondaryIndexes": Array [
           Object {
-            "IndexName": "gsi",
+            "IndexName": "GSI1",
             "KeySchema": Array [
               Object {
-                "AttributeName": "PK1",
+                "AttributeName": "GSI1PK",
                 "KeyType": "HASH",
               },
               Object {
-                "AttributeName": "SK1",
+                "AttributeName": "GSI1SK",
                 "KeyType": "RANGE",
               },
             ],

@@ -34,14 +34,14 @@ describe('DynamoSeeder Construct', () => {
     assert.hasResourceProperties('AWS::DynamoDB::Table', {
       GlobalSecondaryIndexes: [
         {
-          IndexName: 'gsi',
+          IndexName: 'GSI1',
           KeySchema: [
             {
-              AttributeName: 'PK1',
+              AttributeName: 'GSI1PK',
               KeyType: 'HASH',
             },
             {
-              AttributeName: 'SK1',
+              AttributeName: 'GSI1SK',
               KeyType: 'RANGE',
             },
           ],
