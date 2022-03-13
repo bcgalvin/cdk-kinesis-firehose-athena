@@ -4,7 +4,7 @@ import { Template } from 'aws-cdk-lib/assertions';
 import { Construct } from 'constructs';
 import { DynamoSeeder } from '../src';
 
-export class TestStack extends Stack {
+export class TestSeederStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
@@ -13,7 +13,7 @@ export class TestStack extends Stack {
 }
 
 export function getTestAssets(app: App) {
-  const stack = new TestStack(app, 'test-stack');
+  const stack = new TestSeederStack(app, 'test-stack');
 
   const assert = Template.fromStack(stack);
   return {
