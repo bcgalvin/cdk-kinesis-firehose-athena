@@ -122,66 +122,66 @@
         }
       ]
     },
-    "integ:main:assert": {
-      "name": "integ:main:assert",
-      "description": "assert the snapshot of integration test 'main'",
+    "integ:seeder:assert": {
+      "name": "integ:seeder:assert",
+      "description": "assert the snapshot of integration test 'seeder'",
       "steps": [
         {
-          "exec": "[ -d \"test/main.integ.snapshot\" ] || (echo \"No snapshot available for integration test 'main'. Run 'projen integ:main:deploy' to capture.\" && exit 1)"
+          "exec": "[ -d \"test/seeder.integ.snapshot\" ] || (echo \"No snapshot available for integration test 'seeder'. Run 'projen integ:seeder:deploy' to capture.\" && exit 1)"
         },
         {
-          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/main.integ.ts\" --no-version-reporting --no-asset-metadata --no-path-metadata -o test/.tmp/main.integ/assert.cdk.out > /dev/null"
+          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/seeder.integ.ts\" --no-version-reporting --no-asset-metadata --no-path-metadata -o test/.tmp/seeder.integ/assert.cdk.out > /dev/null"
         },
         {
-          "exec": "diff -r -x asset.* -x cdk.out -x manifest.json -x tree.json test/main.integ.snapshot/ test/.tmp/main.integ/assert.cdk.out/"
+          "exec": "diff -r -x asset.* -x cdk.out -x manifest.json -x tree.json test/seeder.integ.snapshot/ test/.tmp/seeder.integ/assert.cdk.out/"
         }
       ]
     },
-    "integ:main:deploy": {
-      "name": "integ:main:deploy",
-      "description": "deploy integration test 'main' and capture snapshot",
+    "integ:seeder:deploy": {
+      "name": "integ:seeder:deploy",
+      "description": "deploy integration test 'seeder' and capture snapshot",
       "steps": [
         {
-          "exec": "rm -fr test/.tmp/main.integ/deploy.cdk.out"
+          "exec": "rm -fr test/.tmp/seeder.integ/deploy.cdk.out"
         },
         {
-          "exec": "cdk deploy --app \"ts-node -P tsconfig.dev.json test/main.integ.ts\" --no-version-reporting --no-asset-metadata --no-path-metadata '**' --require-approval=never -o test/.tmp/main.integ/deploy.cdk.out"
+          "exec": "cdk deploy --app \"ts-node -P tsconfig.dev.json test/seeder.integ.ts\" --no-version-reporting --no-asset-metadata --no-path-metadata '**' --require-approval=never -o test/.tmp/seeder.integ/deploy.cdk.out"
         },
         {
-          "exec": "rm -fr test/main.integ.snapshot"
+          "exec": "rm -fr test/seeder.integ.snapshot"
         },
         {
-          "exec": "mv test/.tmp/main.integ/deploy.cdk.out test/main.integ.snapshot"
+          "exec": "mv test/.tmp/seeder.integ/deploy.cdk.out test/seeder.integ.snapshot"
         },
         {
-          "spawn": "integ:main:destroy"
+          "spawn": "integ:seeder:destroy"
         }
       ]
     },
-    "integ:main:destroy": {
-      "name": "integ:main:destroy",
-      "description": "destroy integration test 'main'",
+    "integ:seeder:destroy": {
+      "name": "integ:seeder:destroy",
+      "description": "destroy integration test 'seeder'",
       "steps": [
         {
-          "exec": "cdk destroy --app test/main.integ.snapshot '**' --no-version-reporting"
+          "exec": "cdk destroy --app test/seeder.integ.snapshot '**' --no-version-reporting"
         }
       ]
     },
-    "integ:main:snapshot": {
-      "name": "integ:main:snapshot",
-      "description": "update snapshot for integration test \"main\"",
+    "integ:seeder:snapshot": {
+      "name": "integ:seeder:snapshot",
+      "description": "update snapshot for integration test \"seeder\"",
       "steps": [
         {
-          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/main.integ.ts\" --no-version-reporting --no-asset-metadata --no-path-metadata -o test/main.integ.snapshot > /dev/null"
+          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/seeder.integ.ts\" --no-version-reporting --no-asset-metadata --no-path-metadata -o test/seeder.integ.snapshot > /dev/null"
         }
       ]
     },
-    "integ:main:watch": {
-      "name": "integ:main:watch",
-      "description": "watch integration test 'main' (without updating snapshots)",
+    "integ:seeder:watch": {
+      "name": "integ:seeder:watch",
+      "description": "watch integration test 'seeder' (without updating snapshots)",
       "steps": [
         {
-          "exec": "cdk watch --app \"ts-node -P tsconfig.dev.json test/main.integ.ts\" --no-version-reporting --no-asset-metadata --no-path-metadata '**' -o test/.tmp/main.integ/deploy.cdk.out"
+          "exec": "cdk watch --app \"ts-node -P tsconfig.dev.json test/seeder.integ.ts\" --no-version-reporting --no-asset-metadata --no-path-metadata '**' -o test/.tmp/seeder.integ/deploy.cdk.out"
         }
       ]
     },
@@ -190,7 +190,7 @@
       "description": "update snapshot for all integration tests",
       "steps": [
         {
-          "spawn": "integ:main:snapshot"
+          "spawn": "integ:seeder:snapshot"
         }
       ]
     },
@@ -238,7 +238,7 @@
           "spawn": "eslint"
         },
         {
-          "spawn": "integ:main:assert"
+          "spawn": "integ:seeder:assert"
         }
       ]
     },

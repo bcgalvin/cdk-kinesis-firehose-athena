@@ -1,14 +1,18 @@
 import { App } from 'aws-cdk-lib';
 // @ts-ignore
-import { getTestAssets } from './util';
+import { getSeederTestAssets } from './util';
 
 describe('DynamoSeeder Construct', () => {
   const app = new App();
 
-  const { assert } = getTestAssets(app);
+  const { assert } = getSeederTestAssets(app);
 
-  test('stack should have an s3 bucket', () => {
+  test('construct should have an s3 bucket', () => {
     assert.resourceCountIs('AWS::S3::Bucket', 1);
+  });
+
+  test('construct should have an s3 bucket deployment custom resource', () => {
+    assert.resourceCountIs('Custom::CDKBucketDeployment', 1);
   });
 
   test('s3 bucket has correct properties', () => {
