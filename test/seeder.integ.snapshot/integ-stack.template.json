@@ -174,6 +174,86 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
+    "snapshotconstructstreamFD8C8D4A": {
+      "Type": "AWS::Kinesis::Stream",
+      "Properties": {
+        "Name": "ddb-kinesis-stream",
+        "RetentionPeriodHours": 24,
+        "ShardCount": 1,
+        "StreamEncryption": {
+          "EncryptionType": "KMS",
+          "KeyId": "alias/aws/kinesis"
+        },
+        "StreamModeDetails": {
+          "StreamMode": "PROVISIONED"
+        }
+      }
+    },
+    "snapshotconstructanalyticstableF88925AF": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "KeySchema": [
+          {
+            "AttributeName": "PK",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "SK",
+            "KeyType": "RANGE"
+          }
+        ],
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "PK",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "SK",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "PK1",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "SK1",
+            "AttributeType": "S"
+          }
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "GlobalSecondaryIndexes": [
+          {
+            "IndexName": "gsi",
+            "KeySchema": [
+              {
+                "AttributeName": "PK1",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "SK1",
+                "KeyType": "RANGE"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            }
+          }
+        ],
+        "KinesisStreamSpecification": {
+          "StreamArn": {
+            "Fn::GetAtt": [
+              "snapshotconstructstreamFD8C8D4A",
+              "Arn"
+            ]
+          }
+        },
+        "SSESpecification": {
+          "SSEEnabled": true
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -392,6 +472,12 @@
       "Description": "Seed s3 bucket name",
       "Value": {
         "Ref": "snapshotconstructBucketDED2BB39"
+      }
+    },
+    "snapshotconstructtableoutput89B84953": {
+      "Description": "Dynamodb table name",
+      "Value": {
+        "Ref": "snapshotconstructanalyticstableF88925AF"
       }
     }
   },
