@@ -19,7 +19,7 @@ if not os.path.exists(DATA_DIR):
     os
 
 
-def random_dates(start: pd.Timestamp, end: pd.Timestamp, n=int):
+def gen_random_dates(start: pd.Timestamp, end: pd.Timestamp, n=int):
     start_u = start.value // 10**9
     end_u = end.value // 10**9
     return pd.to_datetime(np.random.randint(start_u, end_u, n), unit="s")
@@ -33,7 +33,12 @@ def get_s3_file(bucket: str) -> None:
     data = pd.read_csv(
         io.BytesIO(response_body), header=0, delimiter=",", low_memory=False
     )
-    data["createdAt"] = random_dates(PERIOD_START, PERIOD_END, data.shape[0])
+    data.dropna(inplace=True)
+    return data
+
+def enrich_census_data(data: pd.DataFrame)-> pd.DataFrame:
+    data["cluster"] = "NO_SCORE"
+    data["createdAt"] = gen_random_dates(PERIOD_START, PERIOD_END, data.shape[0])
     return data
 
 
@@ -44,5 +49,7 @@ if __name__ == "__main__":
         .sum()
         .reset_index()
     )
+    county_data = enrich_census_data(county_data)
+    state_data = enrich_census_data(state_data)
     county_data.to_csv(f"{DATA_DIR}/counties.csv", index=False)
     state_data.to_csv(f"{DATA_DIR}/states.csv", index=False)
