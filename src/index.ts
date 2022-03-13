@@ -1,5 +1,7 @@
-import { RemovalPolicy } from 'aws-cdk-lib';
+import * as path from 'path';
+import { CfnOutput, RemovalPolicy } from 'aws-cdk-lib';
 import { BlockPublicAccess, Bucket, BucketEncryption, IBucket } from 'aws-cdk-lib/aws-s3';
+import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { Construct } from 'constructs';
 
 export class DynamoSeeder extends Construct {
@@ -15,6 +17,18 @@ export class DynamoSeeder extends Construct {
       autoDeleteObjects: true,
       enforceSSL: true,
     });
+
+    new BucketDeployment(this, 'seed-data-bucket-deployment', {
+      sources: [Source.asset(path.join(__dirname, '../assets/data'))],
+      destinationBucket: seedBucket,
+      destinationKeyPrefix: 'data',
+    });
+
+    new CfnOutput(this, 's3-seed-bucket-output', {
+      description: 'Seed s3 bucket name',
+      value: seedBucket.bucketName,
+    });
+
     this.seedBucket = seedBucket;
   }
 }

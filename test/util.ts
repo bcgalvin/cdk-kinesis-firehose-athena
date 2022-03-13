@@ -12,7 +12,7 @@ export class TestSeederStack extends Stack {
   }
 }
 
-export function getTestAssets(app: App) {
+export function getSeederTestAssets(app: App) {
   const stack = new TestSeederStack(app, 'test-stack');
 
   const assert = Template.fromStack(stack);
