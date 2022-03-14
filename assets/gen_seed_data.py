@@ -1,5 +1,6 @@
 import io
 import os
+
 import boto3
 import numpy as np
 import pandas as pd
@@ -13,16 +14,13 @@ PERIOD_END = pd.to_datetime("2022-03-14")
 DATA_DIR = "data"
 
 if not os.path.exists(DATA_DIR):
-	os.makedirs(DATA_DIR)
-
-if not os.path.exists(DATA_DIR):
-    os
+    os.makedirs(DATA_DIR)
 
 
 def gen_random_dates(start: pd.Timestamp, end: pd.Timestamp, n=int):
     start_u = start.value // 10**9
     end_u = end.value // 10**9
-    return pd.to_datetime(np.random.randint(start_u, end_u, n), unit="s")
+    return pd.to_datetime(np.random.randint(start_u, end_u, n), unit="s").strftime("%Y-%m-%d")
 
 
 def get_s3_file(bucket: str) -> None:
@@ -34,22 +32,10 @@ def get_s3_file(bucket: str) -> None:
         io.BytesIO(response_body), header=0, delimiter=",", low_memory=False
     )
     data.dropna(inplace=True)
-    return data
-
-def enrich_census_data(data: pd.DataFrame)-> pd.DataFrame:
-    data["cluster"] = "NO_SCORE"
     data["createdAt"] = gen_random_dates(PERIOD_START, PERIOD_END, data.shape[0])
     return data
 
 
 if __name__ == "__main__":
-    county_data = get_s3_file(SAGEMAKER_BUCKET)
-    state_data = (
-        county_data.groupby(["State"])[["TotalPop", "Men", "Women", "Citizen"]]
-        .sum()
-        .reset_index()
-    )
-    county_data = enrich_census_data(county_data)
-    state_data = enrich_census_data(state_data)
-    county_data.to_csv(f"{DATA_DIR}/counties.csv", index=False)
-    state_data.to_csv(f"{DATA_DIR}/states.csv", index=False)
+    data = get_s3_file(SAGEMAKER_BUCKET)
+    data.to_json(f"{DATA_DIR}/seed-data.json", orient="records")

@@ -59,7 +59,7 @@
     "jest-junit": "^13",
     "jsii": "^1.55.0",
     "jsii-diff": "^1.55.0",
-    "jsii-docgen": "^6.1.32",
+    "jsii-docgen": "^6.1.33",
     "json-schema": "^0.4.0",
     "npm-check-updates": "^12",
     "prettier": "^2.5.1",

@@ -469,7 +469,7 @@ Object {
           },
         ],
         "SourceObjectKeys": Array [
-          "cf9b7ad8618a1dfe5161d7eec3e1f4cc9119aced46e5cf30dfd995d3e9423c2a.zip",
+          "1e7ae387556aaffe5c938a98baafc52ac42c7ff18d6a99ac4866df6578a7abaa.zip",
         ],
       },
       "Type": "Custom::CDKBucketDeployment",

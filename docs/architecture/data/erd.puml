@@ -20,11 +20,6 @@ hide stereotypes
 
 Table(STATE, "State") {
 primary_key(stateId) STRING
-population INTEGER
-num_citizens INTEGER
-num_male INTEGER
-num_female  INTEGER
-created_at TIMESTAMP
 }
 
 Table(COUNTY, "County") {
@@ -63,7 +58,6 @@ public_work FLOAT
 self_employed FLOAT
 family_wor FLOAT
 unemployment FLOAT
-cluster INTEGER
 created_at TIMESTAMP
 }
 
