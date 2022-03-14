@@ -1,0 +1,73 @@
+@startuml
+' uncomment the line below if you're using computer with a retina display
+ skinparam dpi 300
+!define Table(name,desc) class name as "desc" << (T,#FFAAAA) >>
+' we use bold for primary key
+' green color for unique
+' and underscore for not_null
+!define primary_key(x) <b>x</b>
+!define unique(x) <color:green>x</color>
+!define not_null(x) <u>x</u>
+' other tags available:
+' <i></i>
+' <back:COLOR></color>, where color is a color name or html color code
+' (#FFAACC)
+' see: http://plantuml.com/classes.html#More
+hide methods
+hide stereotypes
+
+' entities
+
+Table(STATE, "State") {
+primary_key(stateId) STRING
+population INTEGER
+num_citizens INTEGER
+num_male INTEGER
+num_female  INTEGER
+}
+
+Table(COUNTY, "County") {
+primary_key(stateId) STRING
+primary_key(countyId) STRING
+num_citizens INTEGER
+num_male INTEGER
+num_female  INTEGER
+hispanic FLOAT
+white FLOAT
+black FLOAT
+native FLOAT
+asian FLOAT
+pacific FLOAT
+income FLOAT
+income_err FLOAT
+income_per_cap FLOAT
+income_per_cap_err FLOAT
+poverty FLOAT
+child_poverty FLOAT
+professional FLOAT
+service FLOAT
+office FLOAT
+construction FLOAT
+production FLOAT
+drive FLOAT
+carpool FLOAT
+transit FLOAT
+walk FLOAT
+other_transport FLOAT
+work_at_home FLOAT
+mean_commute FLOAT
+employed FLOAT
+private_work FLOAT
+public_work FLOAT
+self_employed FLOAT
+family_wor FLOAT
+unemployment FLOAT
+created_at TIMESTAMP
+}
+
+
+
+' relationships
+' one to many relationship
+STATE ||-right-|{ COUNTY : "A state has \n many counties"
+@enduml
