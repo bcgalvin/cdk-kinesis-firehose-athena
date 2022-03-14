@@ -1,4 +1,4 @@
-# Seed Data Modeling
+# Seed Data: Single Table Modeling
 
 ![](erd.png)
 
