@@ -1,4 +1,4 @@
-# Seed Data: Single Table Modeling
+## Seed Data: Single Table Modeling
 
 ![](erd.png)
 
@@ -9,5 +9,5 @@
 
 | Access Pattern        | Index      | Parameters            | Notes | 
 |-----------------------|------------|-----------------------|-------|
-| Get Counties By State | Main Table | Statename             |       |
-| Get County            | Main Table | Statename, Countyname |
+| Get Counties By State | Main Table | StateName             |       |
+| Get County            | Main Table | StateName, CountyName |
