@@ -29,27 +29,4 @@ describe('DynamoSeeder Construct', () => {
       },
     });
   });
-
-  test('table has correct properties', () => {
-    assert.hasResourceProperties('AWS::DynamoDB::Table', {
-      GlobalSecondaryIndexes: [
-        {
-          IndexName: 'GSI1',
-          KeySchema: [
-            {
-              AttributeName: 'GSI1PK',
-              KeyType: 'HASH',
-            },
-            {
-              AttributeName: 'GSI1SK',
-              KeyType: 'RANGE',
-            },
-          ],
-          Projection: {
-            ProjectionType: 'ALL',
-          },
-        },
-      ],
-    });
-  });
 });

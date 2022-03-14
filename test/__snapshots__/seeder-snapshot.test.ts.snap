@@ -384,34 +384,8 @@ Object {
             "AttributeName": "SK",
             "AttributeType": "S",
           },
-          Object {
-            "AttributeName": "GSI1PK",
-            "AttributeType": "S",
-          },
-          Object {
-            "AttributeName": "GSI1SK",
-            "AttributeType": "S",
-          },
         ],
         "BillingMode": "PAY_PER_REQUEST",
-        "GlobalSecondaryIndexes": Array [
-          Object {
-            "IndexName": "GSI1",
-            "KeySchema": Array [
-              Object {
-                "AttributeName": "GSI1PK",
-                "KeyType": "HASH",
-              },
-              Object {
-                "AttributeName": "GSI1SK",
-                "KeyType": "RANGE",
-              },
-            ],
-            "Projection": Object {
-              "ProjectionType": "ALL",
-            },
-          },
-        ],
         "KeySchema": Array [
           Object {
             "AttributeName": "PK",

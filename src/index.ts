@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { CfnOutput, RemovalPolicy } from 'aws-cdk-lib';
-import { AttributeType, BillingMode, ITable, ProjectionType, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
+import { AttributeType, BillingMode, ITable, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { IStream, Stream, StreamEncryption } from 'aws-cdk-lib/aws-kinesis';
 import { BlockPublicAccess, Bucket, BucketEncryption, IBucket } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
@@ -46,18 +46,6 @@ export class DynamoSeeder extends Construct {
       encryption: TableEncryption.AWS_MANAGED,
       billingMode: BillingMode.PAY_PER_REQUEST,
       kinesisStream: stream,
-    });
-    table.addGlobalSecondaryIndex({
-      indexName: 'GSI1',
-      partitionKey: {
-        name: 'GSI1PK',
-        type: AttributeType.STRING,
-      },
-      sortKey: {
-        name: 'GSI1SK',
-        type: AttributeType.STRING,
-      },
-      projectionType: ProjectionType.ALL,
     });
 
     new CfnOutput(this, 's3-seed-bucket-output', {
