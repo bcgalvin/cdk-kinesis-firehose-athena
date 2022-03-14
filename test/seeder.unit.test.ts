@@ -15,10 +15,6 @@ describe('DynamoSeeder Construct', () => {
     assert.resourceCountIs('AWS::DynamoDB::Table', 1);
   });
 
-  test('construct should have an s3 bucket deployment custom resource', () => {
-    assert.resourceCountIs('Custom::CDKBucketDeployment', 1);
-  });
-
   test('s3 bucket has correct properties', () => {
     assert.hasResourceProperties('AWS::S3::Bucket', {
       PublicAccessBlockConfiguration: {
