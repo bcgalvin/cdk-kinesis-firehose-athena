@@ -2,13 +2,13 @@ import { App, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 
 import { Construct } from 'constructs';
-import { DynamoSeeder } from '../src';
+import { DynamoAthenaSeeder } from '../src';
 
 export class TestSeederStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    new DynamoSeeder(this, 'snapshot-construct');
+    new DynamoAthenaSeeder(this, 'seeder-construct');
   }
 }
 

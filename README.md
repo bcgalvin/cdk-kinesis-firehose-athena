@@ -1,3 +1,5 @@
-# CDK Kinesis Firehose Athena  
+# CDK Kinesis Firehose Athena
 
 ---
+
+![Alt text here](template.svg)

@@ -3,16 +3,16 @@
 exports[`Snapshot 1`] = `
 Object {
   "Outputs": Object {
-    "snapshotconstructs3seedbucketoutput4ADC27C3": Object {
+    "seederconstructs3landingbucketoutputD0A727B1": Object {
       "Description": "Seed s3 bucket name",
       "Value": Object {
-        "Ref": "snapshotconstructBucketDED2BB39",
+        "Ref": "seederconstructBucket8985D027",
       },
     },
-    "snapshotconstructtableoutput89B84953": Object {
+    "seederconstructtableoutput5B629359": Object {
       "Description": "Dynamodb table name",
       "Value": Object {
-        "Ref": "snapshotconstructanalyticstableF88925AF",
+        "Ref": "seederconstructanalyticstableD925F0A0",
       },
     },
   },
@@ -41,7 +41,7 @@ Object {
             Array [
               "Lambda function for auto-deleting objects in ",
               Object {
-                "Ref": "snapshotconstructBucketDED2BB39",
+                "Ref": "seederconstructBucket8985D027",
               },
               " S3 bucket.",
             ],
@@ -82,26 +82,7 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "snapshotconstructBucketAutoDeleteObjectsCustomResourceA38BB90D": Object {
-      "DeletionPolicy": "Delete",
-      "DependsOn": Array [
-        "snapshotconstructBucketPolicyBC3C4799",
-      ],
-      "Properties": Object {
-        "BucketName": Object {
-          "Ref": "snapshotconstructBucketDED2BB39",
-        },
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
-            "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
-            "Arn",
-          ],
-        },
-      },
-      "Type": "Custom::S3AutoDeleteObjects",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "snapshotconstructBucketDED2BB39": Object {
+    "seederconstructBucket8985D027": Object {
       "DeletionPolicy": "Delete",
       "Properties": Object {
         "BucketEncryption": Object {
@@ -129,10 +110,29 @@ Object {
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Delete",
     },
-    "snapshotconstructBucketPolicyBC3C4799": Object {
+    "seederconstructBucketAutoDeleteObjectsCustomResource68080881": Object {
+      "DeletionPolicy": "Delete",
+      "DependsOn": Array [
+        "seederconstructBucketPolicy8E64BB55",
+      ],
+      "Properties": Object {
+        "BucketName": Object {
+          "Ref": "seederconstructBucket8985D027",
+        },
+        "ServiceToken": Object {
+          "Fn::GetAtt": Array [
+            "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::S3AutoDeleteObjects",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "seederconstructBucketPolicy8E64BB55": Object {
       "Properties": Object {
         "Bucket": Object {
-          "Ref": "snapshotconstructBucketDED2BB39",
+          "Ref": "seederconstructBucket8985D027",
         },
         "PolicyDocument": Object {
           "Statement": Array [
@@ -150,7 +150,7 @@ Object {
               "Resource": Array [
                 Object {
                   "Fn::GetAtt": Array [
-                    "snapshotconstructBucketDED2BB39",
+                    "seederconstructBucket8985D027",
                     "Arn",
                   ],
                 },
@@ -160,7 +160,7 @@ Object {
                     Array [
                       Object {
                         "Fn::GetAtt": Array [
-                          "snapshotconstructBucketDED2BB39",
+                          "seederconstructBucket8985D027",
                           "Arn",
                         ],
                       },
@@ -188,7 +188,7 @@ Object {
               "Resource": Array [
                 Object {
                   "Fn::GetAtt": Array [
-                    "snapshotconstructBucketDED2BB39",
+                    "seederconstructBucket8985D027",
                     "Arn",
                   ],
                 },
@@ -198,7 +198,41 @@ Object {
                     Array [
                       Object {
                         "Fn::GetAtt": Array [
-                          "snapshotconstructBucketDED2BB39",
+                          "seederconstructBucket8985D027",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            Object {
+              "Action": "s3:*",
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": Object {
+                  "Fn::GetAtt": Array [
+                    "seederconstructIngestionRoleB9833A74",
+                    "Arn",
+                  ],
+                },
+              },
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "seederconstructBucket8985D027",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "seederconstructBucket8985D027",
                           "Arn",
                         ],
                       },
@@ -214,7 +248,218 @@ Object {
       },
       "Type": "AWS::S3::BucketPolicy",
     },
-    "snapshotconstructanalyticstableF88925AF": Object {
+    "seederconstructGlueDatabaseF75256E4": Object {
+      "Properties": Object {
+        "CatalogId": Object {
+          "Ref": "AWS::AccountId",
+        },
+        "DatabaseInput": Object {},
+      },
+      "Type": "AWS::Glue::Database",
+    },
+    "seederconstructGlueTable93AA1D3B": Object {
+      "Properties": Object {
+        "CatalogId": Object {
+          "Ref": "AWS::AccountId",
+        },
+        "DatabaseName": Object {
+          "Ref": "seederconstructGlueDatabaseF75256E4",
+        },
+        "TableInput": Object {
+          "Owner": "owner",
+          "PartitionKeys": Array [
+            Object {
+              "Name": "year",
+              "Type": "string",
+            },
+            Object {
+              "Name": "month",
+              "Type": "string",
+            },
+            Object {
+              "Name": "day",
+              "Type": "string",
+            },
+          ],
+          "Retention": 0,
+          "StorageDescriptor": Object {
+            "BucketColumns": Array [],
+            "Columns": Array [
+              Object {
+                "Name": "PK",
+                "Type": "string",
+              },
+              Object {
+                "Name": "SK",
+                "Type": "string",
+              },
+            ],
+            "Compressed": false,
+            "InputFormat": "org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat",
+            "NumberOfBuckets": -1,
+            "OutputFormat": "org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat",
+            "SerdeInfo": Object {
+              "Parameters": Object {
+                "serialization.format": "1",
+              },
+              "SerializationLibrary": "org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe",
+            },
+            "SortColumns": Array [],
+            "StoredAsSubDirectories": false,
+          },
+          "TableType": "EXTERNAL_TABLE",
+        },
+      },
+      "Type": "AWS::Glue::Table",
+    },
+    "seederconstructIngestionRoleB9833A74": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "firehose.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Policies": Array [
+          Object {
+            "PolicyDocument": Object {
+              "Statement": Array [
+                Object {
+                  "Action": "s3:*",
+                  "Effect": "Allow",
+                  "Resource": Array [
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "seederconstructBucket8985D027",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::Join": Array [
+                        "",
+                        Array [
+                          Object {
+                            "Fn::GetAtt": Array [
+                              "seederconstructBucket8985D027",
+                              "Arn",
+                            ],
+                          },
+                          "/*",
+                        ],
+                      ],
+                    },
+                  ],
+                },
+                Object {
+                  "Action": "glue:GetTableVersions",
+                  "Effect": "Allow",
+                  "Resource": "*",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "default",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "seederconstructTelemetryIngestionStream937F8EFE": Object {
+      "Properties": Object {
+        "ExtendedS3DestinationConfiguration": Object {
+          "BucketARN": Object {
+            "Fn::GetAtt": Array [
+              "seederconstructBucket8985D027",
+              "Arn",
+            ],
+          },
+          "BufferingHints": Object {
+            "IntervalInSeconds": 60,
+            "SizeInMBs": 128,
+          },
+          "CompressionFormat": "UNCOMPRESSED",
+          "DataFormatConversionConfiguration": Object {
+            "Enabled": true,
+            "InputFormatConfiguration": Object {
+              "Deserializer": Object {
+                "OpenXJsonSerDe": Object {},
+              },
+            },
+            "OutputFormatConfiguration": Object {
+              "Serializer": Object {
+                "ParquetSerDe": Object {},
+              },
+            },
+            "SchemaConfiguration": Object {
+              "CatalogId": Object {
+                "Ref": "AWS::AccountId",
+              },
+              "DatabaseName": Object {
+                "Ref": "seederconstructGlueDatabaseF75256E4",
+              },
+              "RoleARN": Object {
+                "Fn::GetAtt": Array [
+                  "seederconstructIngestionRoleB9833A74",
+                  "Arn",
+                ],
+              },
+              "TableName": Object {
+                "Ref": "seederconstructGlueTable93AA1D3B",
+              },
+            },
+          },
+          "DynamicPartitioningConfiguration": Object {
+            "Enabled": true,
+            "RetryOptions": Object {
+              "DurationInSeconds": 300,
+            },
+          },
+          "ErrorOutputPrefix": "error/!{firehose:error-output-type}/dt=!{timestamp:yyyy'-'MM'-'dd}/h=!{timestamp:HH}/",
+          "Prefix": "year=!{partitionKeyFromQuery:year}/month=!{partitionKeyFromQuery:month}/day=!{partitionKeyFromQuery:day}/",
+          "ProcessingConfiguration": Object {
+            "Enabled": true,
+            "Processors": Array [
+              Object {
+                "Parameters": Array [
+                  Object {
+                    "ParameterName": "MetadataExtractionQuery",
+                    "ParameterValue": "{ year : .createdAt[0:4], month : .createdAt[5:7], day : .createdAt[8:10] }",
+                  },
+                  Object {
+                    "ParameterName": "JsonParsingEngine",
+                    "ParameterValue": "JQ-1.6",
+                  },
+                ],
+                "Type": "MetadataExtraction",
+              },
+              Object {
+                "Parameters": Array [
+                  Object {
+                    "ParameterName": "Delimiter",
+                    "ParameterValue": "\\\\n",
+                  },
+                ],
+                "Type": "AppendDelimiterToRecord",
+              },
+            ],
+          },
+          "RoleARN": Object {
+            "Fn::GetAtt": Array [
+              "seederconstructIngestionRoleB9833A74",
+              "Arn",
+            ],
+          },
+        },
+      },
+      "Type": "AWS::KinesisFirehose::DeliveryStream",
+    },
+    "seederconstructanalyticstableD925F0A0": Object {
       "DeletionPolicy": "Delete",
       "Properties": Object {
         "AttributeDefinitions": Array [
@@ -241,7 +486,7 @@ Object {
         "KinesisStreamSpecification": Object {
           "StreamArn": Object {
             "Fn::GetAtt": Array [
-              "snapshotconstructstreamFD8C8D4A",
+              "seederconstructstream9C406DB7",
               "Arn",
             ],
           },
@@ -253,7 +498,7 @@ Object {
       "Type": "AWS::DynamoDB::Table",
       "UpdateReplacePolicy": "Delete",
     },
-    "snapshotconstructstreamFD8C8D4A": Object {
+    "seederconstructstream9C406DB7": Object {
       "Properties": Object {
         "Name": "ddb-kinesis-stream",
         "RetentionPeriodHours": 24,

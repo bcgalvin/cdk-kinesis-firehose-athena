@@ -1,14 +1,18 @@
 import io
 import os
+from typing import Dict
 
 import boto3
 import numpy as np
 import pandas as pd
+from dynamodb_json import json_util
 
+ddb_client = boto3.client("dynamodb")
 s3_client = boto3.client("s3")
 
 SAGEMAKER_ROLE = "arn:aws:iam::570405429484:role/service-role/AmazonSageMaker-ExecutionRole-20201222T192023"
 SAGEMAKER_BUCKET = "aws-ml-blog-sagemaker-census-segmentation"
+DYNAMO_TABLE = "integ-stack-seederconstructanalyticstableD925F0A0-JN0CSW0SP6LM"
 PERIOD_START = pd.to_datetime("2022-01-01")
 PERIOD_END = pd.to_datetime("2022-03-14")
 DATA_DIR = "data"
@@ -20,7 +24,9 @@ if not os.path.exists(DATA_DIR):
 def gen_random_dates(start: pd.Timestamp, end: pd.Timestamp, n=int):
     start_u = start.value // 10**9
     end_u = end.value // 10**9
-    return pd.to_datetime(np.random.randint(start_u, end_u, n), unit="s").strftime("%Y-%m-%d")
+    return pd.to_datetime(np.random.randint(start_u, end_u, n), unit="s").strftime(
+        "%Y-%m-%d"
+    )
 
 
 def get_s3_file(bucket: str) -> None:
@@ -36,6 +42,16 @@ def get_s3_file(bucket: str) -> None:
     return data
 
 
+def save_record(record: Dict, table: str) -> None:
+    ddb_client.put_item(TableName=table, Item=record)
+
+
 if __name__ == "__main__":
     data = get_s3_file(SAGEMAKER_BUCKET)
-    data.to_json(f"{DATA_DIR}/seed-data.json", orient="records")
+    data["PK"] = "STATE#" + data["State"].astype(str)
+    data["SK"] = "COUNTY#" + data["County"].astype(str)
+    data = data[["PK", "SK", "createdAt"]]
+    ddb_data = [
+        json_util.dumps(row.to_dict(), as_dict=True) for index, row in data.iterrows()
+    ]
+    [ddb_client.put_item(TableName=DYNAMO_TABLE, Item=r) for r in ddb_data]
