@@ -1,10 +1,17 @@
-import { join } from 'path';
+import {
+  Database,
+  InputFormat,
+  OutputFormat,
+  Schema,
+  SerializationLibrary,
+  Table as gTable,
+} from '@aws-cdk/aws-glue-alpha';
 import { Aws, CfnOutput, RemovalPolicy } from 'aws-cdk-lib';
 import { AttributeType, BillingMode, ITable, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
-import { CfnDatabase, CfnTable } from 'aws-cdk-lib/aws-glue';
-import { ArnPrincipal, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { IStream, Stream, StreamEncryption } from 'aws-cdk-lib/aws-kinesis';
+import { ArnPrincipal, Effect, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { IStream, Stream, StreamEncryption, StreamMode } from 'aws-cdk-lib/aws-kinesis';
 import { CfnDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
+import { LogGroup, LogStream, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { BlockPublicAccess, Bucket, BucketEncryption, IBucket } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 
@@ -15,6 +22,18 @@ export class DynamoAthenaSeeder extends Construct {
 
   constructor(scope: Construct, id: string) {
     super(scope, id);
+
+    const streamLogGroup = new LogGroup(this, 'deliveryLogGroup', {
+      retention: RetentionDays.ONE_WEEK,
+      logGroupName: '/aws/kinesisfirehose/test-stream',
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+
+    new LogStream(this, 'deliveryLogStream', {
+      logGroup: streamLogGroup,
+      logStreamName: 'S3Delivery',
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
 
     const landingBucket = new Bucket(this, 'Bucket', {
       encryption: BucketEncryption.S3_MANAGED,
@@ -27,9 +46,11 @@ export class DynamoAthenaSeeder extends Construct {
     const stream = new Stream(this, 'stream', {
       streamName: `ddb-kinesis-stream`,
       encryption: StreamEncryption.MANAGED,
+      streamMode: StreamMode.ON_DEMAND,
     });
 
     const table = new Table(this, 'analytics-table', {
+      tableName: 'integ-test-analytics',
       partitionKey: {
         name: 'PK',
         type: AttributeType.STRING,
@@ -44,68 +65,43 @@ export class DynamoAthenaSeeder extends Construct {
       kinesisStream: stream,
     });
 
-    const glueDb = new CfnDatabase(this, 'GlueDatabase', {
-      catalogId: Aws.ACCOUNT_ID,
-      databaseInput: {},
+    const glueDatabase = new Database(this, 'GlueDB', {
+      databaseName: 'ddb-s3-athena',
     });
-    const glueTable = new CfnTable(this, 'GlueTable', {
-      catalogId: Aws.ACCOUNT_ID,
-      databaseName: glueDb.ref,
-      tableInput: {
-        owner: 'owner',
-        retention: 0,
-        storageDescriptor: {
-          columns: [
-            {
-              name: 'PK',
-              type: 'string',
-            },
-            {
-              name: 'SK',
-              type: 'string',
-            },
-          ],
-          inputFormat: 'org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat',
-          outputFormat: 'org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat',
-          compressed: false,
-          numberOfBuckets: -1,
-          serdeInfo: {
-            serializationLibrary: 'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe',
-            parameters: {
-              'serialization.format': '1',
-            },
-          },
-          bucketColumns: [],
-          sortColumns: [],
-          storedAsSubDirectories: false,
+
+    const glueTable = new gTable(this, 'GlueTable', {
+      database: glueDatabase,
+      tableName: 'seeder',
+      columns: [
+        {
+          name: 'PK',
+          type: Schema.TIMESTAMP,
         },
-        partitionKeys: [
-          {
-            name: 'year',
-            type: 'string',
-          },
-          {
-            name: 'month',
-            type: 'string',
-          },
-          {
-            name: 'day',
-            type: 'string',
-          },
-        ],
-        tableType: 'EXTERNAL_TABLE',
+        {
+          name: 'SK',
+          type: Schema.STRING,
+        },
+      ],
+      dataFormat: {
+        inputFormat: new InputFormat('org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat'),
+        outputFormat: new OutputFormat('org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat'),
+        serializationLibrary: new SerializationLibrary('org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe'),
       },
+      s3Prefix: 'data',
+      bucket: landingBucket,
     });
 
     const ingestionRole = new Role(this, 'IngestionRole', {
       assumedBy: new ServicePrincipal('firehose.amazonaws.com'),
       inlinePolicies: {
-        default: new PolicyDocument({
+        AllowFirehose: new PolicyDocument({
           statements: [
             new PolicyStatement({
-              actions: ['s3:*'],
-              resources: [landingBucket.bucketArn, landingBucket.arnForObjects('*')],
+              actions: ['kinesis:DescribeStream', 'kinesis:GetRecords', 'kinesis:GetShardIterator'],
+              effect: Effect.ALLOW,
+              resources: [stream.streamArn],
             }),
+
             new PolicyStatement({
               actions: ['glue:GetTableVersions'],
               resources: ['*'],
@@ -114,6 +110,7 @@ export class DynamoAthenaSeeder extends Construct {
         }),
       },
     });
+
     landingBucket.addToResourcePolicy(
       new PolicyStatement({
         actions: ['s3:*'],
@@ -122,8 +119,22 @@ export class DynamoAthenaSeeder extends Construct {
       }),
     );
 
-    new CfnDeliveryStream(this, 'TelemetryIngestionStream', {
+    stream.grantReadWrite(ingestionRole);
+    streamLogGroup.grantWrite(ingestionRole);
+    landingBucket.grantWrite(ingestionRole);
+
+    new CfnDeliveryStream(this, 'DeliveryStream', {
+      deliveryStreamType: 'KinesisStreamAsSource',
+      kinesisStreamSourceConfiguration: {
+        kinesisStreamArn: stream.streamArn,
+        roleArn: ingestionRole.roleArn,
+      },
       extendedS3DestinationConfiguration: {
+        cloudWatchLoggingOptions: {
+          enabled: true,
+          logGroupName: '/aws/kinesisfirehose/test-stream',
+          logStreamName: 'S3Delivery',
+        },
         bucketArn: landingBucket.bucketArn,
         bufferingHints: {
           sizeInMBs: 128,
@@ -131,12 +142,7 @@ export class DynamoAthenaSeeder extends Construct {
         },
         compressionFormat: 'UNCOMPRESSED',
         errorOutputPrefix: `error/!{firehose:error-output-type}/dt=!{timestamp:yyyy'-'MM'-'dd}/h=!{timestamp:HH}/`,
-        prefix: `${join(
-          'year=!{partitionKeyFromQuery:year}',
-          'month=!{partitionKeyFromQuery:month}',
-          'day=!{partitionKeyFromQuery:day}',
-        )}/`,
-        roleArn: ingestionRole.roleArn,
+        prefix: 'data/date=!{partitionKeyFromQuery:date}',
         dynamicPartitioningConfiguration: {
           enabled: true,
           retryOptions: {
@@ -151,7 +157,7 @@ export class DynamoAthenaSeeder extends Construct {
               parameters: [
                 {
                   parameterName: 'MetadataExtractionQuery',
-                  parameterValue: '{ year : .createdAt[0:4], month : .createdAt[5:7], day : .createdAt[8:10] }',
+                  parameterValue: '{ date : .createdAt[0:10] }',
                 },
                 {
                   parameterName: 'JsonParsingEngine',
@@ -170,13 +176,14 @@ export class DynamoAthenaSeeder extends Construct {
             },
           ],
         },
+        roleArn: ingestionRole.roleArn,
         dataFormatConversionConfiguration: {
-          enabled: true,
           schemaConfiguration: {
-            catalogId: Aws.ACCOUNT_ID,
-            databaseName: glueDb.ref,
-            tableName: glueTable.ref,
             roleArn: ingestionRole.roleArn,
+            catalogId: Aws.ACCOUNT_ID,
+            databaseName: glueDatabase.databaseName,
+            tableName: glueTable.tableName,
+            region: Aws.REGION,
           },
           inputFormatConfiguration: {
             deserializer: {
@@ -188,6 +195,7 @@ export class DynamoAthenaSeeder extends Construct {
               parquetSerDe: {},
             },
           },
+          enabled: true,
         },
       },
     });
