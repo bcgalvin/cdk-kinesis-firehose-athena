@@ -1,25 +1,6 @@
 {
   "Resources": {
-    "seederconstructdeliveryLogGroup3AE885B8": {
-      "Type": "AWS::Logs::LogGroup",
-      "Properties": {
-        "LogGroupName": "/aws/kinesisfirehose/ddb-athena",
-        "RetentionInDays": 7
-      },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
-    },
-    "seederconstructdeliveryLogStream7335E4E7": {
-      "Type": "AWS::Logs::LogStream",
-      "Properties": {
-        "LogGroupName": {
-          "Ref": "seederconstructdeliveryLogGroup3AE885B8"
-        }
-      },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
-    },
-    "seederconstructBucket8985D027": {
+    "seederconstructEventStorageBucketEF5D3FFB": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "BucketEncryption": {
@@ -30,6 +11,11 @@
               }
             }
           ]
+        },
+        "NotificationConfiguration": {
+          "EventBridgeConfiguration": {
+            "EventBridgeEnabled": true
+          }
         },
         "PublicAccessBlockConfiguration": {
           "BlockPublicAcls": true,
@@ -47,11 +33,11 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
-    "seederconstructBucketPolicy8E64BB55": {
+    "seederconstructEventStorageBucketPolicy09361843": {
       "Type": "AWS::S3::BucketPolicy",
       "Properties": {
         "Bucket": {
-          "Ref": "seederconstructBucket8985D027"
+          "Ref": "seederconstructEventStorageBucketEF5D3FFB"
         },
         "PolicyDocument": {
           "Statement": [
@@ -69,7 +55,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "seederconstructBucket8985D027",
+                    "seederconstructEventStorageBucketEF5D3FFB",
                     "Arn"
                   ]
                 },
@@ -79,7 +65,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "seederconstructBucket8985D027",
+                          "seederconstructEventStorageBucketEF5D3FFB",
                           "Arn"
                         ]
                       },
@@ -107,7 +93,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "seederconstructBucket8985D027",
+                    "seederconstructEventStorageBucketEF5D3FFB",
                     "Arn"
                   ]
                 },
@@ -117,7 +103,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "seederconstructBucket8985D027",
+                          "seederconstructEventStorageBucketEF5D3FFB",
                           "Arn"
                         ]
                       },
@@ -133,7 +119,7 @@
               "Principal": {
                 "AWS": {
                   "Fn::GetAtt": [
-                    "seederconstructIngestionRoleB9833A74",
+                    "seederconstructS3FirehoseDeliveryIngestionRole2AADE1EF",
                     "Arn"
                   ]
                 }
@@ -141,7 +127,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "seederconstructBucket8985D027",
+                    "seederconstructEventStorageBucketEF5D3FFB",
                     "Arn"
                   ]
                 },
@@ -151,7 +137,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "seederconstructBucket8985D027",
+                          "seederconstructEventStorageBucketEF5D3FFB",
                           "Arn"
                         ]
                       },
@@ -166,7 +152,7 @@
         }
       }
     },
-    "seederconstructBucketAutoDeleteObjectsCustomResource68080881": {
+    "seederconstructEventStorageBucketAutoDeleteObjectsCustomResourceA5B221D0": {
       "Type": "Custom::S3AutoDeleteObjects",
       "Properties": {
         "ServiceToken": {
@@ -176,19 +162,18 @@
           ]
         },
         "BucketName": {
-          "Ref": "seederconstructBucket8985D027"
+          "Ref": "seederconstructEventStorageBucketEF5D3FFB"
         }
       },
       "DependsOn": [
-        "seederconstructBucketPolicy8E64BB55"
+        "seederconstructEventStorageBucketPolicy09361843"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
-    "seederconstructstream9C406DB7": {
+    "seederconstructEventStoragestreamC0C5F86D": {
       "Type": "AWS::Kinesis::Stream",
       "Properties": {
-        "Name": "ddb-athena-stream",
         "RetentionPeriodHours": 24,
         "StreamEncryption": {
           "EncryptionType": "KMS",
@@ -199,7 +184,7 @@
         }
       }
     },
-    "seederconstructanalyticstableD925F0A0": {
+    "seederconstructEventStorageanalyticstable1032AB2D": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
         "KeySchema": [
@@ -226,20 +211,19 @@
         "KinesisStreamSpecification": {
           "StreamArn": {
             "Fn::GetAtt": [
-              "seederconstructstream9C406DB7",
+              "seederconstructEventStoragestreamC0C5F86D",
               "Arn"
             ]
           }
         },
         "SSESpecification": {
           "SSEEnabled": true
-        },
-        "TableName": "ddb-athena"
+        }
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
-    "seederconstructGlueDB7DCB2FDC": {
+    "seederconstructAthenaGlueDB5E1C6477": {
       "Type": "AWS::Glue::Database",
       "Properties": {
         "CatalogId": {
@@ -250,14 +234,14 @@
         }
       }
     },
-    "seederconstructGlueTableC181FBB2": {
+    "seederconstructAthenaGlueTableD3D04B1A": {
       "Type": "AWS::Glue::Table",
       "Properties": {
         "CatalogId": {
           "Ref": "AWS::AccountId"
         },
         "DatabaseName": {
-          "Ref": "seederconstructGlueDB7DCB2FDC"
+          "Ref": "seederconstructAthenaGlueDB5E1C6477"
         },
         "TableInput": {
           "Description": "seeder generated by CDK",
@@ -299,7 +283,7 @@
                 [
                   "s3://",
                   {
-                    "Ref": "seederconstructBucket8985D027"
+                    "Ref": "seederconstructEventStorageBucketEF5D3FFB"
                   },
                   "/data/"
                 ]
@@ -315,7 +299,192 @@
         }
       }
     },
-    "seederconstructhandlerServiceRole7AA0F496": {
+    "seederconstructAthenaAthenaWorkgroupEE45F9BE": {
+      "Type": "AWS::Athena::WorkGroup",
+      "Properties": {
+        "Name": {
+          "Ref": "AWS::StackName"
+        },
+        "RecursiveDeleteOption": true,
+        "State": "ENABLED",
+        "WorkGroupConfiguration": {
+          "EnforceWorkGroupConfiguration": true,
+          "ResultConfiguration": {
+            "OutputLocation": {
+              "Fn::Join": [
+                "",
+                [
+                  "s3://",
+                  {
+                    "Ref": "seederconstructEventStorageBucketEF5D3FFB"
+                  },
+                  "/results"
+                ]
+              ]
+            }
+          }
+        }
+      }
+    },
+    "seederconstructS3FirehoseDeliverydeliveryLogGroupC840A910": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/kinesisfirehose/ddb-athena",
+        "RetentionInDays": 7
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "seederconstructS3FirehoseDeliverydeliveryLogStreamB8C6DC8A": {
+      "Type": "AWS::Logs::LogStream",
+      "Properties": {
+        "LogGroupName": {
+          "Ref": "seederconstructS3FirehoseDeliverydeliveryLogGroupC840A910"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "seederconstructS3FirehoseDeliveryIngestionRole2AADE1EF": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "firehose.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "kinesis:DescribeStream",
+                    "kinesis:GetRecords",
+                    "kinesis:GetShardIterator"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": {
+                    "Fn::GetAtt": [
+                      "seederconstructEventStoragestreamC0C5F86D",
+                      "Arn"
+                    ]
+                  }
+                },
+                {
+                  "Action": "glue:GetTableVersions",
+                  "Effect": "Allow",
+                  "Resource": "*"
+                }
+              ],
+              "Version": "2012-10-17"
+            },
+            "PolicyName": "AllowFirehose"
+          }
+        ]
+      }
+    },
+    "seederconstructS3FirehoseDeliveryIngestionRoleDefaultPolicy39FD8799": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "kinesis:DescribeStreamSummary",
+                "kinesis:GetRecords",
+                "kinesis:GetShardIterator",
+                "kinesis:ListShards",
+                "kinesis:SubscribeToShard",
+                "kinesis:DescribeStream",
+                "kinesis:ListStreams",
+                "kinesis:PutRecord",
+                "kinesis:PutRecords"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "seederconstructEventStoragestreamC0C5F86D",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "s3:DeleteObject*",
+                "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging",
+                "s3:Abort*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "seederconstructEventStorageBucketEF5D3FFB",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "seederconstructEventStorageBucketEF5D3FFB",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "seederconstructS3FirehoseDeliverydeliveryLogGroupC840A910",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "seederconstructS3FirehoseDeliveryhandlerAA77D9AF",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "seederconstructS3FirehoseDeliveryIngestionRoleDefaultPolicy39FD8799",
+        "Roles": [
+          {
+            "Ref": "seederconstructS3FirehoseDeliveryIngestionRole2AADE1EF"
+          }
+        ]
+      }
+    },
+    "seederconstructS3FirehoseDeliveryhandlerServiceRoleFA116236": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -346,18 +515,18 @@
         ]
       }
     },
-    "seederconstructhandler0F248E93": {
+    "seederconstructS3FirehoseDeliveryhandlerAA77D9AF": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
           },
-          "S3Key": "c8c81667104be8664aee003d2bf9975f78515a8a5cf695fae7e6895fd8086532.zip"
+          "S3Key": "6f2f2a2c2e1fed968804698a60557f6ded760ae8b5403d5ba62f1e1fc37eae6a.zip"
         },
         "Role": {
           "Fn::GetAtt": [
-            "seederconstructhandlerServiceRole7AA0F496",
+            "seederconstructS3FirehoseDeliveryhandlerServiceRoleFA116236",
             "Arn"
           ]
         },
@@ -365,10 +534,10 @@
         "Runtime": "provided.al2"
       },
       "DependsOn": [
-        "seederconstructhandlerServiceRole7AA0F496"
+        "seederconstructS3FirehoseDeliveryhandlerServiceRoleFA116236"
       ]
     },
-    "seederconstructhandlerLogRetention6ED56F48": {
+    "seederconstructS3FirehoseDeliveryhandlerLogRetention4CDCA062": {
       "Type": "Custom::LogRetention",
       "Properties": {
         "ServiceToken": {
@@ -383,7 +552,7 @@
             [
               "/aws/lambda/",
               {
-                "Ref": "seederconstructhandler0F248E93"
+                "Ref": "seederconstructS3FirehoseDeliveryhandlerAA77D9AF"
               }
             ]
           ]
@@ -391,153 +560,14 @@
         "RetentionInDays": 3
       }
     },
-    "seederconstructIngestionRoleB9833A74": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "firehose.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "Policies": [
-          {
-            "PolicyDocument": {
-              "Statement": [
-                {
-                  "Action": [
-                    "kinesis:DescribeStream",
-                    "kinesis:GetRecords",
-                    "kinesis:GetShardIterator"
-                  ],
-                  "Effect": "Allow",
-                  "Resource": {
-                    "Fn::GetAtt": [
-                      "seederconstructstream9C406DB7",
-                      "Arn"
-                    ]
-                  }
-                },
-                {
-                  "Action": "glue:GetTableVersions",
-                  "Effect": "Allow",
-                  "Resource": "*"
-                }
-              ],
-              "Version": "2012-10-17"
-            },
-            "PolicyName": "AllowFirehose"
-          }
-        ]
-      }
-    },
-    "seederconstructIngestionRoleDefaultPolicy7B7C4F8D": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "kinesis:DescribeStreamSummary",
-                "kinesis:GetRecords",
-                "kinesis:GetShardIterator",
-                "kinesis:ListShards",
-                "kinesis:SubscribeToShard",
-                "kinesis:DescribeStream",
-                "kinesis:ListStreams",
-                "kinesis:PutRecord",
-                "kinesis:PutRecords"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "seederconstructstream9C406DB7",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": [
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "seederconstructdeliveryLogGroup3AE885B8",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": [
-                "s3:DeleteObject*",
-                "s3:PutObject",
-                "s3:PutObjectLegalHold",
-                "s3:PutObjectRetention",
-                "s3:PutObjectTagging",
-                "s3:PutObjectVersionTagging",
-                "s3:Abort*"
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "seederconstructBucket8985D027",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "seederconstructBucket8985D027",
-                          "Arn"
-                        ]
-                      },
-                      "/*"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "Action": "lambda:InvokeFunction",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "seederconstructhandler0F248E93",
-                  "Arn"
-                ]
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "PolicyName": "seederconstructIngestionRoleDefaultPolicy7B7C4F8D",
-        "Roles": [
-          {
-            "Ref": "seederconstructIngestionRoleB9833A74"
-          }
-        ]
-      }
-    },
-    "seederconstructDeliveryStreamFBAD3C4C": {
+    "seederconstructS3FirehoseDeliveryDeliveryStream80E54169": {
       "Type": "AWS::KinesisFirehose::DeliveryStream",
       "Properties": {
         "DeliveryStreamType": "KinesisStreamAsSource",
         "ExtendedS3DestinationConfiguration": {
           "BucketARN": {
             "Fn::GetAtt": [
-              "seederconstructBucket8985D027",
+              "seederconstructEventStorageBucketEF5D3FFB",
               "Arn"
             ]
           },
@@ -547,7 +577,7 @@
           "CloudWatchLoggingOptions": {
             "Enabled": true,
             "LogGroupName": "/aws/kinesisfirehose/test-stream",
-            "LogStreamName": "S3Delivery"
+            "LogStreamName": "S3FirehoseDelivery"
           },
           "CompressionFormat": "UNCOMPRESSED",
           "DataFormatConversionConfiguration": {
@@ -567,19 +597,19 @@
                 "Ref": "AWS::AccountId"
               },
               "DatabaseName": {
-                "Ref": "seederconstructGlueDB7DCB2FDC"
+                "Ref": "seederconstructAthenaGlueDB5E1C6477"
               },
               "Region": {
                 "Ref": "AWS::Region"
               },
               "RoleARN": {
                 "Fn::GetAtt": [
-                  "seederconstructIngestionRoleB9833A74",
+                  "seederconstructS3FirehoseDeliveryIngestionRole2AADE1EF",
                   "Arn"
                 ]
               },
               "TableName": {
-                "Ref": "seederconstructGlueTableC181FBB2"
+                "Ref": "seederconstructAthenaGlueTableD3D04B1A"
               }
             }
           },
@@ -597,7 +627,7 @@
                     "ParameterName": "LambdaArn",
                     "ParameterValue": {
                       "Fn::GetAtt": [
-                        "seederconstructhandler0F248E93",
+                        "seederconstructS3FirehoseDeliveryhandlerAA77D9AF",
                         "Arn"
                       ]
                     }
@@ -618,7 +648,7 @@
           },
           "RoleARN": {
             "Fn::GetAtt": [
-              "seederconstructIngestionRoleB9833A74",
+              "seederconstructS3FirehoseDeliveryIngestionRole2AADE1EF",
               "Arn"
             ]
           }
@@ -626,42 +656,15 @@
         "KinesisStreamSourceConfiguration": {
           "KinesisStreamARN": {
             "Fn::GetAtt": [
-              "seederconstructstream9C406DB7",
+              "seederconstructEventStoragestreamC0C5F86D",
               "Arn"
             ]
           },
           "RoleARN": {
             "Fn::GetAtt": [
-              "seederconstructIngestionRoleB9833A74",
+              "seederconstructS3FirehoseDeliveryIngestionRole2AADE1EF",
               "Arn"
             ]
-          }
-        }
-      }
-    },
-    "seederconstructAthenaWorkgroup950A58B7": {
-      "Type": "AWS::Athena::WorkGroup",
-      "Properties": {
-        "Name": {
-          "Ref": "AWS::StackName"
-        },
-        "RecursiveDeleteOption": true,
-        "State": "ENABLED",
-        "WorkGroupConfiguration": {
-          "EnforceWorkGroupConfiguration": true,
-          "ResultConfiguration": {
-            "OutputLocation": {
-              "Fn::Join": [
-                "",
-                [
-                  "s3://",
-                  {
-                    "Ref": "seederconstructBucket8985D027"
-                  },
-                  "/results"
-                ]
-              ]
-            }
           }
         }
       }
@@ -713,7 +716,7 @@
             [
               "Lambda function for auto-deleting objects in ",
               {
-                "Ref": "seederconstructBucket8985D027"
+                "Ref": "seederconstructEventStorageBucketEF5D3FFB"
               },
               " S3 bucket."
             ]
@@ -801,20 +804,6 @@
         "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
         "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
       ]
-    }
-  },
-  "Outputs": {
-    "seederconstructs3landingbucketoutputD0A727B1": {
-      "Description": "Seed s3 bucket name",
-      "Value": {
-        "Ref": "seederconstructBucket8985D027"
-      }
-    },
-    "seederconstructtableoutput5B629359": {
-      "Description": "Dynamodb table name",
-      "Value": {
-        "Ref": "seederconstructanalyticstableD925F0A0"
-      }
     }
   },
   "Parameters": {
