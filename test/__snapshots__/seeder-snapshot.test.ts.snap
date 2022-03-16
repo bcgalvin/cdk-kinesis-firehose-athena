@@ -82,6 +82,111 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A": Object {
+      "DependsOn": Array [
+        "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+        "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "6c0316fef24d0df8a9a705c77052001217d864f49af386539d01df54618cd131.zip",
+        },
+        "Handler": "index.handler",
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs14.x",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "logs:PutRetentionPolicy",
+                "logs:DeleteRetentionPolicy",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+        "Roles": Array [
+          Object {
+            "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "seederconstructAthenaWorkgroup950A58B7": Object {
+      "Properties": Object {
+        "Name": Object {
+          "Ref": "AWS::StackName",
+        },
+        "RecursiveDeleteOption": true,
+        "State": "ENABLED",
+        "WorkGroupConfiguration": Object {
+          "EnforceWorkGroupConfiguration": true,
+          "ResultConfiguration": Object {
+            "OutputLocation": Object {
+              "Fn::Join": Array [
+                "",
+                Array [
+                  "s3://",
+                  Object {
+                    "Ref": "seederconstructBucket8985D027",
+                  },
+                  "/results",
+                ],
+              ],
+            },
+          },
+        },
+      },
+      "Type": "AWS::Athena::WorkGroup",
+    },
     "seederconstructBucket8985D027": Object {
       "DeletionPolicy": "Delete",
       "Properties": Object {
@@ -260,7 +365,6 @@ Object {
           },
           "BufferingHints": Object {
             "IntervalInSeconds": 60,
-            "SizeInMBs": 128,
           },
           "CloudWatchLoggingOptions": Object {
             "Enabled": true,
@@ -301,8 +405,39 @@ Object {
               },
             },
           },
+          "DynamicPartitioningConfiguration": Object {
+            "Enabled": true,
+          },
           "ErrorOutputPrefix": "error/!{firehose:error-output-type}/dt=!{timestamp:yyyy'-'MM'-'dd}/h=!{timestamp:HH}/",
-          "Prefix": "data/",
+          "Prefix": "data/year=!{partitionKeyFromLambda:year}/month=!{partitionKeyFromLambda:month}/day=!{partitionKeyFromLambda:day}/",
+          "ProcessingConfiguration": Object {
+            "Enabled": true,
+            "Processors": Array [
+              Object {
+                "Parameters": Array [
+                  Object {
+                    "ParameterName": "LambdaArn",
+                    "ParameterValue": Object {
+                      "Fn::GetAtt": Array [
+                        "seederconstructhandler0F248E93",
+                        "Arn",
+                      ],
+                    },
+                  },
+                ],
+                "Type": "Lambda",
+              },
+              Object {
+                "Parameters": Array [
+                  Object {
+                    "ParameterName": "Delimiter",
+                    "ParameterValue": "\\\\n",
+                  },
+                ],
+                "Type": "AppendDelimiterToRecord",
+              },
+            ],
+          },
           "RoleARN": Object {
             "Fn::GetAtt": Array [
               "seederconstructIngestionRoleB9833A74",
@@ -333,7 +468,7 @@ Object {
           "Ref": "AWS::AccountId",
         },
         "DatabaseInput": Object {
-          "Name": "ddb-s3-athena",
+          "Name": "ddb_athena",
         },
       },
       "Type": "AWS::Glue::Database",
@@ -350,11 +485,20 @@ Object {
           "Description": "seeder generated by CDK",
           "Name": "seeder",
           "Parameters": Object {
+            "classification": "parquet",
             "has_encrypted_data": false,
           },
           "PartitionKeys": Array [
             Object {
-              "Name": "date",
+              "Name": "year",
+              "Type": "string",
+            },
+            Object {
+              "Name": "month",
+              "Type": "string",
+            },
+            Object {
+              "Name": "day",
               "Type": "string",
             },
           ],
@@ -379,15 +523,15 @@ Object {
                   Object {
                     "Ref": "seederconstructBucket8985D027",
                   },
-                  "/",
+                  "/data/",
                 ],
               ],
             },
-            "OutputFormat": "org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat",
+            "OutputFormat": "org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat",
             "SerdeInfo": Object {
               "SerializationLibrary": "org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe",
             },
-            "StoredAsSubDirectories": false,
+            "StoredAsSubDirectories": true,
           },
           "TableType": "EXTERNAL_TABLE",
         },
@@ -511,6 +655,16 @@ Object {
                 },
               ],
             },
+            Object {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "seederconstructhandler0F248E93",
+                  "Arn",
+                ],
+              },
+            },
           ],
           "Version": "2012-10-17",
         },
@@ -558,7 +712,7 @@ Object {
         "SSESpecification": Object {
           "SSEEnabled": true,
         },
-        "TableName": "integ-test-analytics",
+        "TableName": "ddb-athena",
       },
       "Type": "AWS::DynamoDB::Table",
       "UpdateReplacePolicy": "Delete",
@@ -566,7 +720,7 @@ Object {
     "seederconstructdeliveryLogGroup3AE885B8": Object {
       "DeletionPolicy": "Delete",
       "Properties": Object {
-        "LogGroupName": "/aws/kinesisfirehose/test-stream",
+        "LogGroupName": "/aws/kinesisfirehose/ddb-athena",
         "RetentionInDays": 7,
       },
       "Type": "AWS::Logs::LogGroup",
@@ -578,14 +732,89 @@ Object {
         "LogGroupName": Object {
           "Ref": "seederconstructdeliveryLogGroup3AE885B8",
         },
-        "LogStreamName": "S3Delivery",
       },
       "Type": "AWS::Logs::LogStream",
       "UpdateReplacePolicy": "Delete",
     },
+    "seederconstructhandler0F248E93": Object {
+      "DependsOn": Array [
+        "seederconstructhandlerServiceRole7AA0F496",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "c8c81667104be8664aee003d2bf9975f78515a8a5cf695fae7e6895fd8086532.zip",
+        },
+        "Handler": "bootstrap",
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "seederconstructhandlerServiceRole7AA0F496",
+            "Arn",
+          ],
+        },
+        "Runtime": "provided.al2",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "seederconstructhandlerLogRetention6ED56F48": Object {
+      "Properties": Object {
+        "LogGroupName": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "/aws/lambda/",
+              Object {
+                "Ref": "seederconstructhandler0F248E93",
+              },
+            ],
+          ],
+        },
+        "RetentionInDays": 3,
+        "ServiceToken": Object {
+          "Fn::GetAtt": Array [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::LogRetention",
+    },
+    "seederconstructhandlerServiceRole7AA0F496": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
     "seederconstructstream9C406DB7": Object {
       "Properties": Object {
-        "Name": "ddb-kinesis-stream",
+        "Name": "ddb-athena-stream",
         "RetentionPeriodHours": 24,
         "StreamEncryption": Object {
           "EncryptionType": "KMS",

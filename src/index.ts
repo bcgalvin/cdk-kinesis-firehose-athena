@@ -1,12 +1,8 @@
-import {
-  Database,
-  InputFormat,
-  OutputFormat,
-  Schema,
-  SerializationLibrary,
-  Table as gTable,
-} from '@aws-cdk/aws-glue-alpha';
+import * as path from 'path';
+import { Database, DataFormat, Schema, Table as gTable } from '@aws-cdk/aws-glue-alpha';
+import { GoFunction } from '@aws-cdk/aws-lambda-go-alpha';
 import { Aws, CfnOutput, RemovalPolicy } from 'aws-cdk-lib';
+import { CfnWorkGroup } from 'aws-cdk-lib/aws-athena';
 import { AttributeType, BillingMode, ITable, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { ArnPrincipal, Effect, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IStream, Stream, StreamEncryption, StreamMode } from 'aws-cdk-lib/aws-kinesis';
@@ -25,13 +21,12 @@ export class DynamoAthenaSeeder extends Construct {
 
     const streamLogGroup = new LogGroup(this, 'deliveryLogGroup', {
       retention: RetentionDays.ONE_WEEK,
-      logGroupName: '/aws/kinesisfirehose/test-stream',
+      logGroupName: '/aws/kinesisfirehose/ddb-athena',
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
     new LogStream(this, 'deliveryLogStream', {
       logGroup: streamLogGroup,
-      logStreamName: 'S3Delivery',
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
@@ -44,13 +39,13 @@ export class DynamoAthenaSeeder extends Construct {
     });
 
     const stream = new Stream(this, 'stream', {
-      streamName: `ddb-kinesis-stream`,
+      streamName: `ddb-athena-stream`,
       encryption: StreamEncryption.MANAGED,
       streamMode: StreamMode.ON_DEMAND,
     });
 
     const table = new Table(this, 'analytics-table', {
-      tableName: 'integ-test-analytics',
+      tableName: 'ddb-athena',
       partitionKey: {
         name: 'PK',
         type: AttributeType.STRING,
@@ -66,7 +61,7 @@ export class DynamoAthenaSeeder extends Construct {
     });
 
     const glueDatabase = new Database(this, 'GlueDB', {
-      databaseName: 'ddb-s3-athena',
+      databaseName: 'ddb_athena',
     });
 
     const glueTable = new gTable(this, 'GlueTable', {
@@ -82,13 +77,29 @@ export class DynamoAthenaSeeder extends Construct {
           type: Schema.STRING,
         },
       ],
-      dataFormat: {
-        inputFormat: new InputFormat('org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat'),
-        outputFormat: new OutputFormat('org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat'),
-        serializationLibrary: new SerializationLibrary('org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe'),
-      },
-      s3Prefix: 'data',
+      storedAsSubDirectories: true,
+      dataFormat: DataFormat.PARQUET,
+      s3Prefix: 'data/',
+      partitionKeys: [
+        {
+          name: 'year',
+          type: Schema.STRING,
+        },
+        {
+          name: 'month',
+          type: Schema.STRING,
+        },
+        {
+          name: 'day',
+          type: Schema.STRING,
+        },
+      ],
       bucket: landingBucket,
+    });
+
+    const kinesisLambda = new GoFunction(this, 'handler', {
+      entry: path.resolve(__dirname, './lambda/firehose-enricher'),
+      logRetention: RetentionDays.THREE_DAYS,
     });
 
     const ingestionRole = new Role(this, 'IngestionRole', {
@@ -122,6 +133,7 @@ export class DynamoAthenaSeeder extends Construct {
     stream.grantReadWrite(ingestionRole);
     streamLogGroup.grantWrite(ingestionRole);
     landingBucket.grantWrite(ingestionRole);
+    kinesisLambda.grantInvoke(ingestionRole);
 
     new CfnDeliveryStream(this, 'DeliveryStream', {
       deliveryStreamType: 'KinesisStreamAsSource',
@@ -136,32 +148,19 @@ export class DynamoAthenaSeeder extends Construct {
           logStreamName: 'S3Delivery',
         },
         bucketArn: landingBucket.bucketArn,
-        bufferingHints: {
-          sizeInMBs: 128,
-          intervalInSeconds: 60,
-        },
         compressionFormat: 'UNCOMPRESSED',
         errorOutputPrefix: `error/!{firehose:error-output-type}/dt=!{timestamp:yyyy'-'MM'-'dd}/h=!{timestamp:HH}/`,
-        prefix: 'data/date=!{partitionKeyFromQuery:date}',
-        dynamicPartitioningConfiguration: {
-          enabled: true,
-          retryOptions: {
-            durationInSeconds: 300,
-          },
-        },
+        prefix:
+          'data/year=!{partitionKeyFromLambda:year}/month=!{partitionKeyFromLambda:month}/day=!{partitionKeyFromLambda:day}/',
         processingConfiguration: {
           enabled: true,
           processors: [
             {
-              type: 'MetadataExtraction',
+              type: 'Lambda',
               parameters: [
                 {
-                  parameterName: 'MetadataExtractionQuery',
-                  parameterValue: '{ date : .createdAt[0:10] }',
-                },
-                {
-                  parameterName: 'JsonParsingEngine',
-                  parameterValue: 'JQ-1.6',
+                  parameterName: 'LambdaArn',
+                  parameterValue: kinesisLambda.functionArn,
                 },
               ],
             },
@@ -175,6 +174,12 @@ export class DynamoAthenaSeeder extends Construct {
               ],
             },
           ],
+        },
+        dynamicPartitioningConfiguration: {
+          enabled: true,
+        },
+        bufferingHints: {
+          intervalInSeconds: 60,
         },
         roleArn: ingestionRole.roleArn,
         dataFormatConversionConfiguration: {
@@ -196,6 +201,19 @@ export class DynamoAthenaSeeder extends Construct {
             },
           },
           enabled: true,
+        },
+      },
+    });
+
+    // Athena Workgroup
+    new CfnWorkGroup(this, 'AthenaWorkgroup', {
+      name: Aws.STACK_NAME,
+      recursiveDeleteOption: true,
+      state: 'ENABLED',
+      workGroupConfiguration: {
+        enforceWorkGroupConfiguration: true,
+        resultConfiguration: {
+          outputLocation: `s3://${landingBucket.bucketName}/results`,
         },
       },
     });

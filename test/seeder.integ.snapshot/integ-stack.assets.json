@@ -14,7 +14,33 @@
         }
       }
     },
-    "54decd2d1664b39cb75760c7cd87e5523424f2bf4f59fa35f48a1d30d4c011bc": {
+    "c8c81667104be8664aee003d2bf9975f78515a8a5cf695fae7e6895fd8086532": {
+      "source": {
+        "path": "asset.c8c81667104be8664aee003d2bf9975f78515a8a5cf695fae7e6895fd8086532",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c8c81667104be8664aee003d2bf9975f78515a8a5cf695fae7e6895fd8086532.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "6c0316fef24d0df8a9a705c77052001217d864f49af386539d01df54618cd131": {
+      "source": {
+        "path": "asset.6c0316fef24d0df8a9a705c77052001217d864f49af386539d01df54618cd131",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "6c0316fef24d0df8a9a705c77052001217d864f49af386539d01df54618cd131.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "df34247ccf273306f4587f41a2251bf42bcf0e57c65d104256ba28844d916ed3": {
       "source": {
         "path": "integ-stack.template.json",
         "packaging": "file"
@@ -22,7 +48,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "54decd2d1664b39cb75760c7cd87e5523424f2bf4f59fa35f48a1d30d4c011bc.json",
+          "objectKey": "df34247ccf273306f4587f41a2251bf42bcf0e57c65d104256ba28844d916ed3.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

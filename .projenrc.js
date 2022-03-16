@@ -5,6 +5,7 @@ const commonIgnore = ['.idea', '.Rproj', '.vscode', 'cdk.context.json', '.DS_Sto
 const deps = [
   `aws-cdk-lib@${cdkVersion}`,
   'constructs@10.0.5',
+  `@aws-cdk/aws-lambda-go-alpha@${cdkVersion}-alpha.0`,
   `@aws-cdk/aws-glue-alpha@${cdkVersion}-alpha.0`,
   `@aws-cdk/aws-kinesisfirehose-destinations-alpha@${cdkVersion}-alpha.0`,
 ];
