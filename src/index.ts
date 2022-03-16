@@ -1,15 +1,11 @@
-import * as path from 'path';
 import { Database, DataFormat, Schema, Table as gTable } from '@aws-cdk/aws-glue-alpha';
-import { GoFunction } from '@aws-cdk/aws-lambda-go-alpha';
 import { Aws, CfnOutput, RemovalPolicy } from 'aws-cdk-lib';
 import { CfnWorkGroup } from 'aws-cdk-lib/aws-athena';
 import { AttributeType, BillingMode, ITable, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
-import { ArnPrincipal, Effect, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IStream, Stream, StreamEncryption, StreamMode } from 'aws-cdk-lib/aws-kinesis';
-import { CfnDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
-import { LogGroup, LogStream, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { BlockPublicAccess, Bucket, BucketEncryption, IBucket } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
+import { S3FirehoseDelivery } from './ingestion';
 
 export class DynamoAthenaSeeder extends Construct {
   public readonly seedBucket: IBucket;
@@ -18,17 +14,6 @@ export class DynamoAthenaSeeder extends Construct {
 
   constructor(scope: Construct, id: string) {
     super(scope, id);
-
-    const streamLogGroup = new LogGroup(this, 'deliveryLogGroup', {
-      retention: RetentionDays.ONE_WEEK,
-      logGroupName: '/aws/kinesisfirehose/ddb-athena',
-      removalPolicy: RemovalPolicy.DESTROY,
-    });
-
-    new LogStream(this, 'deliveryLogStream', {
-      logGroup: streamLogGroup,
-      removalPolicy: RemovalPolicy.DESTROY,
-    });
 
     const landingBucket = new Bucket(this, 'Bucket', {
       encryption: BucketEncryption.S3_MANAGED,
@@ -97,112 +82,11 @@ export class DynamoAthenaSeeder extends Construct {
       bucket: landingBucket,
     });
 
-    const kinesisLambda = new GoFunction(this, 'handler', {
-      entry: path.resolve(__dirname, './lambda/firehose-enricher'),
-      logRetention: RetentionDays.THREE_DAYS,
-    });
-
-    const ingestionRole = new Role(this, 'IngestionRole', {
-      assumedBy: new ServicePrincipal('firehose.amazonaws.com'),
-      inlinePolicies: {
-        AllowFirehose: new PolicyDocument({
-          statements: [
-            new PolicyStatement({
-              actions: ['kinesis:DescribeStream', 'kinesis:GetRecords', 'kinesis:GetShardIterator'],
-              effect: Effect.ALLOW,
-              resources: [stream.streamArn],
-            }),
-
-            new PolicyStatement({
-              actions: ['glue:GetTableVersions'],
-              resources: ['*'],
-            }),
-          ],
-        }),
-      },
-    });
-
-    landingBucket.addToResourcePolicy(
-      new PolicyStatement({
-        actions: ['s3:*'],
-        resources: [landingBucket.bucketArn, landingBucket.arnForObjects('*')],
-        principals: [new ArnPrincipal(ingestionRole.roleArn)],
-      }),
-    );
-
-    stream.grantReadWrite(ingestionRole);
-    streamLogGroup.grantWrite(ingestionRole);
-    landingBucket.grantWrite(ingestionRole);
-    kinesisLambda.grantInvoke(ingestionRole);
-
-    new CfnDeliveryStream(this, 'DeliveryStream', {
-      deliveryStreamType: 'KinesisStreamAsSource',
-      kinesisStreamSourceConfiguration: {
-        kinesisStreamArn: stream.streamArn,
-        roleArn: ingestionRole.roleArn,
-      },
-      extendedS3DestinationConfiguration: {
-        cloudWatchLoggingOptions: {
-          enabled: true,
-          logGroupName: '/aws/kinesisfirehose/test-stream',
-          logStreamName: 'S3Delivery',
-        },
-        bucketArn: landingBucket.bucketArn,
-        compressionFormat: 'UNCOMPRESSED',
-        errorOutputPrefix: `error/!{firehose:error-output-type}/dt=!{timestamp:yyyy'-'MM'-'dd}/h=!{timestamp:HH}/`,
-        prefix:
-          'data/year=!{partitionKeyFromLambda:year}/month=!{partitionKeyFromLambda:month}/day=!{partitionKeyFromLambda:day}/',
-        processingConfiguration: {
-          enabled: true,
-          processors: [
-            {
-              type: 'Lambda',
-              parameters: [
-                {
-                  parameterName: 'LambdaArn',
-                  parameterValue: kinesisLambda.functionArn,
-                },
-              ],
-            },
-            {
-              type: 'AppendDelimiterToRecord',
-              parameters: [
-                {
-                  parameterName: 'Delimiter',
-                  parameterValue: '\\n',
-                },
-              ],
-            },
-          ],
-        },
-        dynamicPartitioningConfiguration: {
-          enabled: true,
-        },
-        bufferingHints: {
-          intervalInSeconds: 60,
-        },
-        roleArn: ingestionRole.roleArn,
-        dataFormatConversionConfiguration: {
-          schemaConfiguration: {
-            roleArn: ingestionRole.roleArn,
-            catalogId: Aws.ACCOUNT_ID,
-            databaseName: glueDatabase.databaseName,
-            tableName: glueTable.tableName,
-            region: Aws.REGION,
-          },
-          inputFormatConfiguration: {
-            deserializer: {
-              openXJsonSerDe: {},
-            },
-          },
-          outputFormatConfiguration: {
-            serializer: {
-              parquetSerDe: {},
-            },
-          },
-          enabled: true,
-        },
-      },
+    new S3FirehoseDelivery(this, 'S3Delivery', {
+      bucket: landingBucket,
+      stream: stream,
+      glueDatabaseName: glueDatabase.databaseName,
+      glueTableName: glueTable.tableName,
     });
 
     // Athena Workgroup
