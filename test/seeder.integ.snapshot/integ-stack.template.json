@@ -1,6 +1,6 @@
 {
   "Resources": {
-    "seederconstructBucket8985D027": {
+    "seederconstructEventStorageBucketEF5D3FFB": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "BucketEncryption": {
@@ -11,6 +11,11 @@
               }
             }
           ]
+        },
+        "NotificationConfiguration": {
+          "EventBridgeConfiguration": {
+            "EventBridgeEnabled": true
+          }
         },
         "PublicAccessBlockConfiguration": {
           "BlockPublicAcls": true,
@@ -28,11 +33,11 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
-    "seederconstructBucketPolicy8E64BB55": {
+    "seederconstructEventStorageBucketPolicy09361843": {
       "Type": "AWS::S3::BucketPolicy",
       "Properties": {
         "Bucket": {
-          "Ref": "seederconstructBucket8985D027"
+          "Ref": "seederconstructEventStorageBucketEF5D3FFB"
         },
         "PolicyDocument": {
           "Statement": [
@@ -50,7 +55,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "seederconstructBucket8985D027",
+                    "seederconstructEventStorageBucketEF5D3FFB",
                     "Arn"
                   ]
                 },
@@ -60,7 +65,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "seederconstructBucket8985D027",
+                          "seederconstructEventStorageBucketEF5D3FFB",
                           "Arn"
                         ]
                       },
@@ -88,7 +93,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "seederconstructBucket8985D027",
+                    "seederconstructEventStorageBucketEF5D3FFB",
                     "Arn"
                   ]
                 },
@@ -98,7 +103,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "seederconstructBucket8985D027",
+                          "seederconstructEventStorageBucketEF5D3FFB",
                           "Arn"
                         ]
                       },
@@ -122,7 +127,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "seederconstructBucket8985D027",
+                    "seederconstructEventStorageBucketEF5D3FFB",
                     "Arn"
                   ]
                 },
@@ -132,7 +137,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "seederconstructBucket8985D027",
+                          "seederconstructEventStorageBucketEF5D3FFB",
                           "Arn"
                         ]
                       },
@@ -147,7 +152,7 @@
         }
       }
     },
-    "seederconstructBucketAutoDeleteObjectsCustomResource68080881": {
+    "seederconstructEventStorageBucketAutoDeleteObjectsCustomResourceA5B221D0": {
       "Type": "Custom::S3AutoDeleteObjects",
       "Properties": {
         "ServiceToken": {
@@ -157,19 +162,18 @@
           ]
         },
         "BucketName": {
-          "Ref": "seederconstructBucket8985D027"
+          "Ref": "seederconstructEventStorageBucketEF5D3FFB"
         }
       },
       "DependsOn": [
-        "seederconstructBucketPolicy8E64BB55"
+        "seederconstructEventStorageBucketPolicy09361843"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
-    "seederconstructstream9C406DB7": {
+    "seederconstructEventStoragestreamC0C5F86D": {
       "Type": "AWS::Kinesis::Stream",
       "Properties": {
-        "Name": "ddb-athena-stream",
         "RetentionPeriodHours": 24,
         "StreamEncryption": {
           "EncryptionType": "KMS",
@@ -180,7 +184,7 @@
         }
       }
     },
-    "seederconstructanalyticstableD925F0A0": {
+    "seederconstructEventStorageanalyticstable1032AB2D": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
         "KeySchema": [
@@ -207,15 +211,14 @@
         "KinesisStreamSpecification": {
           "StreamArn": {
             "Fn::GetAtt": [
-              "seederconstructstream9C406DB7",
+              "seederconstructEventStoragestreamC0C5F86D",
               "Arn"
             ]
           }
         },
         "SSESpecification": {
           "SSEEnabled": true
-        },
-        "TableName": "ddb-athena"
+        }
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
@@ -280,7 +283,7 @@
                 [
                   "s3://",
                   {
-                    "Ref": "seederconstructBucket8985D027"
+                    "Ref": "seederconstructEventStorageBucketEF5D3FFB"
                   },
                   "/data/"
                 ]
@@ -343,7 +346,7 @@
                   "Effect": "Allow",
                   "Resource": {
                     "Fn::GetAtt": [
-                      "seederconstructstream9C406DB7",
+                      "seederconstructEventStoragestreamC0C5F86D",
                       "Arn"
                     ]
                   }
@@ -381,7 +384,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "seederconstructstream9C406DB7",
+                  "seederconstructEventStoragestreamC0C5F86D",
                   "Arn"
                 ]
               }
@@ -400,7 +403,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "seederconstructBucket8985D027",
+                    "seederconstructEventStorageBucketEF5D3FFB",
                     "Arn"
                   ]
                 },
@@ -410,7 +413,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "seederconstructBucket8985D027",
+                          "seederconstructEventStorageBucketEF5D3FFB",
                           "Arn"
                         ]
                       },
@@ -537,7 +540,7 @@
         "ExtendedS3DestinationConfiguration": {
           "BucketARN": {
             "Fn::GetAtt": [
-              "seederconstructBucket8985D027",
+              "seederconstructEventStorageBucketEF5D3FFB",
               "Arn"
             ]
           },
@@ -626,7 +629,7 @@
         "KinesisStreamSourceConfiguration": {
           "KinesisStreamARN": {
             "Fn::GetAtt": [
-              "seederconstructstream9C406DB7",
+              "seederconstructEventStoragestreamC0C5F86D",
               "Arn"
             ]
           },
@@ -656,7 +659,7 @@
                 [
                   "s3://",
                   {
-                    "Ref": "seederconstructBucket8985D027"
+                    "Ref": "seederconstructEventStorageBucketEF5D3FFB"
                   },
                   "/results"
                 ]
@@ -713,7 +716,7 @@
             [
               "Lambda function for auto-deleting objects in ",
               {
-                "Ref": "seederconstructBucket8985D027"
+                "Ref": "seederconstructEventStorageBucketEF5D3FFB"
               },
               " S3 bucket."
             ]
@@ -801,20 +804,6 @@
         "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
         "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
       ]
-    }
-  },
-  "Outputs": {
-    "seederconstructs3landingbucketoutputD0A727B1": {
-      "Description": "Seed s3 bucket name",
-      "Value": {
-        "Ref": "seederconstructBucket8985D027"
-      }
-    },
-    "seederconstructtableoutput5B629359": {
-      "Description": "Dynamodb table name",
-      "Value": {
-        "Ref": "seederconstructanalyticstableD925F0A0"
-      }
     }
   },
   "Parameters": {

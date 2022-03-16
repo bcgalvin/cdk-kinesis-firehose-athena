@@ -2,20 +2,6 @@
 
 exports[`Snapshot 1`] = `
 Object {
-  "Outputs": Object {
-    "seederconstructs3landingbucketoutputD0A727B1": Object {
-      "Description": "Seed s3 bucket name",
-      "Value": Object {
-        "Ref": "seederconstructBucket8985D027",
-      },
-    },
-    "seederconstructtableoutput5B629359": Object {
-      "Description": "Dynamodb table name",
-      "Value": Object {
-        "Ref": "seederconstructanalyticstableD925F0A0",
-      },
-    },
-  },
   "Parameters": Object {
     "BootstrapVersion": Object {
       "Default": "/cdk-bootstrap/hnb659fds/version",
@@ -41,7 +27,7 @@ Object {
             Array [
               "Lambda function for auto-deleting objects in ",
               Object {
-                "Ref": "seederconstructBucket8985D027",
+                "Ref": "seederconstructEventStorageBucketEF5D3FFB",
               },
               " S3 bucket.",
             ],
@@ -176,7 +162,7 @@ Object {
                 Array [
                   "s3://",
                   Object {
-                    "Ref": "seederconstructBucket8985D027",
+                    "Ref": "seederconstructEventStorageBucketEF5D3FFB",
                   },
                   "/results",
                 ],
@@ -187,7 +173,26 @@ Object {
       },
       "Type": "AWS::Athena::WorkGroup",
     },
-    "seederconstructBucket8985D027": Object {
+    "seederconstructEventStorageBucketAutoDeleteObjectsCustomResourceA5B221D0": Object {
+      "DeletionPolicy": "Delete",
+      "DependsOn": Array [
+        "seederconstructEventStorageBucketPolicy09361843",
+      ],
+      "Properties": Object {
+        "BucketName": Object {
+          "Ref": "seederconstructEventStorageBucketEF5D3FFB",
+        },
+        "ServiceToken": Object {
+          "Fn::GetAtt": Array [
+            "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::S3AutoDeleteObjects",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "seederconstructEventStorageBucketEF5D3FFB": Object {
       "DeletionPolicy": "Delete",
       "Properties": Object {
         "BucketEncryption": Object {
@@ -198,6 +203,11 @@ Object {
               },
             },
           ],
+        },
+        "NotificationConfiguration": Object {
+          "EventBridgeConfiguration": Object {
+            "EventBridgeEnabled": true,
+          },
         },
         "PublicAccessBlockConfiguration": Object {
           "BlockPublicAcls": true,
@@ -215,29 +225,10 @@ Object {
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Delete",
     },
-    "seederconstructBucketAutoDeleteObjectsCustomResource68080881": Object {
-      "DeletionPolicy": "Delete",
-      "DependsOn": Array [
-        "seederconstructBucketPolicy8E64BB55",
-      ],
-      "Properties": Object {
-        "BucketName": Object {
-          "Ref": "seederconstructBucket8985D027",
-        },
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
-            "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
-            "Arn",
-          ],
-        },
-      },
-      "Type": "Custom::S3AutoDeleteObjects",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "seederconstructBucketPolicy8E64BB55": Object {
+    "seederconstructEventStorageBucketPolicy09361843": Object {
       "Properties": Object {
         "Bucket": Object {
-          "Ref": "seederconstructBucket8985D027",
+          "Ref": "seederconstructEventStorageBucketEF5D3FFB",
         },
         "PolicyDocument": Object {
           "Statement": Array [
@@ -255,7 +246,7 @@ Object {
               "Resource": Array [
                 Object {
                   "Fn::GetAtt": Array [
-                    "seederconstructBucket8985D027",
+                    "seederconstructEventStorageBucketEF5D3FFB",
                     "Arn",
                   ],
                 },
@@ -265,7 +256,7 @@ Object {
                     Array [
                       Object {
                         "Fn::GetAtt": Array [
-                          "seederconstructBucket8985D027",
+                          "seederconstructEventStorageBucketEF5D3FFB",
                           "Arn",
                         ],
                       },
@@ -293,7 +284,7 @@ Object {
               "Resource": Array [
                 Object {
                   "Fn::GetAtt": Array [
-                    "seederconstructBucket8985D027",
+                    "seederconstructEventStorageBucketEF5D3FFB",
                     "Arn",
                   ],
                 },
@@ -303,7 +294,7 @@ Object {
                     Array [
                       Object {
                         "Fn::GetAtt": Array [
-                          "seederconstructBucket8985D027",
+                          "seederconstructEventStorageBucketEF5D3FFB",
                           "Arn",
                         ],
                       },
@@ -327,7 +318,7 @@ Object {
               "Resource": Array [
                 Object {
                   "Fn::GetAtt": Array [
-                    "seederconstructBucket8985D027",
+                    "seederconstructEventStorageBucketEF5D3FFB",
                     "Arn",
                   ],
                 },
@@ -337,7 +328,7 @@ Object {
                     Array [
                       Object {
                         "Fn::GetAtt": Array [
-                          "seederconstructBucket8985D027",
+                          "seederconstructEventStorageBucketEF5D3FFB",
                           "Arn",
                         ],
                       },
@@ -352,6 +343,58 @@ Object {
         },
       },
       "Type": "AWS::S3::BucketPolicy",
+    },
+    "seederconstructEventStorageanalyticstable1032AB2D": Object {
+      "DeletionPolicy": "Delete",
+      "Properties": Object {
+        "AttributeDefinitions": Array [
+          Object {
+            "AttributeName": "PK",
+            "AttributeType": "S",
+          },
+          Object {
+            "AttributeName": "SK",
+            "AttributeType": "S",
+          },
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "KeySchema": Array [
+          Object {
+            "AttributeName": "PK",
+            "KeyType": "HASH",
+          },
+          Object {
+            "AttributeName": "SK",
+            "KeyType": "RANGE",
+          },
+        ],
+        "KinesisStreamSpecification": Object {
+          "StreamArn": Object {
+            "Fn::GetAtt": Array [
+              "seederconstructEventStoragestreamC0C5F86D",
+              "Arn",
+            ],
+          },
+        },
+        "SSESpecification": Object {
+          "SSEEnabled": true,
+        },
+      },
+      "Type": "AWS::DynamoDB::Table",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "seederconstructEventStoragestreamC0C5F86D": Object {
+      "Properties": Object {
+        "RetentionPeriodHours": 24,
+        "StreamEncryption": Object {
+          "EncryptionType": "KMS",
+          "KeyId": "alias/aws/kinesis",
+        },
+        "StreamModeDetails": Object {
+          "StreamMode": "ON_DEMAND",
+        },
+      },
+      "Type": "AWS::Kinesis::Stream",
     },
     "seederconstructGlueDB7DCB2FDC": Object {
       "Properties": Object {
@@ -412,7 +455,7 @@ Object {
                 Array [
                   "s3://",
                   Object {
-                    "Ref": "seederconstructBucket8985D027",
+                    "Ref": "seederconstructEventStorageBucketEF5D3FFB",
                   },
                   "/data/",
                 ],
@@ -435,7 +478,7 @@ Object {
         "ExtendedS3DestinationConfiguration": Object {
           "BucketARN": Object {
             "Fn::GetAtt": Array [
-              "seederconstructBucket8985D027",
+              "seederconstructEventStorageBucketEF5D3FFB",
               "Arn",
             ],
           },
@@ -524,7 +567,7 @@ Object {
         "KinesisStreamSourceConfiguration": Object {
           "KinesisStreamARN": Object {
             "Fn::GetAtt": Array [
-              "seederconstructstream9C406DB7",
+              "seederconstructEventStoragestreamC0C5F86D",
               "Arn",
             ],
           },
@@ -565,7 +608,7 @@ Object {
                   "Effect": "Allow",
                   "Resource": Object {
                     "Fn::GetAtt": Array [
-                      "seederconstructstream9C406DB7",
+                      "seederconstructEventStoragestreamC0C5F86D",
                       "Arn",
                     ],
                   },
@@ -603,7 +646,7 @@ Object {
               "Effect": "Allow",
               "Resource": Object {
                 "Fn::GetAtt": Array [
-                  "seederconstructstream9C406DB7",
+                  "seederconstructEventStoragestreamC0C5F86D",
                   "Arn",
                 ],
               },
@@ -622,7 +665,7 @@ Object {
               "Resource": Array [
                 Object {
                   "Fn::GetAtt": Array [
-                    "seederconstructBucket8985D027",
+                    "seederconstructEventStorageBucketEF5D3FFB",
                     "Arn",
                   ],
                 },
@@ -632,7 +675,7 @@ Object {
                     Array [
                       Object {
                         "Fn::GetAtt": Array [
-                          "seederconstructBucket8985D027",
+                          "seederconstructEventStorageBucketEF5D3FFB",
                           "Arn",
                         ],
                       },
@@ -771,60 +814,6 @@ Object {
         ],
       },
       "Type": "AWS::IAM::Role",
-    },
-    "seederconstructanalyticstableD925F0A0": Object {
-      "DeletionPolicy": "Delete",
-      "Properties": Object {
-        "AttributeDefinitions": Array [
-          Object {
-            "AttributeName": "PK",
-            "AttributeType": "S",
-          },
-          Object {
-            "AttributeName": "SK",
-            "AttributeType": "S",
-          },
-        ],
-        "BillingMode": "PAY_PER_REQUEST",
-        "KeySchema": Array [
-          Object {
-            "AttributeName": "PK",
-            "KeyType": "HASH",
-          },
-          Object {
-            "AttributeName": "SK",
-            "KeyType": "RANGE",
-          },
-        ],
-        "KinesisStreamSpecification": Object {
-          "StreamArn": Object {
-            "Fn::GetAtt": Array [
-              "seederconstructstream9C406DB7",
-              "Arn",
-            ],
-          },
-        },
-        "SSESpecification": Object {
-          "SSEEnabled": true,
-        },
-        "TableName": "ddb-athena",
-      },
-      "Type": "AWS::DynamoDB::Table",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "seederconstructstream9C406DB7": Object {
-      "Properties": Object {
-        "Name": "ddb-athena-stream",
-        "RetentionPeriodHours": 24,
-        "StreamEncryption": Object {
-          "EncryptionType": "KMS",
-          "KeyId": "alias/aws/kinesis",
-        },
-        "StreamModeDetails": Object {
-          "StreamMode": "ON_DEMAND",
-        },
-      },
-      "Type": "AWS::Kinesis::Stream",
     },
   },
   "Rules": Object {
