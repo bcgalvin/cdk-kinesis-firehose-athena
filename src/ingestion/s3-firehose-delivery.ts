@@ -25,18 +25,18 @@ export class S3FirehoseDelivery extends Construct {
   constructor(scope: Construct, id: string, props: S3FirehoseDeliveryProps) {
     super(scope, id);
 
-    this.kinesisLogGroup = new LogGroup(this, 'deliveryLogGroup', {
+    this.kinesisLogGroup = new LogGroup(this, 'delivery-log-group', {
       retention: RetentionDays.ONE_WEEK,
       logGroupName: props?.logGroupName || '/aws/kinesisfirehose/ddb-athena',
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
-    new LogStream(this, 'deliveryLogStream', {
+    new LogStream(this, 'delivery-log-stream', {
       logGroup: this.kinesisLogGroup,
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
-    const ingestionRole = new Role(this, 'IngestionRole', {
+    const ingestionRole = new Role(this, 'ingestion-role', {
       assumedBy: new ServicePrincipal('firehose.amazonaws.com'),
       inlinePolicies: {
         AllowFirehose: new PolicyDocument({
@@ -56,7 +56,7 @@ export class S3FirehoseDelivery extends Construct {
       },
     });
 
-    this.kinesisDeliveryLambda = new GoFunction(this, 'handler', {
+    this.kinesisDeliveryLambda = new GoFunction(this, 'firehose-enricher-lambda', {
       entry: path.resolve(__dirname, './lambda/firehose-enricher'),
       logRetention: RetentionDays.THREE_DAYS,
     });
@@ -74,7 +74,7 @@ export class S3FirehoseDelivery extends Construct {
     this.kinesisLogGroup.grantWrite(ingestionRole);
     this.kinesisDeliveryLambda.grantInvoke(ingestionRole);
 
-    this.S3DeliveryStream = new CfnDeliveryStream(this, 'DeliveryStream', {
+    this.S3DeliveryStream = new CfnDeliveryStream(this, 'delivery-stream', {
       deliveryStreamType: 'KinesisStreamAsSource',
       kinesisStreamSourceConfiguration: {
         kinesisStreamArn: props.stream.streamArn,

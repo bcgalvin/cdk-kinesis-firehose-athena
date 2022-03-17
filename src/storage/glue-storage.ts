@@ -4,6 +4,7 @@ import { CfnWorkGroup } from 'aws-cdk-lib/aws-athena';
 
 import { IStream } from 'aws-cdk-lib/aws-kinesis';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
+import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
 
 export interface GlueStorageProps {
@@ -18,17 +19,17 @@ export class GlueStorage extends Construct {
   constructor(scope: Construct, id: string, props: GlueStorageProps) {
     super(scope, id);
 
-    this.database = new Database(this, 'GlueDB', {
+    this.database = new Database(this, 'glue-db', {
       databaseName: 'ddb_athena',
     });
 
-    this.table = new Table(this, 'GlueTable', {
+    this.table = new Table(this, 'glue-table', {
       database: this.database,
       tableName: 'seeder',
       columns: [
         {
           name: 'PK',
-          type: Schema.TIMESTAMP,
+          type: Schema.STRING,
         },
         {
           name: 'SK',
@@ -55,7 +56,7 @@ export class GlueStorage extends Construct {
       bucket: props.bucket,
     });
 
-    new CfnWorkGroup(this, 'AthenaWorkgroup', {
+    new CfnWorkGroup(this, 'athena-workgroup', {
       name: Aws.STACK_NAME,
       recursiveDeleteOption: true,
       state: 'ENABLED',
@@ -65,6 +66,11 @@ export class GlueStorage extends Construct {
           outputLocation: `s3://${props.bucket.bucketName}/results`,
         },
       },
+    });
+
+    new StringParameter(this, 'glue-table-parameter', {
+      parameterName: '/glue-storage/table',
+      stringValue: `${this.database.databaseName}-${this.table.tableName}`,
     });
   }
 }

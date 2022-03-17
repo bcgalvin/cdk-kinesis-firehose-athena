@@ -9,10 +9,11 @@ from dynamodb_json import json_util
 
 ddb_client = boto3.client("dynamodb")
 s3_client = boto3.client("s3")
+ssm_client = boto3.client("ssm")
 
 SAGEMAKER_ROLE = "arn:aws:iam::570405429484:role/service-role/AmazonSageMaker-ExecutionRole-20201222T192023"
 SAGEMAKER_BUCKET = "aws-ml-blog-sagemaker-census-segmentation"
-DYNAMO_TABLE = "integ-stack-seederconstructEventStorageanalyticstable1032AB2D-12854T9VD18YV"
+DYNAMO_TABLE = ssm_client.get_parameter(Name="/event-storage/table")["Parameter"]["Value"]
 PERIOD_START = pd.to_datetime("2022-01-01")
 PERIOD_END = pd.to_datetime("2022-03-14")
 DATA_DIR = "data"

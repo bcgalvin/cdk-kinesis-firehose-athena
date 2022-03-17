@@ -2,6 +2,7 @@ import { RemovalPolicy } from 'aws-cdk-lib';
 import { AttributeType, BillingMode, ITable, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { IStream, Stream, StreamEncryption, StreamMode } from 'aws-cdk-lib/aws-kinesis';
 import { BlockPublicAccess, Bucket, BucketEncryption, CfnBucket, IBucket } from 'aws-cdk-lib/aws-s3';
+import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
 
 export interface EventStorageProps {
@@ -18,7 +19,7 @@ export class EventStorage extends Construct {
   constructor(scope: Construct, id: string, props?: EventStorageProps) {
     super(scope, id);
 
-    const bucket = new Bucket(this, 'Bucket', {
+    const bucket = new Bucket(this, 'bucket', {
       bucketName: props?.bucketName || undefined,
       encryption: BucketEncryption.S3_MANAGED,
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
@@ -41,7 +42,7 @@ export class EventStorage extends Construct {
       streamMode: StreamMode.ON_DEMAND,
     });
 
-    this.table = new Table(this, 'analytics-table', {
+    this.table = new Table(this, 'ddb-table', {
       tableName: props?.tableName || undefined,
       partitionKey: {
         name: 'PK',
@@ -55,6 +56,21 @@ export class EventStorage extends Construct {
       encryption: TableEncryption.AWS_MANAGED,
       billingMode: BillingMode.PAY_PER_REQUEST,
       kinesisStream: this.stream,
+    });
+
+    new StringParameter(this, 'bucket-parameter', {
+      parameterName: '/event-storage/bucket',
+      stringValue: bucket.bucketName,
+    });
+
+    new StringParameter(this, 'ddb-table-parameter', {
+      parameterName: '/event-storage/table',
+      stringValue: this.table.tableName,
+    });
+
+    new StringParameter(this, 'stream-parameter', {
+      parameterName: '/event-storage/stream',
+      stringValue: this.table.tableName,
     });
   }
 }
