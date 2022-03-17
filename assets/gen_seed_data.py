@@ -51,7 +51,6 @@ if __name__ == "__main__":
     data = get_s3_file(SAGEMAKER_BUCKET)
     data["PK"] = "STATE#" + data["State"].astype(str)
     data["SK"] = "COUNTY#" + data["County"].astype(str)
-    data = data[["PK", "SK", "createdAt"]]
     ddb_data = [
         json_util.dumps(row.to_dict(), as_dict=True) for index, row in data.iterrows()
     ]

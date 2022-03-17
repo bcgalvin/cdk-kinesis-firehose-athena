@@ -37,15 +37,162 @@ type Keys struct {
 }
 
 type NewImage struct {
-	PK struct {
+	CensusId struct {
 		S string `json:"S"`
-	} `json:"PK"`
+	} `json:"CensusId"`
+	State struct {
+		S string `json:"S"`
+	} `json:"State"`
+	County struct {
+		S string `json:"S"`
+	} `json:"County"`
+	TotalPop struct {
+		S string `json:"S"`
+	} `json:"TotalPop"`
+	Men struct {
+		S string `json:"S"`
+	} `json:"Men"`
+	Women struct {
+		S string `json:"S"`
+	} `json:"Women"`
+	Hispanic struct {
+		S string `json:"S"`
+	} `json:"Hispanic"`
+	White struct {
+		S string `json:"S"`
+	} `json:"White"`
+	Black struct {
+		S string `json:"S"`
+	} `json:"Black"`
+	Native struct {
+		S string `json:"S"`
+	} `json:"Native"`
+	Asian struct {
+		S string `json:"S"`
+	} `json:"Asian"`
+	Pacific struct {
+		S string `json:"S"`
+	} `json:"Pacific"`
+	Citizen struct {
+		S string `json:"S"`
+	} `json:"Citizen"`
+	Income struct {
+		S string `json:"S"`
+	} `json:"Income"`
+	IncomeErr struct {
+		S string `json:"S"`
+	} `json:"IncomeErr"`
+	IncomePerCap struct {
+		S string `json:"S"`
+	} `json:"IncomePerCap"`
+	IncomePerCapErr struct {
+		S string `json:"S"`
+	} `json:"IncomePerCapErr"`
+	Poverty struct {
+		S string `json:"S"`
+	} `json:"Poverty"`
+	ChildPoverty struct {
+		S string `json:"S"`
+	} `json:"ChildPoverty"`
+	Professional struct {
+		S string `json:"S"`
+	} `json:"Professional"`
+	Service struct {
+		S string `json:"S"`
+	} `json:"Service"`
+	Office struct {
+		S string `json:"S"`
+	} `json:"Office"`
+	Construction struct {
+		S string `json:"S"`
+	} `json:"Construction"`
+	Production struct {
+		S string `json:"S"`
+	} `json:"Production"`
+	Drive struct {
+		S string `json:"S"`
+	} `json:"Drive"`
+	Carpool struct {
+		S string `json:"S"`
+	} `json:"Carpool"`
+	Transit struct {
+		S string `json:"S"`
+	} `json:"Transit"`
+	Walk struct {
+		S string `json:"S"`
+	} `json:"Walk"`
+	OtherTransp struct {
+		S string `json:"S"`
+	} `json:"OtherTransp"`
+	WorkAtHome struct {
+		S string `json:"S"`
+	} `json:"WorkAtHome"`
+	MeanCommute struct {
+		S string `json:"S"`
+	} `json:"MeanCommute"`
+	Employed struct {
+		S string `json:"S"`
+	} `json:"Employed"`
+	PrivateWork struct {
+		S string `json:"S"`
+	} `json:"PrivateWork"`
+	PublicWork struct {
+		S string `json:"S"`
+	} `json:"PublicWork"`
+	SelfEmployed struct {
+		S string `json:"S"`
+	} `json:"SelfEmployed"`
+	FamilyWork struct {
+		S string `json:"S"`
+	} `json:"FamilyWork"`
+	Unemployment struct {
+		S string `json:"S"`
+	} `json:"Unemployment"`
 	CreatedAt struct {
 		S string `json:"S"`
 	} `json:"createdAt"`
-	SK struct {
-		S string `json:"S"`
-	} `json:"SK"`
+}
+
+type OutData struct {
+	NewImage
+
+	CensusId        string `json:"dynamodb.NewImage.CenusId.S"`
+	State           string `json:"dynamodb.NewImage.State.S"`
+	County          string `json:"dynamodb.NewImage.County.S"`
+	TotalPop        string `json:"dynamodb.NewImage.TotalPop.S"`
+	Men             string `json:"dynamodb.NewImage.Men.S"`
+	Women           string `json:"dynamodb.NewImage.Women.S"`
+	Hispanic        string `json:"dynamodb.NewImage.Hispanic.S"`
+	White           string `json:"dynamodb.NewImage.White.S"`
+	Black           string `json:"dynamodb.NewImage.Black.S"`
+	Native          string `json:"dynamodb.NewImage.Native.S"`
+	Asian           string `json:"dynamodb.NewImage.Asian.S"`
+	Pacific         string `json:"dynamodb.NewImage.Pacific.S"`
+	Citizen         string `json:"dynamodb.NewImage.Citizen.S"`
+	Income          string `json:"dynamodb.NewImage.Income.S"`
+	IncomeErr       string `json:"dynamodb.NewImage.IncomeErr.S"`
+	IncomePerCap    string `json:"dynamodb.NewImage.IncomePerCap.S"`
+	IncomePerCapErr string `json:"dynamodb.NewImage.IncomePerCapErr.S"`
+	Poverty         string `json:"dynamodb.NewImage.Poverty.S"`
+	ChildPoverty    string `json:"dynamodb.NewImage.ChildPoverty.S"`
+	Professional    string `json:"dynamodb.NewImage.Professional.S"`
+	Service         string `json:"dynamodb.NewImage.Service.S"`
+	Office          string `json:"dynamodb.NewImage.Office.S"`
+	Construction    string `json:"dynamodb.NewImage.Construction.S"`
+	Production      string `json:"dynamodb.NewImage.Production.S"`
+	Drive           string `json:"dynamodb.NewImage.Drive.S"`
+	Carpool         string `json:"dynamodb.NewImage.Carpool.S"`
+	Transit         string `json:"dynamodb.NewImage.Transit.S"`
+	Walk            string `json:"dynamodb.NewImage.Walk.S"`
+	OtherTransp     string `json:"dynamodb.NewImage.OtherTransp.S"`
+	WorkAtHome      string `json:"dynamodb.NewImage.WorkAtHome.S"`
+	MeanCommute     string `json:"dynamodb.NewImage.MeanCommute.S"`
+	Employed        string `json:"dynamodb.NewImage.Employed.S"`
+	PrivateWork     string `json:"dynamodb.NewImage.PrivateWork.S"`
+	PublicWork      string `json:"dynamodb.NewImage.PublicWork.S"`
+	SelfEmployed    string `json:"dynamodb.NewImage.SelfEmployed.S"`
+	FamilyWork      string `json:"dynamodb.NewImage.FFamilyWork.S"`
+	Unemployment    string `json:"dynamodb.NewImage.Unemployment.S"`
 }
 
 func extractDateValues(date string) (string, string, string, error) {
@@ -55,7 +202,7 @@ func extractDateValues(date string) (string, string, string, error) {
 		return "", "", "", err
 	}
 	y, m, d := dateParsed.Date()
-	year := fmt.Sprintf("%0*d", 4, int(y))
+	year := fmt.Sprintf("%0*d", 4, y)
 	month := fmt.Sprintf("%0*d", 2, m)
 	day := fmt.Sprintf("%0*d", 2, d)
 	return year, month, day, nil
@@ -63,10 +210,6 @@ func extractDateValues(date string) (string, string, string, error) {
 }
 
 func handleRequest(evnt events.KinesisFirehoseEvent) (events.KinesisFirehoseResponse, error) {
-
-	fmt.Printf("InvocationID: %s\n", evnt.InvocationID)
-	fmt.Printf("DeliveryStreamArn: %s\n", evnt.DeliveryStreamArn)
-	fmt.Printf("Region: %s\n", evnt.Region)
 
 	var response events.KinesisFirehoseResponse
 
@@ -95,16 +238,25 @@ func handleRequest(evnt events.KinesisFirehoseEvent) (events.KinesisFirehoseResp
 		partitionKeys["year"] = y
 		partitionKeys["month"] = m
 		partitionKeys["day"] = d
+		metaData.PartitionKeys = partitionKeys
+		transformedRecord.Metadata = metaData
 
-		err = json.Unmarshal(record.Data, &recordData)
+		outData := OutData{
+			NewImage: recordData.Change.NewImage,
+		}
+
+		data, err := json.Marshal(outData)
 		if err != nil {
 			return events.KinesisFirehoseResponse{}, err
 		}
 
-		metaData.PartitionKeys = partitionKeys
-		transformedRecord.Metadata = metaData
-
-		response.Records = append(response.Records, transformedRecord)
+		response.Records = append(response.Records, events.KinesisFirehoseResponseRecord{
+			RecordID: record.RecordID,
+			Result:   "Ok",
+			Data:     data,
+			Metadata: events.KinesisFirehoseResponseRecordMetadata{
+				PartitionKeys: partitionKeys,
+			}})
 	}
 
 	return response, nil
