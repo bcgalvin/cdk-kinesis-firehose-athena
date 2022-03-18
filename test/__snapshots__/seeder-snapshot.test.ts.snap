@@ -19,7 +19,7 @@ Object {
           "S3Bucket": Object {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "bdb08b9984816ecf43301a0c6d8913e270ee2448940b6b95e430dd222a4d90be.zip",
+          "S3Key": "483ae06ed27ef8ca76e011264d772420593a6cfe8544759c306ef3b98c9e25be.zip",
         },
         "Description": Object {
           "Fn::Join": Array [
@@ -78,7 +78,7 @@ Object {
           "S3Bucket": Object {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "6c0316fef24d0df8a9a705c77052001217d864f49af386539d01df54618cd131.zip",
+          "S3Key": "558dc75fbdc793c8e2f64f85d2d7ed2cb820c727ec7e9b08666ad1af0103992e.zip",
         },
         "Handler": "index.handler",
         "Role": Object {
@@ -141,6 +141,111 @@ Object {
         "Roles": Array [
           Object {
             "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "seederconstructAthenaMyGlueCrawlerBFB15302": Object {
+      "Properties": Object {
+        "DatabaseName": Object {
+          "Ref": "seederconstructAthenagluedb6C1BDE21",
+        },
+        "Name": "seed-crawler",
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "seederconstructAthenaMyGlueCrawlerRole27B31308",
+            "Arn",
+          ],
+        },
+        "SchemaChangePolicy": Object {
+          "DeleteBehavior": "LOG",
+        },
+        "Targets": Object {
+          "CatalogTargets": Array [
+            Object {
+              "DatabaseName": Object {
+                "Ref": "seederconstructAthenagluedb6C1BDE21",
+              },
+              "Tables": Array [
+                Object {
+                  "Ref": "seederconstructAthenagluetableTableF0ABE847",
+                },
+              ],
+            },
+          ],
+        },
+      },
+      "Type": "AWS::Glue::Crawler",
+    },
+    "seederconstructAthenaMyGlueCrawlerRole27B31308": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "glue.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          "arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole",
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "seederconstructAthenaMyGlueCrawlerRoleDefaultPolicyCBCDEBA8": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*",
+                "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging",
+                "s3:Abort*",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "seederconstructEventStoragebucketE39F04C3",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "seederconstructEventStoragebucketE39F04C3",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "seederconstructAthenaMyGlueCrawlerRoleDefaultPolicyCBCDEBA8",
+        "Roles": Array [
+          Object {
+            "Ref": "seederconstructAthenaMyGlueCrawlerRole27B31308",
           },
         ],
       },
@@ -216,11 +321,151 @@ Object {
           "StorageDescriptor": Object {
             "Columns": Array [
               Object {
-                "Name": "PK",
-                "Type": "timestamp",
+                "Name": "CensusId",
+                "Type": "string",
               },
               Object {
-                "Name": "SK",
+                "Name": "State",
+                "Type": "string",
+              },
+              Object {
+                "Name": "County",
+                "Type": "string",
+              },
+              Object {
+                "Name": "TotalPop",
+                "Type": "string",
+              },
+              Object {
+                "Name": "Men",
+                "Type": "string",
+              },
+              Object {
+                "Name": "Women",
+                "Type": "string",
+              },
+              Object {
+                "Name": "Hispanic",
+                "Type": "string",
+              },
+              Object {
+                "Name": "White",
+                "Type": "string",
+              },
+              Object {
+                "Name": "Black",
+                "Type": "string",
+              },
+              Object {
+                "Name": "Native",
+                "Type": "string",
+              },
+              Object {
+                "Name": "Asian",
+                "Type": "string",
+              },
+              Object {
+                "Name": "Pacific",
+                "Type": "string",
+              },
+              Object {
+                "Name": "Citizen",
+                "Type": "string",
+              },
+              Object {
+                "Name": "Income",
+                "Type": "string",
+              },
+              Object {
+                "Name": "IncomeErr",
+                "Type": "string",
+              },
+              Object {
+                "Name": "IncomePerCap",
+                "Type": "string",
+              },
+              Object {
+                "Name": "IncomePerCapErr",
+                "Type": "string",
+              },
+              Object {
+                "Name": "Poverty",
+                "Type": "string",
+              },
+              Object {
+                "Name": "ChildPoverty",
+                "Type": "string",
+              },
+              Object {
+                "Name": "Professional",
+                "Type": "string",
+              },
+              Object {
+                "Name": "Service",
+                "Type": "string",
+              },
+              Object {
+                "Name": "Office",
+                "Type": "string",
+              },
+              Object {
+                "Name": "Construction",
+                "Type": "string",
+              },
+              Object {
+                "Name": "Production",
+                "Type": "string",
+              },
+              Object {
+                "Name": "Drive",
+                "Type": "string",
+              },
+              Object {
+                "Name": "Carpool",
+                "Type": "string",
+              },
+              Object {
+                "Name": "Transit",
+                "Type": "string",
+              },
+              Object {
+                "Name": "Walk",
+                "Type": "string",
+              },
+              Object {
+                "Name": "OtherTransp",
+                "Type": "string",
+              },
+              Object {
+                "Name": "WorkAtHome",
+                "Type": "string",
+              },
+              Object {
+                "Name": "MeanCommute",
+                "Type": "string",
+              },
+              Object {
+                "Name": "Employed",
+                "Type": "string",
+              },
+              Object {
+                "Name": "PrivateWork",
+                "Type": "string",
+              },
+              Object {
+                "Name": "PublicWork",
+                "Type": "string",
+              },
+              Object {
+                "Name": "SelfEmployed",
+                "Type": "string",
+              },
+              Object {
+                "Name": "FamilyWork",
+                "Type": "string",
+              },
+              Object {
+                "Name": "Unemployment",
                 "Type": "string",
               },
             ],
@@ -242,7 +487,7 @@ Object {
             "SerdeInfo": Object {
               "SerializationLibrary": "org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe",
             },
-            "StoredAsSubDirectories": true,
+            "StoredAsSubDirectories": false,
           },
           "TableType": "EXTERNAL_TABLE",
         },
@@ -660,7 +905,7 @@ Object {
           "S3Bucket": Object {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "d06712e7d03b2ecbab21a1966526c1d853428791d0c7bd375a4ab592f38ba691.zip",
+          "S3Key": "20644cc717ae09c3aaed79b2b10f3081c45a9d7fd555ca34d5a8e9c88baf23f2.zip",
         },
         "Handler": "bootstrap",
         "Role": Object {
