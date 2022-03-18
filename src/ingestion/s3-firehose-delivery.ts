@@ -10,7 +10,7 @@ import { IBucket } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 
 export interface S3FirehoseDeliveryProps {
-  bucket: IBucket;
+  stagingBucket: IBucket;
   stream: IStream;
   glueDatabaseName: string;
   glueTableName: string;
@@ -61,16 +61,16 @@ export class S3FirehoseDelivery extends Construct {
       logRetention: RetentionDays.THREE_DAYS,
     });
 
-    props.bucket.addToResourcePolicy(
+    props.stagingBucket.addToResourcePolicy(
       new PolicyStatement({
         actions: ['s3:*'],
-        resources: [props.bucket.bucketArn, props.bucket.arnForObjects('*')],
+        resources: [props.stagingBucket.bucketArn, props.stagingBucket.arnForObjects('*')],
         principals: [new ArnPrincipal(ingestionRole.roleArn)],
       }),
     );
 
     props.stream.grantReadWrite(ingestionRole);
-    props.bucket.grantWrite(ingestionRole);
+    props.stagingBucket.grantWrite(ingestionRole);
     this.kinesisLogGroup.grantWrite(ingestionRole);
     this.kinesisDeliveryLambda.grantInvoke(ingestionRole);
 
@@ -86,7 +86,7 @@ export class S3FirehoseDelivery extends Construct {
           logGroupName: '/aws/kinesisfirehose/test-stream',
           logStreamName: 'S3FirehoseDelivery',
         },
-        bucketArn: props.bucket.bucketArn,
+        bucketArn: props.stagingBucket.bucketArn,
         compressionFormat: 'UNCOMPRESSED',
         errorOutputPrefix: `error/!{firehose:error-output-type}/dt=!{timestamp:yyyy'-'MM'-'dd}/h=!{timestamp:HH}/`,
         prefix:

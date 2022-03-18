@@ -1,40 +1,29 @@
 import { RemovalPolicy } from 'aws-cdk-lib';
 import { AttributeType, BillingMode, ITable, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { IStream, Stream, StreamEncryption, StreamMode } from 'aws-cdk-lib/aws-kinesis';
-import { BlockPublicAccess, Bucket, BucketEncryption, CfnBucket, IBucket } from 'aws-cdk-lib/aws-s3';
+import { IBucket } from 'aws-cdk-lib/aws-s3';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
+import { EventBucket } from './eventbridge-enabled-bucket';
 
 export interface EventStorageProps {
-  bucketName?: string;
   tableName?: string;
   streamName?: string;
 }
 
 export class EventStorage extends Construct {
-  public readonly bucket: IBucket;
+  public readonly rawBucket: IBucket;
+  public readonly landingBucket: IBucket;
+  public readonly stagingBucket: IBucket;
   public readonly stream: IStream;
   public readonly table: ITable;
 
   constructor(scope: Construct, id: string, props?: EventStorageProps) {
     super(scope, id);
 
-    const bucket = new Bucket(this, 'bucket', {
-      bucketName: props?.bucketName || undefined,
-      encryption: BucketEncryption.S3_MANAGED,
-      blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
-      removalPolicy: RemovalPolicy.DESTROY,
-      autoDeleteObjects: true,
-      enforceSSL: true,
-    });
-
-    (bucket.node.defaultChild as CfnBucket).notificationConfiguration = {
-      eventBridgeConfiguration: {
-        eventBridgeEnabled: true,
-      },
-    };
-
-    this.bucket = bucket;
+    this.rawBucket = new EventBucket(this, 'raw-bucket');
+    this.landingBucket = new EventBucket(this, 'landing-bucket');
+    this.stagingBucket = new EventBucket(this, 'staging-bucket');
 
     this.stream = new Stream(this, 'stream', {
       streamName: props?.streamName || undefined,
@@ -58,9 +47,19 @@ export class EventStorage extends Construct {
       kinesisStream: this.stream,
     });
 
-    new StringParameter(this, 'bucket-parameter', {
-      parameterName: '/event-storage/bucket',
-      stringValue: bucket.bucketName,
+    new StringParameter(this, 'raw-bucket-parameter', {
+      parameterName: '/event-storage/raw-bucket',
+      stringValue: this.rawBucket.bucketName,
+    });
+
+    new StringParameter(this, 'landing-bucket-parameter', {
+      parameterName: '/event-storage/landing-bucket',
+      stringValue: this.landingBucket.bucketName,
+    });
+
+    new StringParameter(this, 'staging-bucket-parameter', {
+      parameterName: '/event-storage/staging-bucket',
+      stringValue: this.stagingBucket.bucketName,
     });
 
     new StringParameter(this, 'ddb-table-parameter', {

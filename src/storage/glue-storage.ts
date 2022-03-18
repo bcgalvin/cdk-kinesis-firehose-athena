@@ -10,7 +10,7 @@ import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
 
 export interface GlueStorageProps {
-  bucket: IBucket;
+  stagingBucket: IBucket;
   stream: IStream;
   prefix: string;
 }
@@ -196,7 +196,7 @@ export class GlueStorage extends Construct {
           type: Schema.STRING,
         },
       ],
-      bucket: props.bucket,
+      bucket: props.stagingBucket,
     });
 
     const crawlerRole = new Role(this, `MyGlueCrawlerRole`, {
@@ -209,7 +209,7 @@ export class GlueStorage extends Construct {
         ),
       ],
     });
-    props.bucket.grantReadWrite(crawlerRole);
+    props.stagingBucket.grantReadWrite(crawlerRole);
 
     new CfnCrawler(this, 'MyGlueCrawler', {
       name: 'seed-crawler',
@@ -282,7 +282,7 @@ export class GlueStorage extends Construct {
       workGroupConfiguration: {
         enforceWorkGroupConfiguration: true,
         resultConfiguration: {
-          outputLocation: `s3://${props.bucket.bucketName}/results`,
+          outputLocation: `s3://${props.stagingBucket.bucketName}/results`,
         },
       },
     });

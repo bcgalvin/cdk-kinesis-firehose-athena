@@ -10,19 +10,19 @@ export class DynamoAthenaSeeder extends Construct {
   constructor(scope: Construct, id: string, props: DynamoAthenaSeederProps) {
     super(scope, id);
 
-    const eventStorage = new EventStorage(this, 'EventStorage');
+    const eventStorage = new EventStorage(this, 'event-storage');
 
-    const athenaResources = new GlueStorage(this, 'Athena', {
+    const glueResources = new GlueStorage(this, 'glue-resources', {
       stream: eventStorage.stream,
-      bucket: eventStorage.bucket,
+      stagingBucket: eventStorage.stagingBucket,
       prefix: props.prefix,
     });
 
-    new S3FirehoseDelivery(this, 'S3FirehoseDelivery', {
-      bucket: eventStorage.bucket,
+    new S3FirehoseDelivery(this, 's3-firehose-delivery', {
+      stagingBucket: eventStorage.stagingBucket,
       stream: eventStorage.stream,
-      glueDatabaseName: athenaResources.database.databaseName,
-      glueTableName: athenaResources.table.tableName,
+      glueDatabaseName: glueResources.database.databaseName,
+      glueTableName: glueResources.table.tableName,
     });
   }
 }

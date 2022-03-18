@@ -8,7 +8,7 @@ describe('DynamoSeeder Construct', () => {
   const { assert } = getSeederTestAssets(app);
 
   test('construct should have a s3 bucket', () => {
-    assert.resourceCountIs('AWS::S3::Bucket', 1);
+    assert.resourceCountIs('AWS::S3::Bucket', 3);
   });
 
   test('construct should have a ddb table', () => {
