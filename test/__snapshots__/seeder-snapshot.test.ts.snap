@@ -19,7 +19,7 @@ Object {
           "S3Bucket": Object {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "bdb08b9984816ecf43301a0c6d8913e270ee2448940b6b95e430dd222a4d90be.zip",
+          "S3Key": "483ae06ed27ef8ca76e011264d772420593a6cfe8544759c306ef3b98c9e25be.zip",
         },
         "Description": Object {
           "Fn::Join": Array [
@@ -78,7 +78,7 @@ Object {
           "S3Bucket": Object {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "6c0316fef24d0df8a9a705c77052001217d864f49af386539d01df54618cd131.zip",
+          "S3Key": "558dc75fbdc793c8e2f64f85d2d7ed2cb820c727ec7e9b08666ad1af0103992e.zip",
         },
         "Handler": "index.handler",
         "Role": Object {
@@ -146,303 +146,8 @@ Object {
       },
       "Type": "AWS::IAM::Policy",
     },
-    "seederconstructAthenaCrawlerStarterA1BDB70F": Object {
-      "DependsOn": Array [
-        "seederconstructAthenaCrawlerStarterServiceRoleDefaultPolicy67D8F1B4",
-        "seederconstructAthenaCrawlerStarterServiceRole7297DB9A",
-      ],
-      "Properties": Object {
-        "Code": Object {
-          "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
-          },
-          "S3Key": "d07f803a72922632ad0361c19cd5e3bb719a19566c405be283e2a9008a155593.zip",
-        },
-        "Handler": "bootstrap",
-        "Role": Object {
-          "Fn::GetAtt": Array [
-            "seederconstructAthenaCrawlerStarterServiceRole7297DB9A",
-            "Arn",
-          ],
-        },
-        "Runtime": "provided.al2",
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "seederconstructAthenaCrawlerStarterCustomResourceD1126DC9": Object {
-      "DeletionPolicy": "Delete",
-      "Properties": Object {
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
-            "seederconstructAthenaCrawlerStarterProviderframeworkonEventFF7211EA",
-            "Arn",
-          ],
-        },
-      },
-      "Type": "Custom::CrawlerStarter",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "seederconstructAthenaCrawlerStarterProviderframeworkonEventFF7211EA": Object {
-      "DependsOn": Array [
-        "seederconstructAthenaCrawlerStarterProviderframeworkonEventServiceRoleDefaultPolicy66FF20A4",
-        "seederconstructAthenaCrawlerStarterProviderframeworkonEventServiceRole24D030DC",
-      ],
-      "Properties": Object {
-        "Code": Object {
-          "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
-          },
-          "S3Key": "8673bd36bbfce694fb944a5bd855eac5d342df85f1f9a67cb19fa5fbf3d5bde3.zip",
-        },
-        "Description": "AWS CDK resource provider framework - onEvent (test-stack/seeder-construct/Athena/CrawlerStarterProvider)",
-        "Environment": Object {
-          "Variables": Object {
-            "USER_ON_EVENT_FUNCTION_ARN": Object {
-              "Fn::GetAtt": Array [
-                "seederconstructAthenaCrawlerStarterA1BDB70F",
-                "Arn",
-              ],
-            },
-          },
-        },
-        "Handler": "framework.onEvent",
-        "Role": Object {
-          "Fn::GetAtt": Array [
-            "seederconstructAthenaCrawlerStarterProviderframeworkonEventServiceRole24D030DC",
-            "Arn",
-          ],
-        },
-        "Runtime": "nodejs12.x",
-        "Timeout": 900,
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "seederconstructAthenaCrawlerStarterProviderframeworkonEventServiceRole24D030DC": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": Object {
-                "Service": "lambda.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": Array [
-          Object {
-            "Fn::Join": Array [
-              "",
-              Array [
-                "arn:",
-                Object {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-              ],
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "seederconstructAthenaCrawlerStarterProviderframeworkonEventServiceRoleDefaultPolicy66FF20A4": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "lambda:InvokeFunction",
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::GetAtt": Array [
-                  "seederconstructAthenaCrawlerStarterA1BDB70F",
-                  "Arn",
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "seederconstructAthenaCrawlerStarterProviderframeworkonEventServiceRoleDefaultPolicy66FF20A4",
-        "Roles": Array [
-          Object {
-            "Ref": "seederconstructAthenaCrawlerStarterProviderframeworkonEventServiceRole24D030DC",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "seederconstructAthenaCrawlerStarterServiceRole7297DB9A": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": Object {
-                "Service": "lambda.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": Array [
-          Object {
-            "Fn::Join": Array [
-              "",
-              Array [
-                "arn:",
-                Object {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-              ],
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "seederconstructAthenaCrawlerStarterServiceRoleDefaultPolicy67D8F1B4": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "glue:StartTrigger",
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    "arn:",
-                    Object {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":glue:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":trigger/undefined",
-                  ],
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "seederconstructAthenaCrawlerStarterServiceRoleDefaultPolicy67D8F1B4",
-        "Roles": Array [
-          Object {
-            "Ref": "seederconstructAthenaCrawlerStarterServiceRole7297DB9A",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "seederconstructAthenaCrawlerStatusChecker7DD04450": Object {
-      "DependsOn": Array [
-        "seederconstructAthenaCrawlerStatusCheckerServiceRoleDefaultPolicyB5A86758",
-        "seederconstructAthenaCrawlerStatusCheckerServiceRole6763FD65",
-      ],
-      "Properties": Object {
-        "Code": Object {
-          "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
-          },
-          "S3Key": "85af212afd087d8de05ed825e6d3117005baa8441f0351c65104b578c2e3f26b.zip",
-        },
-        "Handler": "bootstrap",
-        "Role": Object {
-          "Fn::GetAtt": Array [
-            "seederconstructAthenaCrawlerStatusCheckerServiceRole6763FD65",
-            "Arn",
-          ],
-        },
-        "Runtime": "provided.al2",
-        "Timeout": 300,
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "seederconstructAthenaCrawlerStatusCheckerServiceRole6763FD65": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": Object {
-                "Service": "lambda.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": Array [
-          Object {
-            "Fn::Join": Array [
-              "",
-              Array [
-                "arn:",
-                Object {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-              ],
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "seederconstructAthenaCrawlerStatusCheckerServiceRoleDefaultPolicyB5A86758": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "glue:GetCrawler",
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    "arn:",
-                    Object {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":glue:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":crawler/seed-crawler",
-                  ],
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "seederconstructAthenaCrawlerStatusCheckerServiceRoleDefaultPolicyB5A86758",
-        "Roles": Array [
-          Object {
-            "Ref": "seederconstructAthenaCrawlerStatusCheckerServiceRole6763FD65",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
     "seederconstructAthenaMyGlueCrawlerBFB15302": Object {
       "Properties": Object {
-        "Configuration": "{\\"Version\\":1.0,\\"CrawlerOutput\\":{\\"Partitions\\":{\\"AddOrUpdateBehavior\\":\\"InheritFromTable\\"},\\"Tables\\":{\\"AddOrUpdateBehavior\\":\\"MergeNewColumns\\"}}}",
         "DatabaseName": Object {
           "Ref": "seederconstructAthenagluedb6C1BDE21",
         },
@@ -455,7 +160,6 @@ Object {
         },
         "SchemaChangePolicy": Object {
           "DeleteBehavior": "LOG",
-          "UpdateBehavior": "UPDATE_IN_DATABASE",
         },
         "Targets": Object {
           "CatalogTargets": Array [
@@ -574,18 +278,6 @@ Object {
       },
       "Type": "AWS::Athena::WorkGroup",
     },
-    "seederconstructAthenaglueTriggerExchanges3086F239": Object {
-      "Properties": Object {
-        "Actions": Array [
-          Object {
-            "CrawlerName": "seed-crawler",
-          },
-        ],
-        "Description": "Start the Glue Crawler",
-        "Type": "ON_DEMAND",
-      },
-      "Type": "AWS::Glue::Trigger",
-    },
     "seederconstructAthenagluedb6C1BDE21": Object {
       "Properties": Object {
         "CatalogId": Object {
@@ -658,6 +350,10 @@ Object {
               },
               Object {
                 "Name": "White",
+                "Type": "string",
+              },
+              Object {
+                "Name": "Black",
                 "Type": "string",
               },
               Object {
@@ -741,7 +437,7 @@ Object {
                 "Type": "string",
               },
               Object {
-                "Name": "WorkAtHomee",
+                "Name": "WorkAtHome",
                 "Type": "string",
               },
               Object {
@@ -1209,7 +905,7 @@ Object {
           "S3Bucket": Object {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "046721cdad50c02b50ddef565efb5a4f89bf8f4e993d6a488093c2449672d008.zip",
+          "S3Key": "20644cc717ae09c3aaed79b2b10f3081c45a9d7fd555ca34d5a8e9c88baf23f2.zip",
         },
         "Handler": "bootstrap",
         "Role": Object {

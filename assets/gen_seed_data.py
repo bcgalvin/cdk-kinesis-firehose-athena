@@ -13,7 +13,9 @@ ssm_client = boto3.client("ssm")
 
 SAGEMAKER_ROLE = "arn:aws:iam::570405429484:role/service-role/AmazonSageMaker-ExecutionRole-20201222T192023"
 SAGEMAKER_BUCKET = "aws-ml-blog-sagemaker-census-segmentation"
-DYNAMO_TABLE = ssm_client.get_parameter(Name="/event-storage/table")["Parameter"]["Value"]
+DYNAMO_TABLE = ssm_client.get_parameter(Name="/event-storage/table")["Parameter"][
+    "Value"
+]
 PERIOD_START = pd.to_datetime("2022-01-01")
 PERIOD_END = pd.to_datetime("2022-03-14")
 DATA_DIR = "data"
@@ -39,7 +41,7 @@ def get_s3_file(bucket: str) -> None:
         io.BytesIO(response_body), header=0, delimiter=",", low_memory=False
     )
     data.dropna(inplace=True)
-    data["createdAt"] = gen_random_dates(PERIOD_START, PERIOD_END, data.shape[0])
+    data["CreatedAt"] = gen_random_dates(PERIOD_START, PERIOD_END, data.shape[0])
     return data
 
 

@@ -1,15 +1,12 @@
-import { join } from 'path';
 import { Database, DataFormat, IDatabase, ITable, Schema, Table } from '@aws-cdk/aws-glue-alpha';
-import { GoFunction } from '@aws-cdk/aws-lambda-go-alpha';
-import { Aws, CustomResource, Duration } from 'aws-cdk-lib';
+import { Aws } from 'aws-cdk-lib';
 import { CfnWorkGroup } from 'aws-cdk-lib/aws-athena';
 
-import { CfnCrawler, CfnTrigger } from 'aws-cdk-lib/aws-glue';
-import { Effect, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { CfnCrawler } from 'aws-cdk-lib/aws-glue';
+import { ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IStream } from 'aws-cdk-lib/aws-kinesis';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
-import { Provider } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 
 export interface GlueStorageProps {
@@ -49,7 +46,6 @@ export class GlueStorage extends Construct {
           name: 'TotalPop',
           type: Schema.STRING,
         },
-
         {
           name: 'Men',
           type: Schema.STRING,
@@ -64,6 +60,10 @@ export class GlueStorage extends Construct {
         },
         {
           name: 'White',
+          type: Schema.STRING,
+        },
+        {
+          name: 'Black',
           type: Schema.STRING,
         },
         {
@@ -82,7 +82,6 @@ export class GlueStorage extends Construct {
           name: 'Citizen',
           type: Schema.STRING,
         },
-
         {
           name: 'Income',
           type: Schema.STRING,
@@ -148,9 +147,8 @@ export class GlueStorage extends Construct {
           name: 'OtherTransp',
           type: Schema.STRING,
         },
-
         {
-          name: 'WorkAtHomee',
+          name: 'WorkAtHome',
           type: Schema.STRING,
         },
         {
@@ -213,7 +211,7 @@ export class GlueStorage extends Construct {
     });
     props.bucket.grantReadWrite(crawlerRole);
 
-    const seedCrawler = new CfnCrawler(this, 'MyGlueCrawler', {
+    new CfnCrawler(this, 'MyGlueCrawler', {
       name: 'seed-crawler',
       databaseName: this.database.databaseName,
       role: crawlerRole.roleArn,
@@ -227,58 +225,55 @@ export class GlueStorage extends Construct {
       },
       schemaChangePolicy: {
         deleteBehavior: 'LOG',
-        updateBehavior: 'UPDATE_IN_DATABASE',
-      },
-      configuration:
-        '{"Version":1.0,"CrawlerOutput":{"Partitions":{"AddOrUpdateBehavior":"InheritFromTable"},"Tables":{"AddOrUpdateBehavior":"MergeNewColumns"}}}',
-    });
-
-    const crawlerTrigger = new CfnTrigger(this, 'glueTriggerExchanges', {
-      name: 'seed-crawler-trigger',
-      type: 'ON_DEMAND',
-      actions: [
-        {
-          crawlerName: seedCrawler.name,
-        },
-      ],
-      description: 'Start the Glue Crawler',
-    });
-
-    const crawlerStarter = new GoFunction(this, 'CrawlerStarter', {
-      entry: join(__dirname, './lambda/crawler-starter'),
-    });
-    crawlerStarter.addToRolePolicy(
-      new PolicyStatement({
-        effect: Effect.ALLOW,
-        actions: ['glue:StartTrigger'],
-        resources: [`arn:${Aws.PARTITION}:glue:${Aws.REGION}:${Aws.ACCOUNT_ID}:trigger/${crawlerTrigger.name}`],
-      }),
-    );
-
-    const crawlerStatusCheckerTimeout = Duration.minutes(5);
-    const crawlerStatusChecker = new GoFunction(this, 'CrawlerStatusChecker', {
-      entry: join(__dirname, './lambda/crawler-status-checker'),
-      timeout: crawlerStatusCheckerTimeout,
-    });
-    crawlerStatusChecker.addToRolePolicy(
-      new PolicyStatement({
-        effect: Effect.ALLOW,
-        actions: ['glue:GetCrawler'],
-        resources: [`arn:${Aws.PARTITION}:glue:${Aws.REGION}:${Aws.ACCOUNT_ID}:crawler/${seedCrawler.name}`],
-      }),
-    );
-
-    const crawlerStarterProvider = new Provider(this, 'CrawlerStarterProvider', {
-      onEventHandler: crawlerStarter,
-    });
-
-    new CustomResource(this, 'CrawlerStarterCustomResource', {
-      serviceToken: crawlerStarterProvider.serviceToken,
-      resourceType: 'Custom::CrawlerStarter',
-      properties: {
-        TriggerName: crawlerTrigger.name,
       },
     });
+
+    // const crawlerTrigger = new CfnTrigger(this, 'glueTriggerExchanges', {
+    //   name: 'seed-crawler-trigger',
+    //   type: 'ON_DEMAND',
+    //   actions: [
+    //     {
+    //       crawlerName: seedCrawler.name,
+    //     },
+    //   ],
+    //   description: 'Start the Glue Crawler',
+    // });
+
+    // const crawlerStarter = new GoFunction(this, 'CrawlerStarter', {
+    //   entry: join(__dirname, './lambda/crawler-starter'),
+    // });
+    // crawlerStarter.addToRolePolicy(
+    //   new PolicyStatement({
+    //     effect: Effect.ALLOW,
+    //     actions: ['glue:StartTrigger'],
+    //     resources: [`arn:${Aws.PARTITION}:glue:${Aws.REGION}:${Aws.ACCOUNT_ID}:trigger/${crawlerTrigger.name}`],
+    //   }),
+    // );
+
+    // const crawlerStatusCheckerTimeout = Duration.minutes(5);
+    // const crawlerStatusChecker = new GoFunction(this, 'CrawlerStatusChecker', {
+    //   entry: join(__dirname, './lambda/crawler-status-checker'),
+    //   timeout: crawlerStatusCheckerTimeout,
+    // });
+    // crawlerStatusChecker.addToRolePolicy(
+    //   new PolicyStatement({
+    //     effect: Effect.ALLOW,
+    //     actions: ['glue:GetCrawler'],
+    //     resources: [`arn:${Aws.PARTITION}:glue:${Aws.REGION}:${Aws.ACCOUNT_ID}:crawler/${seedCrawler.name}`],
+    //   }),
+    // );
+    //
+    // const crawlerStarterProvider = new Provider(this, 'CrawlerStarterProvider', {
+    //   onEventHandler: crawlerStarter,
+    // });
+    //
+    // new CustomResource(this, 'CrawlerStarterCustomResource', {
+    //   serviceToken: crawlerStarterProvider.serviceToken,
+    //   resourceType: 'Custom::CrawlerStarter',
+    //   properties: {
+    //     TriggerName: crawlerTrigger.name,
+    //   },
+    // });
 
     new CfnWorkGroup(this, 'athena-workgroup', {
       name: Aws.STACK_NAME,
