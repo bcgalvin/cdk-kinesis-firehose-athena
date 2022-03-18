@@ -20,9 +20,6 @@ PERIOD_START = pd.to_datetime("2022-01-01")
 PERIOD_END = pd.to_datetime("2022-03-14")
 DATA_DIR = "data"
 
-if not os.path.exists(DATA_DIR):
-    os.makedirs(DATA_DIR)
-
 
 def gen_random_dates(start: pd.Timestamp, end: pd.Timestamp, n=int):
     start_u = start.value // 10**9

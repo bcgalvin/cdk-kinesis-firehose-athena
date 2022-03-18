@@ -10,6 +10,7 @@ import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
 
 export interface GlueStorageProps {
+  project: string;
   stagingBucket: IBucket;
   stream: IStream;
   prefix: string;
@@ -288,7 +289,7 @@ export class GlueStorage extends Construct {
     });
 
     new StringParameter(this, 'glue-table-parameter', {
-      parameterName: '/glue-storage/table',
+      parameterName: `/${props.project}/glue-table`,
       stringValue: `${this.database.databaseName}-${this.table.tableName}`,
     });
   }

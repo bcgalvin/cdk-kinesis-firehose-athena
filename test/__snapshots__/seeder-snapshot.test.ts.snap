@@ -187,7 +187,7 @@ Object {
     },
     "seederconstructeventstorageddbtableparameterE19E6D6C": Object {
       "Properties": Object {
-        "Name": "/event-storage/table",
+        "Name": "/test/ddb-table",
         "Type": "String",
         "Value": Object {
           "Ref": "seederconstructeventstorageddbtableD582708A",
@@ -334,7 +334,7 @@ Object {
     },
     "seederconstructeventstoragelandingbucketparameterF8ADDCEC": Object {
       "Properties": Object {
-        "Name": "/event-storage/landing-bucket",
+        "Name": "/test/landing-bucket",
         "Type": "String",
         "Value": Object {
           "Ref": "seederconstructeventstoragelandingbucket9B76A9B7",
@@ -481,7 +481,7 @@ Object {
     },
     "seederconstructeventstoragerawbucketparameter08B6012C": Object {
       "Properties": Object {
-        "Name": "/event-storage/raw-bucket",
+        "Name": "/test/raw-bucket",
         "Type": "String",
         "Value": Object {
           "Ref": "seederconstructeventstoragerawbucketA5644EB5",
@@ -662,7 +662,7 @@ Object {
     },
     "seederconstructeventstoragestagingbucketparameterDB84A36C": Object {
       "Properties": Object {
-        "Name": "/event-storage/staging-bucket",
+        "Name": "/test/staging-bucket",
         "Type": "String",
         "Value": Object {
           "Ref": "seederconstructeventstoragestagingbucketF569C51D",
@@ -685,7 +685,7 @@ Object {
     },
     "seederconstructeventstoragestreamparameterFE7348DE": Object {
       "Properties": Object {
-        "Name": "/event-storage/stream",
+        "Name": "/test/stream",
         "Type": "String",
         "Value": Object {
           "Ref": "seederconstructeventstorageddbtableD582708A",
@@ -1043,7 +1043,7 @@ Object {
     },
     "seederconstructglueresourcesgluetableparameter5324098C": Object {
       "Properties": Object {
-        "Name": "/glue-storage/table",
+        "Name": "/test/glue-table",
         "Type": "String",
         "Value": Object {
           "Fn::Join": Array [
@@ -1199,7 +1199,7 @@ Object {
           "S3Bucket": Object {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "262afa78d6677bc51236e0586c2f49eac20e431985c11100988b6c886b5a319a.zip",
+          "S3Key": "a8778b6153523800d59d40a430ed73581549576893b055cac40925b8648d35ce.zip",
         },
         "Handler": "bootstrap",
         "Role": Object {

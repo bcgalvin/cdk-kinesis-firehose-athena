@@ -7,6 +7,7 @@ import { Construct } from 'constructs';
 import { EventBucket } from './eventbridge-enabled-bucket';
 
 export interface EventStorageProps {
+  project: string;
   tableName?: string;
   streamName?: string;
 }
@@ -18,7 +19,7 @@ export class EventStorage extends Construct {
   public readonly stream: IStream;
   public readonly table: ITable;
 
-  constructor(scope: Construct, id: string, props?: EventStorageProps) {
+  constructor(scope: Construct, id: string, props: EventStorageProps) {
     super(scope, id);
 
     this.rawBucket = new EventBucket(this, 'raw-bucket');
@@ -48,27 +49,27 @@ export class EventStorage extends Construct {
     });
 
     new StringParameter(this, 'raw-bucket-parameter', {
-      parameterName: '/event-storage/raw-bucket',
+      parameterName: `/${props.project}/raw-bucket`,
       stringValue: this.rawBucket.bucketName,
     });
 
     new StringParameter(this, 'landing-bucket-parameter', {
-      parameterName: '/event-storage/landing-bucket',
+      parameterName: `/${props.project}/landing-bucket`,
       stringValue: this.landingBucket.bucketName,
     });
 
     new StringParameter(this, 'staging-bucket-parameter', {
-      parameterName: '/event-storage/staging-bucket',
+      parameterName: `/${props.project}/staging-bucket`,
       stringValue: this.stagingBucket.bucketName,
     });
 
     new StringParameter(this, 'ddb-table-parameter', {
-      parameterName: '/event-storage/table',
+      parameterName: `/${props.project}/ddb-table`,
       stringValue: this.table.tableName,
     });
 
     new StringParameter(this, 'stream-parameter', {
-      parameterName: '/event-storage/stream',
+      parameterName: `/${props.project}/stream`,
       stringValue: this.table.tableName,
     });
   }

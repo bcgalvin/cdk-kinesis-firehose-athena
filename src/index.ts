@@ -3,19 +3,23 @@ import { S3FirehoseDelivery } from './ingestion';
 import { EventStorage, GlueStorage } from './storage';
 
 export interface DynamoAthenaSeederProps {
-  prefix: string;
+  dataPrefix: string;
+  projectName: string;
 }
 
 export class DynamoAthenaSeeder extends Construct {
   constructor(scope: Construct, id: string, props: DynamoAthenaSeederProps) {
     super(scope, id);
 
-    const eventStorage = new EventStorage(this, 'event-storage');
+    const eventStorage = new EventStorage(this, 'event-storage', {
+      project: props.projectName,
+    });
 
     const glueResources = new GlueStorage(this, 'glue-resources', {
       stream: eventStorage.stream,
       stagingBucket: eventStorage.stagingBucket,
-      prefix: props.prefix,
+      prefix: props.dataPrefix,
+      project: props.projectName,
     });
 
     new S3FirehoseDelivery(this, 's3-firehose-delivery', {

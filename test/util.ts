@@ -8,7 +8,10 @@ export class TestSeederStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    new DynamoAthenaSeeder(this, 'seeder-construct', { prefix: 'data/' });
+    new DynamoAthenaSeeder(this, 'seeder-construct', {
+      projectName: 'test',
+      dataPrefix: 'data/',
+    });
   }
 }
 
