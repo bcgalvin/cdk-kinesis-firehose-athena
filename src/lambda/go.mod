@@ -1,12 +1,13 @@
-module github.com/bcgalvin/cdk-kinesis-firehose-crawler-starter
+module github.com/bcgalvin/cdk-kinesis-firehose/lambda
 
-go 1.17
+go 1.18
 
 require (
 	github.com/aws/aws-lambda-go v1.28.0
 	github.com/aws/aws-sdk-go-v2 v1.15.0
 	github.com/aws/aws-sdk-go-v2/config v1.15.0
-	github.com/aws/aws-sdk-go-v2/service/glue v1.21.0
+	github.com/aws/aws-sdk-go-v2/service/glue v1.22.0
+	github.com/sirupsen/logrus v1.8.1
 )
 
 require (
@@ -19,4 +20,5 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sso v1.11.0 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.16.0 // indirect
 	github.com/aws/smithy-go v1.11.1 // indirect
+	golang.org/x/sys v0.0.0-20191026070338-33540a1f6037 // indirect
 )
