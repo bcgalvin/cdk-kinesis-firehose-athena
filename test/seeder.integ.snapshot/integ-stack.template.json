@@ -249,6 +249,40 @@
                   ]
                 }
               ]
+            },
+            {
+              "Action": "s3:*",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::GetAtt": [
+                    "seederconstructs3firehosedeliveryingestionroleFD2104AA",
+                    "Arn"
+                  ]
+                }
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "seederconstructeventstoragelandingbucket9B76A9B7",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "seederconstructeventstoragelandingbucket9B76A9B7",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"
@@ -360,40 +394,6 @@
                 "AWS": {
                   "Fn::GetAtt": [
                     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-                    "Arn"
-                  ]
-                }
-              },
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "seederconstructeventstoragestagingbucketF569C51D",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "seederconstructeventstoragestagingbucketF569C51D",
-                          "Arn"
-                        ]
-                      },
-                      "/*"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "Action": "s3:*",
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": {
-                  "Fn::GetAtt": [
-                    "seederconstructs3firehosedeliveryingestionroleFD2104AA",
                     "Arn"
                   ]
                 }
@@ -747,7 +747,7 @@
                 [
                   "s3://",
                   {
-                    "Ref": "seederconstructeventstoragestagingbucketF569C51D"
+                    "Ref": "seederconstructeventstoragelandingbucket9B76A9B7"
                   },
                   "/data/"
                 ]
@@ -805,7 +805,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "seederconstructeventstoragestagingbucketF569C51D",
+                    "seederconstructeventstoragelandingbucket9B76A9B7",
                     "Arn"
                   ]
                 },
@@ -815,7 +815,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "seederconstructeventstoragestagingbucketF569C51D",
+                          "seederconstructeventstoragelandingbucket9B76A9B7",
                           "Arn"
                         ]
                       },
@@ -885,7 +885,7 @@
                 [
                   "s3://",
                   {
-                    "Ref": "seederconstructeventstoragestagingbucketF569C51D"
+                    "Ref": "seederconstructeventstoragelandingbucket9B76A9B7"
                   },
                   "/results"
                 ]
@@ -1020,7 +1020,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "seederconstructeventstoragestagingbucketF569C51D",
+                    "seederconstructeventstoragelandingbucket9B76A9B7",
                     "Arn"
                   ]
                 },
@@ -1030,7 +1030,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "seederconstructeventstoragestagingbucketF569C51D",
+                          "seederconstructeventstoragelandingbucket9B76A9B7",
                           "Arn"
                         ]
                       },
@@ -1058,7 +1058,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "seederconstructs3firehosedeliveryfirehoseenricherlambda996BCC25",
+                  "seederconstructs3firehosedeliveryfirehoseenricherlambdas204E698E",
                   "Arn"
                 ]
               }
@@ -1074,7 +1074,7 @@
         ]
       }
     },
-    "seederconstructs3firehosedeliveryfirehoseenricherlambdaServiceRole3325222A": {
+    "seederconstructs3firehosedeliveryfirehoseenricherlambdasServiceRole6EAC6191": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -1105,18 +1105,18 @@
         ]
       }
     },
-    "seederconstructs3firehosedeliveryfirehoseenricherlambda996BCC25": {
+    "seederconstructs3firehosedeliveryfirehoseenricherlambdas204E698E": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
           },
-          "S3Key": "90ea8e1fb9cda240db3b59ff3466b2ffa87ca90740f8ed37bae9b80095660cd4.zip"
+          "S3Key": "f14d047d97ebbffacd743d19e69e32bb06ff89fce54dcbeffa599e7e6d5374b7.zip"
         },
         "Role": {
           "Fn::GetAtt": [
-            "seederconstructs3firehosedeliveryfirehoseenricherlambdaServiceRole3325222A",
+            "seederconstructs3firehosedeliveryfirehoseenricherlambdasServiceRole6EAC6191",
             "Arn"
           ]
         },
@@ -1124,10 +1124,10 @@
         "Runtime": "provided.al2"
       },
       "DependsOn": [
-        "seederconstructs3firehosedeliveryfirehoseenricherlambdaServiceRole3325222A"
+        "seederconstructs3firehosedeliveryfirehoseenricherlambdasServiceRole6EAC6191"
       ]
     },
-    "seederconstructs3firehosedeliveryfirehoseenricherlambdaLogRetention22387F60": {
+    "seederconstructs3firehosedeliveryfirehoseenricherlambdasLogRetentionE5EAC818": {
       "Type": "Custom::LogRetention",
       "Properties": {
         "ServiceToken": {
@@ -1142,7 +1142,7 @@
             [
               "/aws/lambda/",
               {
-                "Ref": "seederconstructs3firehosedeliveryfirehoseenricherlambda996BCC25"
+                "Ref": "seederconstructs3firehosedeliveryfirehoseenricherlambdas204E698E"
               }
             ]
           ]
@@ -1157,7 +1157,7 @@
         "ExtendedS3DestinationConfiguration": {
           "BucketARN": {
             "Fn::GetAtt": [
-              "seederconstructeventstoragestagingbucketF569C51D",
+              "seederconstructeventstoragelandingbucket9B76A9B7",
               "Arn"
             ]
           },
@@ -1217,7 +1217,7 @@
                     "ParameterName": "LambdaArn",
                     "ParameterValue": {
                       "Fn::GetAtt": [
-                        "seederconstructs3firehosedeliveryfirehoseenricherlambda996BCC25",
+                        "seederconstructs3firehosedeliveryfirehoseenricherlambdas204E698E",
                         "Arn"
                       ]
                     }

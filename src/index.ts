@@ -17,13 +17,13 @@ export class DynamoAthenaSeeder extends Construct {
 
     const glueResources = new GlueStorage(this, 'glue-resources', {
       stream: eventStorage.stream,
-      stagingBucket: eventStorage.stagingBucket,
+      bucket: eventStorage.landingBucket,
       prefix: props.dataPrefix,
       project: props.projectName,
     });
 
     new S3FirehoseDelivery(this, 's3-firehose-delivery', {
-      stagingBucket: eventStorage.stagingBucket,
+      bucket: eventStorage.landingBucket,
       stream: eventStorage.stream,
       glueDatabaseName: glueResources.database.databaseName,
       glueTableName: glueResources.table.tableName,

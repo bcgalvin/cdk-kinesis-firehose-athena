@@ -11,7 +11,7 @@ import { Construct } from 'constructs';
 
 export interface GlueStorageProps {
   project: string;
-  stagingBucket: IBucket;
+  bucket: IBucket;
   stream: IStream;
   prefix: string;
 }
@@ -197,7 +197,7 @@ export class GlueStorage extends Construct {
           type: Schema.STRING,
         },
       ],
-      bucket: props.stagingBucket,
+      bucket: props.bucket,
     });
 
     const crawlerRole = new Role(this, `MyGlueCrawlerRole`, {
@@ -210,7 +210,7 @@ export class GlueStorage extends Construct {
         ),
       ],
     });
-    props.stagingBucket.grantReadWrite(crawlerRole);
+    props.bucket.grantReadWrite(crawlerRole);
 
     new CfnCrawler(this, 'MyGlueCrawler', {
       name: 'seed-crawler',
@@ -283,7 +283,7 @@ export class GlueStorage extends Construct {
       workGroupConfiguration: {
         enforceWorkGroupConfiguration: true,
         resultConfiguration: {
-          outputLocation: `s3://${props.stagingBucket.bucketName}/results`,
+          outputLocation: `s3://${props.bucket.bucketName}/results`,
         },
       },
     });

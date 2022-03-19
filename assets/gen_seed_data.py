@@ -13,7 +13,7 @@ ssm_client = boto3.client("ssm")
 
 SAGEMAKER_ROLE = "arn:aws:iam::570405429484:role/service-role/AmazonSageMaker-ExecutionRole-20201222T192023"
 SAGEMAKER_BUCKET = "aws-ml-blog-sagemaker-census-segmentation"
-DYNAMO_TABLE = ssm_client.get_parameter(Name="/event-storage/table")["Parameter"][
+DYNAMO_TABLE = ssm_client.get_parameter(Name="/test/ddb-table")["Parameter"][
     "Value"
 ]
 PERIOD_START = pd.to_datetime("2022-01-01")

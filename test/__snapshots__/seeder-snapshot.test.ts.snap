@@ -326,6 +326,40 @@ Object {
                 },
               ],
             },
+            Object {
+              "Action": "s3:*",
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": Object {
+                  "Fn::GetAtt": Array [
+                    "seederconstructs3firehosedeliveryingestionroleFD2104AA",
+                    "Arn",
+                  ],
+                },
+              },
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "seederconstructeventstoragelandingbucket9B76A9B7",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "seederconstructeventstoragelandingbucket9B76A9B7",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
           ],
           "Version": "2012-10-17",
         },
@@ -620,40 +654,6 @@ Object {
                 },
               ],
             },
-            Object {
-              "Action": "s3:*",
-              "Effect": "Allow",
-              "Principal": Object {
-                "AWS": Object {
-                  "Fn::GetAtt": Array [
-                    "seederconstructs3firehosedeliveryingestionroleFD2104AA",
-                    "Arn",
-                  ],
-                },
-              },
-              "Resource": Array [
-                Object {
-                  "Fn::GetAtt": Array [
-                    "seederconstructeventstoragestagingbucketF569C51D",
-                    "Arn",
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "seederconstructeventstoragestagingbucketF569C51D",
-                          "Arn",
-                        ],
-                      },
-                      "/*",
-                    ],
-                  ],
-                },
-              ],
-            },
           ],
           "Version": "2012-10-17",
         },
@@ -766,7 +766,7 @@ Object {
               "Resource": Array [
                 Object {
                   "Fn::GetAtt": Array [
-                    "seederconstructeventstoragestagingbucketF569C51D",
+                    "seederconstructeventstoragelandingbucket9B76A9B7",
                     "Arn",
                   ],
                 },
@@ -776,7 +776,7 @@ Object {
                     Array [
                       Object {
                         "Fn::GetAtt": Array [
-                          "seederconstructeventstoragestagingbucketF569C51D",
+                          "seederconstructeventstoragelandingbucket9B76A9B7",
                           "Arn",
                         ],
                       },
@@ -814,7 +814,7 @@ Object {
                 Array [
                   "s3://",
                   Object {
-                    "Ref": "seederconstructeventstoragestagingbucketF569C51D",
+                    "Ref": "seederconstructeventstoragelandingbucket9B76A9B7",
                   },
                   "/results",
                 ],
@@ -1024,7 +1024,7 @@ Object {
                 Array [
                   "s3://",
                   Object {
-                    "Ref": "seederconstructeventstoragestagingbucketF569C51D",
+                    "Ref": "seederconstructeventstoragelandingbucket9B76A9B7",
                   },
                   "/data/",
                 ],
@@ -1087,7 +1087,7 @@ Object {
         "ExtendedS3DestinationConfiguration": Object {
           "BucketARN": Object {
             "Fn::GetAtt": Array [
-              "seederconstructeventstoragestagingbucketF569C51D",
+              "seederconstructeventstoragelandingbucket9B76A9B7",
               "Arn",
             ],
           },
@@ -1199,7 +1199,7 @@ Object {
           "S3Bucket": Object {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "a4342c0a4eb2d2531fe91a32ba86329e2cd3bb760d40817a3eb3474da341ca5a.zip",
+          "S3Key": "f14d047d97ebbffacd743d19e69e32bb06ff89fce54dcbeffa599e7e6d5374b7.zip",
         },
         "Handler": "bootstrap",
         "Role": Object {
@@ -1304,7 +1304,7 @@ Object {
               "Resource": Array [
                 Object {
                   "Fn::GetAtt": Array [
-                    "seederconstructeventstoragestagingbucketF569C51D",
+                    "seederconstructeventstoragelandingbucket9B76A9B7",
                     "Arn",
                   ],
                 },
@@ -1314,7 +1314,7 @@ Object {
                     Array [
                       Object {
                         "Fn::GetAtt": Array [
-                          "seederconstructeventstoragestagingbucketF569C51D",
+                          "seederconstructeventstoragelandingbucket9B76A9B7",
                           "Arn",
                         ],
                       },
