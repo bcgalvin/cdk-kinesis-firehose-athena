@@ -1147,7 +1147,7 @@ Object {
                     "ParameterName": "LambdaArn",
                     "ParameterValue": Object {
                       "Fn::GetAtt": Array [
-                        "seederconstructs3firehosedeliveryfirehoseenricherlambda996BCC25",
+                        "seederconstructs3firehosedeliveryfirehoseenricherlambdas204E698E",
                         "Arn",
                       ],
                     },
@@ -1190,21 +1190,21 @@ Object {
       },
       "Type": "AWS::KinesisFirehose::DeliveryStream",
     },
-    "seederconstructs3firehosedeliveryfirehoseenricherlambda996BCC25": Object {
+    "seederconstructs3firehosedeliveryfirehoseenricherlambdas204E698E": Object {
       "DependsOn": Array [
-        "seederconstructs3firehosedeliveryfirehoseenricherlambdaServiceRole3325222A",
+        "seederconstructs3firehosedeliveryfirehoseenricherlambdasServiceRole6EAC6191",
       ],
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "a6bf9fcd2c0ad5758e704b9723bbb33dbe80daba60b1c5755ad1eaf52a7c25ce.zip",
+          "S3Key": "a4342c0a4eb2d2531fe91a32ba86329e2cd3bb760d40817a3eb3474da341ca5a.zip",
         },
         "Handler": "bootstrap",
         "Role": Object {
           "Fn::GetAtt": Array [
-            "seederconstructs3firehosedeliveryfirehoseenricherlambdaServiceRole3325222A",
+            "seederconstructs3firehosedeliveryfirehoseenricherlambdasServiceRole6EAC6191",
             "Arn",
           ],
         },
@@ -1212,7 +1212,7 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
-    "seederconstructs3firehosedeliveryfirehoseenricherlambdaLogRetention22387F60": Object {
+    "seederconstructs3firehosedeliveryfirehoseenricherlambdasLogRetentionE5EAC818": Object {
       "Properties": Object {
         "LogGroupName": Object {
           "Fn::Join": Array [
@@ -1220,7 +1220,7 @@ Object {
             Array [
               "/aws/lambda/",
               Object {
-                "Ref": "seederconstructs3firehosedeliveryfirehoseenricherlambda996BCC25",
+                "Ref": "seederconstructs3firehosedeliveryfirehoseenricherlambdas204E698E",
               },
             ],
           ],
@@ -1235,7 +1235,7 @@ Object {
       },
       "Type": "Custom::LogRetention",
     },
-    "seederconstructs3firehosedeliveryfirehoseenricherlambdaServiceRole3325222A": Object {
+    "seederconstructs3firehosedeliveryfirehoseenricherlambdasServiceRole6EAC6191": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -1342,7 +1342,7 @@ Object {
               "Effect": "Allow",
               "Resource": Object {
                 "Fn::GetAtt": Array [
-                  "seederconstructs3firehosedeliveryfirehoseenricherlambda996BCC25",
+                  "seederconstructs3firehosedeliveryfirehoseenricherlambdas204E698E",
                   "Arn",
                 ],
               },

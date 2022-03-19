@@ -241,7 +241,7 @@ export class GlueStorage extends Construct {
     // });
 
     // const crawlerStarter = new GoFunction(this, 'CrawlerStarter', {
-    //   entry: join(__dirname, '../lambda/crawler-starter'),
+    //   entry: join(__dirname, '../lambdas/crawler-starter'),
     // });
     // crawlerStarter.addToRolePolicy(
     //   new PolicyStatement({
@@ -253,7 +253,7 @@ export class GlueStorage extends Construct {
 
     // const crawlerStatusCheckerTimeout = Duration.minutes(5);
     // const crawlerStatusChecker = new GoFunction(this, 'CrawlerStatusChecker', {
-    //   entry: join(__dirname, '../lambda/crawler-status-checker'),
+    //   entry: join(__dirname, '../lambdas/crawler-status-checker'),
     //   timeout: crawlerStatusCheckerTimeout,
     // });
     // crawlerStatusChecker.addToRolePolicy(
