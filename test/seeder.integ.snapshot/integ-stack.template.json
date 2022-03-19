@@ -504,7 +504,7 @@
         "Value": {
           "Ref": "seederconstructeventstoragerawbucketA5644EB5"
         },
-        "Name": "/event-storage/raw-bucket"
+        "Name": "/test/raw-bucket"
       }
     },
     "seederconstructeventstoragelandingbucketparameterF8ADDCEC": {
@@ -514,7 +514,7 @@
         "Value": {
           "Ref": "seederconstructeventstoragelandingbucket9B76A9B7"
         },
-        "Name": "/event-storage/landing-bucket"
+        "Name": "/test/landing-bucket"
       }
     },
     "seederconstructeventstoragestagingbucketparameterDB84A36C": {
@@ -524,7 +524,7 @@
         "Value": {
           "Ref": "seederconstructeventstoragestagingbucketF569C51D"
         },
-        "Name": "/event-storage/staging-bucket"
+        "Name": "/test/staging-bucket"
       }
     },
     "seederconstructeventstorageddbtableparameterE19E6D6C": {
@@ -534,7 +534,7 @@
         "Value": {
           "Ref": "seederconstructeventstorageddbtableD582708A"
         },
-        "Name": "/event-storage/table"
+        "Name": "/test/ddb-table"
       }
     },
     "seederconstructeventstoragestreamparameterFE7348DE": {
@@ -544,7 +544,7 @@
         "Value": {
           "Ref": "seederconstructeventstorageddbtableD582708A"
         },
-        "Name": "/event-storage/stream"
+        "Name": "/test/stream"
       }
     },
     "seederconstructglueresourcesgluedbDAE27AF3": {
@@ -913,7 +913,7 @@
             ]
           ]
         },
-        "Name": "/glue-storage/table"
+        "Name": "/test/glue-table"
       }
     },
     "seederconstructs3firehosedeliverydeliveryloggroup7E5A98FB": {
@@ -1112,7 +1112,7 @@
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
           },
-          "S3Key": "47207fcefb97b38fcc6e65d4ad1738297f196ce6b63b79218768c2d206e3decb.zip"
+          "S3Key": "90ea8e1fb9cda240db3b59ff3466b2ffa87ca90740f8ed37bae9b80095660cd4.zip"
         },
         "Role": {
           "Fn::GetAtt": [
