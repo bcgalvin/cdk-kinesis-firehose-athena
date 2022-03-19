@@ -16,3 +16,4 @@ run-unit-test:
 
 compile-local:
 	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -ldflags ${LINKER_FLAGS} -o ${DESTINATION} ./cmd/application
+
