@@ -2,10 +2,10 @@ package main
 
 import (
 	"context"
-	"errors"
-	"fmt"
+	"github.com/aws/aws-sdk-go-v2/service/sfn"
+	"os"
+	"reflect"
 
-	"github.com/aws/aws-lambda-go/cfn"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -13,20 +13,24 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func handleRequest(ctx context.Context, evnt cfn.Event) (physicalResourceID string, data map[string]interface{}, err error) {
+type Result struct {
+	Success *sfn.SendTaskSuccessInput
+	Failure *sfn.SendTaskFailureInput
+}
 
-	if evnt.RequestType == cfn.RequestDelete {
-		log.Infof("Delete event type, skipping")
-		return
+func getType(myvar interface{}) string {
+	t := reflect.TypeOf(myvar)
+	if t.Kind() == reflect.Ptr {
+		return t.Elem().Name()
 	}
+	return t.Name()
+}
+
+func handleRequest(ctx context.Context) (Result, error) {
 
 	log.Infof("Retrieving trigger name")
-
-	triggerName, found := evnt.ResourceProperties["TriggerName"].(string)
-	if !found {
-		return physicalResourceID, data, errors.New("TriggerName is required")
-	}
-
+	triggerName := os.Getenv("GLUE_TRIGGER_NAME")
+	log.Infof("trigger: %s found", triggerName)
 	log.Infof("Initializing the client")
 
 	cfg, err := config.LoadDefaultConfig(ctx)
@@ -42,14 +46,23 @@ func handleRequest(ctx context.Context, evnt cfn.Event) (physicalResourceID stri
 		Name: aws.String(triggerName),
 	})
 	if err != nil {
-		return physicalResourceID, data, fmt.Errorf("failed to activate the trigger: %w", err)
+		return Result{
+			Failure: &sfn.SendTaskFailureInput{
+				Error: aws.String(getType(err)),
+				Cause: aws.String(err.Error()),
+			},
+		}, err
 	}
 
 	log.Infof("Trigger %s activated", triggerName)
 
-	return
+	return Result{
+		Success: &sfn.SendTaskSuccessInput{
+			Output: aws.String("Success"),
+		},
+	}, nil
 }
 
 func main() {
-	lambda.Start(cfn.LambdaWrap(handleRequest))
+	lambda.Start(handleRequest)
 }

@@ -81,8 +81,21 @@ export class SfnSeedTask extends Construct {
       timeout: Duration.minutes(5),
     });
 
+    const crawlerTrigger = new CfnTrigger(this, 'glueTriggerExchanges', {
+      type: 'ON_DEMAND',
+      actions: [
+        {
+          crawlerName: props.crawlerName,
+        },
+      ],
+      description: 'Start the Glue Crawler',
+    });
+
     const crawlerStarter = new GoFunction(this, 'CrawlerStarter', {
       entry: path.resolve(__dirname, '../lambdas/cmd/crawler-starter'),
+      environment: {
+        GLUE_TRIGGER_NAME: crawlerTrigger.ref,
+      },
     });
 
     const ddbSeederTask = new LambdaInvoke(this, 'seed-ddb', {
@@ -109,21 +122,11 @@ export class SfnSeedTask extends Construct {
       },
     });
 
-    const crawlerTrigger = new CfnTrigger(this, 'glueTriggerExchanges', {
-      type: 'ON_DEMAND',
-      actions: [
-        {
-          crawlerName: props.crawlerName,
-        },
-      ],
-      description: 'Start the Glue Crawler',
-    });
-
     crawlerStarter.addToRolePolicy(
       new PolicyStatement({
         effect: Effect.ALLOW,
         actions: ['glue:StartTrigger'],
-        resources: [`arn:${Aws.PARTITION}:glue:${Aws.REGION}:${Aws.ACCOUNT_ID}:trigger/${crawlerTrigger.name}`],
+        resources: [`arn:${Aws.PARTITION}:glue:${Aws.REGION}:${Aws.ACCOUNT_ID}:trigger/${crawlerTrigger.ref}`],
       }),
     );
 
