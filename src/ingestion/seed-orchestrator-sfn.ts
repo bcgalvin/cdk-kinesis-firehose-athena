@@ -45,7 +45,6 @@ export class SfnSeedTask extends Construct {
         Status: DynamoAttributeValue.fromString('STARTED'),
       },
       table: auditTable,
-
       resultPath: JsonPath.DISCARD,
     });
 
@@ -74,11 +73,12 @@ export class SfnSeedTask extends Construct {
         S3_BUCKET: props.bucket.bucketName,
         DDB_TABLE: props.table.tableName,
       },
+      timeout: Duration.minutes(5),
     });
 
     const ddbSeederTask = new LambdaInvoke(this, 'seed-ddb', {
       lambdaFunction: ddbSeeder,
-      resultPath: JsonPath.DISCARD,
+      timeout: Duration.minutes(5),
     });
 
     const definition = logStartTask.next(ddbSeederTask).next(waitX).next(logEndTask);
@@ -92,6 +92,41 @@ export class SfnSeedTask extends Construct {
         StateMachineArn: stateMachine.stateMachineArn,
       },
     });
+
+    // const crawlerTrigger = new CfnTrigger(this, 'glueTriggerExchanges', {
+    //   name: 'seed-crawler-trigger',
+    //   type: 'ON_DEMAND',
+    //   actions: [
+    //     {
+    //       crawlerName: 'seed-crawler',
+    //     },
+    //   ],
+    //   description: 'Start the Glue Crawler',
+    // });
+    //
+    // const crawlerStarter = new GoFunction(this, 'CrawlerStarter', {
+    //   entry: path.resolve(__dirname, '../lambdas/cmd/crawler-starter'),
+    // });
+    // crawlerStarter.addToRolePolicy(
+    //   new PolicyStatement({
+    //     effect: Effect.ALLOW,
+    //     actions: ['glue:StartTrigger'],
+    //     resources: [`arn:${Aws.PARTITION}:glue:${Aws.REGION}:${Aws.ACCOUNT_ID}:trigger/${crawlerTrigger.name}`],
+    //   }),
+    // );
+    //
+    // const crawlerStatusCheckerTimeout = Duration.minutes(5);
+    // const crawlerStatusChecker = new GoFunction(this, 'CrawlerStatusChecker', {
+    //   entry: path.resolve(__dirname, '../lambdas/cmd/crawler-status-checker'),
+    //   timeout: crawlerStatusCheckerTimeout,
+    // });
+    // crawlerStatusChecker.addToRolePolicy(
+    //   new PolicyStatement({
+    //     effect: Effect.ALLOW,
+    //     actions: ['glue:GetCrawler'],
+    //     resources: [`arn:${Aws.PARTITION}:glue:${Aws.REGION}:${Aws.ACCOUNT_ID}:crawler/seed-crawler`],
+    //   }),
+    // );
 
     props.bucket.grantRead(ddbSeeder);
     props.table.grantWriteData(ddbSeeder);

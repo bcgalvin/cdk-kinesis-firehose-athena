@@ -3,6 +3,7 @@ package dynamo
 import (
 	"context"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/rs/zerolog/log"
 	"golang.org/x/sync/errgroup"
 	"time"
 
@@ -62,6 +63,7 @@ func (c *Client) WriteCounties(ctx context.Context, counties []*County, tableNam
 
 	for _, chunk := range chunkBy(counties, 25) {
 		localInputs := chunk
+		log.Info().Msgf("Writing %d counties to dynamodb", len(localInputs))
 
 		g.Go(func() error {
 			writes := make([]types.WriteRequest, len(localInputs))

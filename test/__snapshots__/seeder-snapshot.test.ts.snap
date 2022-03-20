@@ -1489,7 +1489,7 @@ Object {
           "S3Bucket": Object {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "7952766f54a40fc44635867b6750ff37c6be726f3fa2ca6abed4924ecf590a61.zip",
+          "S3Key": "cfad2628b5056dd6dff2288c26201987855e9b40cf52e1e287657ee05f663518.zip",
         },
         "Handler": "bootstrap",
         "Role": Object {
@@ -1819,7 +1819,7 @@ Object {
               Object {
                 "Ref": "seederconstructseedtaskaudittable8E019259",
               },
-              "\\"}},\\"seed-ddb\\":{\\"Next\\":\\"Execute long running task...wait 30 seconds\\",\\"Retry\\":[{\\"ErrorEquals\\":[\\"Lambda.ServiceException\\",\\"Lambda.AWSLambdaException\\",\\"Lambda.SdkClientException\\"],\\"IntervalSeconds\\":2,\\"MaxAttempts\\":6,\\"BackoffRate\\":2}],\\"Type\\":\\"Task\\",\\"ResultPath\\":null,\\"Resource\\":\\"arn:",
+              "\\"}},\\"seed-ddb\\":{\\"Next\\":\\"Execute long running task...wait 30 seconds\\",\\"Retry\\":[{\\"ErrorEquals\\":[\\"Lambda.ServiceException\\",\\"Lambda.AWSLambdaException\\",\\"Lambda.SdkClientException\\"],\\"IntervalSeconds\\":2,\\"MaxAttempts\\":6,\\"BackoffRate\\":2}],\\"Type\\":\\"Task\\",\\"TimeoutSeconds\\":300,\\"Resource\\":\\"arn:",
               Object {
                 "Ref": "AWS::Partition",
               },
@@ -2016,7 +2016,7 @@ Object {
           "S3Bucket": Object {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "426e5b0e58bd9cc7fb449fa95b234b676ec960ed7912e9ec741d870133c2c5d5.zip",
+          "S3Key": "b4c132d3e689578a32f5ee4fd723f66978e6a7fabb0e252094e94f32fdfef1b5.zip",
         },
         "Environment": Object {
           "Variables": Object {
@@ -2036,6 +2036,7 @@ Object {
           ],
         },
         "Runtime": "provided.al2",
+        "Timeout": 300,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -2147,7 +2148,7 @@ Object {
           "S3Bucket": Object {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "e2741537bb6e3f5fadaf4905ba4e61b24670c89c41d5f8500083293f0c7c3ed1.zip",
+          "S3Key": "8a1623d7584c1e97ca119f4783758a96264c5cff043f590f7750630996931e85.zip",
         },
         "Environment": Object {
           "Variables": Object {

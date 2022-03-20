@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/aws/aws-lambda-go/cfn"
 	"log"
@@ -21,10 +20,12 @@ type StepFunctionInput struct {
 }
 
 func HandleRequest(ctx context.Context, event cfn.Event) (string, error) {
-	taskId, found := event.ResourceProperties["taskId"].(string)
+	var taskId string
+	var found bool
+	taskId, found = event.ResourceProperties["taskId"].(string)
 	if !found {
-		err := errors.New("taskId is required")
-		panic(err)
+		log.Printf("taskId not found in event: %+v\n, using default value: %s\n", event, "invoke-sfn")
+		taskId = "invoke-sfn"
 	}
 	log.Printf("Task ID: %s", taskId)
 
