@@ -12,11 +12,11 @@ import (
 )
 
 type County struct {
-	CensusId        string `dynamodbav:"census_id"`
+	CensusId        string `dynamodbav:"censusId"`
 	State           string `dynamodbav:"state"`
 	County          string `dynamodbav:"county"`
-	TotalPop        string `dynamodbav:"total_pop"`
-	Men             string `dynamodbav:"county"`
+	TotalPop        string `dynamodbav:"totalPop"`
+	Men             string `dynamodbav:"men"`
 	Women           string `dynamodbav:"women"`
 	Hispanic        string `dynamodbav:"hispanic"`
 	White           string `dynamodbav:"white"`
