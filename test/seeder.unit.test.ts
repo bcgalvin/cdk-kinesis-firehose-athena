@@ -12,7 +12,7 @@ describe('DynamoSeeder Construct', () => {
   });
 
   test('construct should have a ddb table', () => {
-    assert.resourceCountIs('AWS::DynamoDB::Table', 1);
+    assert.resourceCountIs('AWS::DynamoDB::Table', 2);
   });
 
   test('s3 bucket has correct properties', () => {

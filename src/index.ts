@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { S3FirehoseDelivery } from './ingestion';
+import { S3FirehoseDelivery, SfnSeedTask } from './ingestion';
 import { EventStorage, GlueStorage } from './storage';
 
 export interface DynamoAthenaSeederProps {
@@ -28,5 +28,7 @@ export class DynamoAthenaSeeder extends Construct {
       glueDatabaseName: glueResources.database.databaseName,
       glueTableName: glueResources.table.tableName,
     });
+
+    new SfnSeedTask(this, 'seed-task');
   }
 }
