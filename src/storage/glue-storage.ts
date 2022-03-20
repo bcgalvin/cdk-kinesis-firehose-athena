@@ -229,53 +229,6 @@ export class GlueStorage extends Construct {
       },
     });
 
-    // const crawlerTrigger = new CfnTrigger(this, 'glueTriggerExchanges', {
-    //   name: 'seed-crawler-trigger',
-    //   type: 'ON_DEMAND',
-    //   actions: [
-    //     {
-    //       crawlerName: seedCrawler.name,
-    //     },
-    //   ],
-    //   description: 'Start the Glue Crawler',
-    // });
-
-    // const crawlerStarter = new GoFunction(this, 'CrawlerStarter', {
-    //   entry: join(__dirname, '../lambdas/crawler-starter'),
-    // });
-    // crawlerStarter.addToRolePolicy(
-    //   new PolicyStatement({
-    //     effect: Effect.ALLOW,
-    //     actions: ['glue:StartTrigger'],
-    //     resources: [`arn:${Aws.PARTITION}:glue:${Aws.REGION}:${Aws.ACCOUNT_ID}:trigger/${crawlerTrigger.name}`],
-    //   }),
-    // );
-
-    // const crawlerStatusCheckerTimeout = Duration.minutes(5);
-    // const crawlerStatusChecker = new GoFunction(this, 'CrawlerStatusChecker', {
-    //   entry: join(__dirname, '../lambdas/crawler-status-checker'),
-    //   timeout: crawlerStatusCheckerTimeout,
-    // });
-    // crawlerStatusChecker.addToRolePolicy(
-    //   new PolicyStatement({
-    //     effect: Effect.ALLOW,
-    //     actions: ['glue:GetCrawler'],
-    //     resources: [`arn:${Aws.PARTITION}:glue:${Aws.REGION}:${Aws.ACCOUNT_ID}:crawler/${seedCrawler.name}`],
-    //   }),
-    // );
-    //
-    // const crawlerStarterProvider = new Provider(this, 'CrawlerStarterProvider', {
-    //   onEventHandler: crawlerStarter,
-    // });
-    //
-    // new CustomResource(this, 'CrawlerStarterCustomResource', {
-    //   serviceToken: crawlerStarterProvider.serviceToken,
-    //   resourceType: 'Custom::CrawlerStarter',
-    //   properties: {
-    //     TriggerName: crawlerTrigger.name,
-    //   },
-    // });
-
     new CfnWorkGroup(this, 'athena-workgroup', {
       name: Aws.STACK_NAME,
       recursiveDeleteOption: true,

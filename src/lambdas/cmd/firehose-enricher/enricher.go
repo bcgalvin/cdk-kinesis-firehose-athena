@@ -10,7 +10,7 @@ import (
 
 func extractDateValues(date string) (map[string]string, error) {
 	partitionKeys := make(map[string]string)
-	dateParsed, err := time.Parse("2006-01-02", date)
+	dateParsed, err := time.Parse(time.RFC3339, date)
 	if err != nil {
 		fmt.Println(err)
 		return map[string]string{}, err

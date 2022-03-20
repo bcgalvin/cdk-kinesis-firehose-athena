@@ -29,7 +29,7 @@ func handleRequest(evnt events.KinesisFirehoseEvent) (events.KinesisFirehoseResp
 			return events.KinesisFirehoseResponse{}, fmt.Errorf("invalid DynamoDBEvent: %v", e)
 		}
 
-		partitionKeys, err := extractDateValues(image["CreatedAt"].String())
+		partitionKeys, err := extractDateValues(image["createdAt"].String())
 		if err != nil {
 			return events.KinesisFirehoseResponse{}, err
 		}
