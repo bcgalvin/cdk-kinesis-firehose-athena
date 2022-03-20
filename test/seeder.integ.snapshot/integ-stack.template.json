@@ -1154,7 +1154,7 @@
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
           },
-          "S3Key": "ad07a9fdbd1aa54611e1a8e50b57dd5dea2a14c3cfd799dc9512f2267b1158ca.zip"
+          "S3Key": "7952766f54a40fc44635867b6750ff37c6be726f3fa2ca6abed4924ecf590a61.zip"
         },
         "Role": {
           "Fn::GetAtt": [
@@ -1300,6 +1300,532 @@
           }
         }
       }
+    },
+    "seederconstructseedtaskaudittable8E019259": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "KeySchema": [
+          {
+            "AttributeName": "taskId",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "timestamp",
+            "KeyType": "RANGE"
+          }
+        ],
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "taskId",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "timestamp",
+            "AttributeType": "N"
+          }
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "TableName": "Tasks"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "seederconstructseedtaskddbseederServiceRole6987B73E": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "seederconstructseedtaskddbseederServiceRoleDefaultPolicy227EA068": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "seederconstructeventstoragerawbucketA5644EB5",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "seederconstructeventstoragerawbucketA5644EB5",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "seederconstructeventstorageddbtableD582708A",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Ref": "AWS::NoValue"
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "seederconstructseedtaskddbseederServiceRoleDefaultPolicy227EA068",
+        "Roles": [
+          {
+            "Ref": "seederconstructseedtaskddbseederServiceRole6987B73E"
+          }
+        ]
+      }
+    },
+    "seederconstructseedtaskddbseeder7E84DA27": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "S3Key": "a033fc6914e4b701f9e4e0ec8b777164cd1a9a614a3ca03d7b852db91e59b6b1.zip"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "seederconstructseedtaskddbseederServiceRole6987B73E",
+            "Arn"
+          ]
+        },
+        "Environment": {
+          "Variables": {
+            "S3_BUCKET": {
+              "Ref": "seederconstructeventstoragerawbucketA5644EB5"
+            },
+            "DDB_TABLE": {
+              "Ref": "seederconstructeventstorageddbtableD582708A"
+            }
+          }
+        },
+        "Handler": "bootstrap",
+        "Runtime": "provided.al2"
+      },
+      "DependsOn": [
+        "seederconstructseedtaskddbseederServiceRoleDefaultPolicy227EA068",
+        "seederconstructseedtaskddbseederServiceRole6987B73E"
+      ]
+    },
+    "seederconstructseedtaskStateMachineRole21B840BE": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::FindInMap": [
+                    "ServiceprincipalMap",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "states"
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "seederconstructseedtaskStateMachineRoleDefaultPolicy81BDA013": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "dynamodb:PutItem",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":dynamodb:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":table/",
+                    {
+                      "Ref": "seederconstructseedtaskaudittable8E019259"
+                    }
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "seederconstructseedtaskddbseeder7E84DA27",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "dynamodb:UpdateItem",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":dynamodb:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":table/",
+                    {
+                      "Ref": "seederconstructseedtaskaudittable8E019259"
+                    }
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": [
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "seederconstructseedtaskaudittable8E019259",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Ref": "AWS::NoValue"
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "seederconstructseedtaskStateMachineRoleDefaultPolicy81BDA013",
+        "Roles": [
+          {
+            "Ref": "seederconstructseedtaskStateMachineRole21B840BE"
+          }
+        ]
+      }
+    },
+    "seederconstructseedtaskStateMachine87A58956": {
+      "Type": "AWS::StepFunctions::StateMachine",
+      "Properties": {
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "seederconstructseedtaskStateMachineRole21B840BE",
+            "Arn"
+          ]
+        },
+        "DefinitionString": {
+          "Fn::Join": [
+            "",
+            [
+              "{\"StartAt\":\"create-ddb-item\",\"States\":{\"create-ddb-item\":{\"Next\":\"seed-ddb\",\"Type\":\"Task\",\"ResultPath\":null,\"Resource\":\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":states:::dynamodb:putItem\",\"Parameters\":{\"Item\":{\"taskId\":{\"S.$\":\"$.taskId\"},\"timestamp\":{\"N.$\":\"States.Format('{}', $.timestamp)\"},\"Status\":{\"S\":\"STARTED\"}},\"TableName\":\"",
+              {
+                "Ref": "seederconstructseedtaskaudittable8E019259"
+              },
+              "\"}},\"seed-ddb\":{\"Next\":\"Execute long running task...wait 30 seconds\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"ResultPath\":null,\"Resource\":\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+              {
+                "Fn::GetAtt": [
+                  "seederconstructseedtaskddbseeder7E84DA27",
+                  "Arn"
+                ]
+              },
+              "\",\"Payload.$\":\"$\"}},\"Execute long running task...wait 30 seconds\":{\"Type\":\"Wait\",\"Seconds\":30,\"Next\":\"UpdateDynamoTaskItem\"},\"UpdateDynamoTaskItem\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":states:::dynamodb:updateItem\",\"Parameters\":{\"Key\":{\"taskId\":{\"S.$\":\"$.taskId\"},\"timestamp\":{\"N.$\":\"States.Format('{}', $.timestamp)\"}},\"TableName\":\"",
+              {
+                "Ref": "seederconstructseedtaskaudittable8E019259"
+              },
+              "\",\"ExpressionAttributeNames\":{\"#s\":\"Status\"},\"ExpressionAttributeValues\":{\":val\":{\"S\":\"Done\"}},\"UpdateExpression\":\"SET #s = :val\"}}}}"
+            ]
+          ]
+        }
+      },
+      "DependsOn": [
+        "seederconstructseedtaskStateMachineRoleDefaultPolicy81BDA013",
+        "seederconstructseedtaskStateMachineRole21B840BE"
+      ]
+    },
+    "seederconstructseedtaskinvokesfnServiceRoleF5E5760B": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "seederconstructseedtaskinvokesfnServiceRoleDefaultPolicyD01F7595": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "states:StartExecution",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "seederconstructseedtaskStateMachine87A58956"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "seederconstructseedtaskinvokesfnServiceRoleDefaultPolicyD01F7595",
+        "Roles": [
+          {
+            "Ref": "seederconstructseedtaskinvokesfnServiceRoleF5E5760B"
+          }
+        ]
+      }
+    },
+    "seederconstructseedtaskinvokesfn2DCB1D7F": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "S3Key": "e2741537bb6e3f5fadaf4905ba4e61b24670c89c41d5f8500083293f0c7c3ed1.zip"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "seederconstructseedtaskinvokesfnServiceRoleF5E5760B",
+            "Arn"
+          ]
+        },
+        "Environment": {
+          "Variables": {
+            "StateMachineArn": {
+              "Ref": "seederconstructseedtaskStateMachine87A58956"
+            }
+          }
+        },
+        "Handler": "bootstrap",
+        "Runtime": "provided.al2"
+      },
+      "DependsOn": [
+        "seederconstructseedtaskinvokesfnServiceRoleDefaultPolicyD01F7595",
+        "seederconstructseedtaskinvokesfnServiceRoleF5E5760B"
+      ]
+    },
+    "seederconstructseedtaskCrawlerStarterProviderframeworkonEventServiceRole2F37282C": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "seederconstructseedtaskCrawlerStarterProviderframeworkonEventServiceRoleDefaultPolicy151575E4": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "seederconstructseedtaskinvokesfn2DCB1D7F",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "seederconstructseedtaskCrawlerStarterProviderframeworkonEventServiceRoleDefaultPolicy151575E4",
+        "Roles": [
+          {
+            "Ref": "seederconstructseedtaskCrawlerStarterProviderframeworkonEventServiceRole2F37282C"
+          }
+        ]
+      }
+    },
+    "seederconstructseedtaskCrawlerStarterProviderframeworkonEvent3F275E37": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "S3Key": "885e74c18034f7d2833ec7129bb76a442e75d84f9c21ce7990bbb3aea67ab779.zip"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "seederconstructseedtaskCrawlerStarterProviderframeworkonEventServiceRole2F37282C",
+            "Arn"
+          ]
+        },
+        "Description": "AWS CDK resource provider framework - onEvent (integ-stack/seeder-construct/seed-task/CrawlerStarterProvider)",
+        "Environment": {
+          "Variables": {
+            "USER_ON_EVENT_FUNCTION_ARN": {
+              "Fn::GetAtt": [
+                "seederconstructseedtaskinvokesfn2DCB1D7F",
+                "Arn"
+              ]
+            }
+          }
+        },
+        "Handler": "framework.onEvent",
+        "Runtime": "nodejs12.x",
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "seederconstructseedtaskCrawlerStarterProviderframeworkonEventServiceRoleDefaultPolicy151575E4",
+        "seederconstructseedtaskCrawlerStarterProviderframeworkonEventServiceRole2F37282C"
+      ]
+    },
+    "seederconstructseedtaskCrawlerStarterCustomResource6E31BB0D": {
+      "Type": "Custom::SfnStarter",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "seederconstructseedtaskCrawlerStarterProviderframeworkonEvent3F275E37",
+            "Arn"
+          ]
+        },
+        "taskId": "seed-dynamo"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
       "Type": "AWS::IAM::Role",
@@ -1590,6 +2116,100 @@
         "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
         "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
       ]
+    }
+  },
+  "Mappings": {
+    "ServiceprincipalMap": {
+      "af-south-1": {
+        "states": "states.af-south-1.amazonaws.com"
+      },
+      "ap-east-1": {
+        "states": "states.ap-east-1.amazonaws.com"
+      },
+      "ap-northeast-1": {
+        "states": "states.ap-northeast-1.amazonaws.com"
+      },
+      "ap-northeast-2": {
+        "states": "states.ap-northeast-2.amazonaws.com"
+      },
+      "ap-northeast-3": {
+        "states": "states.ap-northeast-3.amazonaws.com"
+      },
+      "ap-south-1": {
+        "states": "states.ap-south-1.amazonaws.com"
+      },
+      "ap-southeast-1": {
+        "states": "states.ap-southeast-1.amazonaws.com"
+      },
+      "ap-southeast-2": {
+        "states": "states.ap-southeast-2.amazonaws.com"
+      },
+      "ap-southeast-3": {
+        "states": "states.ap-southeast-3.amazonaws.com"
+      },
+      "ca-central-1": {
+        "states": "states.ca-central-1.amazonaws.com"
+      },
+      "cn-north-1": {
+        "states": "states.cn-north-1.amazonaws.com"
+      },
+      "cn-northwest-1": {
+        "states": "states.cn-northwest-1.amazonaws.com"
+      },
+      "eu-central-1": {
+        "states": "states.eu-central-1.amazonaws.com"
+      },
+      "eu-north-1": {
+        "states": "states.eu-north-1.amazonaws.com"
+      },
+      "eu-south-1": {
+        "states": "states.eu-south-1.amazonaws.com"
+      },
+      "eu-south-2": {
+        "states": "states.eu-south-2.amazonaws.com"
+      },
+      "eu-west-1": {
+        "states": "states.eu-west-1.amazonaws.com"
+      },
+      "eu-west-2": {
+        "states": "states.eu-west-2.amazonaws.com"
+      },
+      "eu-west-3": {
+        "states": "states.eu-west-3.amazonaws.com"
+      },
+      "me-south-1": {
+        "states": "states.me-south-1.amazonaws.com"
+      },
+      "sa-east-1": {
+        "states": "states.sa-east-1.amazonaws.com"
+      },
+      "us-east-1": {
+        "states": "states.us-east-1.amazonaws.com"
+      },
+      "us-east-2": {
+        "states": "states.us-east-2.amazonaws.com"
+      },
+      "us-gov-east-1": {
+        "states": "states.us-gov-east-1.amazonaws.com"
+      },
+      "us-gov-west-1": {
+        "states": "states.us-gov-west-1.amazonaws.com"
+      },
+      "us-iso-east-1": {
+        "states": "states.amazonaws.com"
+      },
+      "us-iso-west-1": {
+        "states": "states.amazonaws.com"
+      },
+      "us-isob-east-1": {
+        "states": "states.amazonaws.com"
+      },
+      "us-west-1": {
+        "states": "states.us-west-1.amazonaws.com"
+      },
+      "us-west-2": {
+        "states": "states.us-west-2.amazonaws.com"
+      }
     }
   },
   "Parameters": {

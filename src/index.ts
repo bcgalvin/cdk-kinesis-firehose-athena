@@ -29,6 +29,9 @@ export class DynamoAthenaSeeder extends Construct {
       glueTableName: glueResources.table.tableName,
     });
 
-    new SfnSeedTask(this, 'seed-task');
+    new SfnSeedTask(this, 'seed-task', {
+      bucket: eventStorage.rawBucket,
+      table: eventStorage.table,
+    });
   }
 }

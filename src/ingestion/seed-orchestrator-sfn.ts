@@ -1,15 +1,27 @@
 import * as path from 'path';
 import { GoFunction } from '@aws-cdk/aws-lambda-go-alpha';
-import { Duration, RemovalPolicy } from 'aws-cdk-lib';
+import { CustomResource, Duration, RemovalPolicy } from 'aws-cdk-lib';
 import { AttributeType, BillingMode, ITable, Table } from 'aws-cdk-lib/aws-dynamodb';
+import { IBucket } from 'aws-cdk-lib/aws-s3';
 import { JsonPath, StateMachine, Wait, WaitTime } from 'aws-cdk-lib/aws-stepfunctions';
-import { DynamoAttributeValue, DynamoPutItem, DynamoUpdateItem } from 'aws-cdk-lib/aws-stepfunctions-tasks';
+import {
+  DynamoAttributeValue,
+  DynamoPutItem,
+  DynamoUpdateItem,
+  LambdaInvoke,
+} from 'aws-cdk-lib/aws-stepfunctions-tasks';
+import { Provider } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
+
+export interface SfnSeedTaskProps {
+  bucket: IBucket;
+  table: ITable;
+}
 
 export class SfnSeedTask extends Construct {
   public readonly table: ITable;
 
-  constructor(scope: Construct, id: string) {
+  constructor(scope: Construct, id: string, props: SfnSeedTaskProps) {
     super(scope, id);
 
     const auditTable = new Table(this, 'audit-table', {
@@ -56,21 +68,47 @@ export class SfnSeedTask extends Construct {
       updateExpression: 'SET #s = :val',
     });
 
-    const definition = logStartTask.next(waitX).next(logEndTask);
+    const ddbSeeder = new GoFunction(this, 'ddb-seeder', {
+      entry: path.resolve(__dirname, '../lambdas/cmd/dynamodb-seeder'),
+      environment: {
+        S3_BUCKET: props.bucket.bucketName,
+        DDB_TABLE: props.table.tableName,
+      },
+    });
+
+    const ddbSeederTask = new LambdaInvoke(this, 'seed-ddb', {
+      lambdaFunction: ddbSeeder,
+      resultPath: JsonPath.DISCARD,
+    });
+
+    const definition = logStartTask.next(ddbSeederTask).next(waitX).next(logEndTask);
     const stateMachine = new StateMachine(this, 'StateMachine', {
       definition,
     });
-    auditTable.grantWriteData(stateMachine);
 
-    const invokeStepFunction = new GoFunction(this, 'invokeStepFunction', {
-      entry: path.resolve(__dirname, '../lambdas/cmd/dynamodb-seeder'),
+    const invokeStepFunction = new GoFunction(this, 'invoke-sfn', {
+      entry: path.resolve(__dirname, '../lambdas/cmd/sfn-invoker'),
       environment: {
         StateMachineArn: stateMachine.stateMachineArn,
       },
-      functionName: 'InvokeTaskStepFunction',
     });
 
+    props.bucket.grantRead(ddbSeeder);
+    props.table.grantWriteData(ddbSeeder);
+    auditTable.grantWriteData(stateMachine);
     stateMachine.grantStartExecution(invokeStepFunction);
+
+    const sfnStarterProvider = new Provider(this, 'CrawlerStarterProvider', {
+      onEventHandler: invokeStepFunction,
+    });
+
+    new CustomResource(this, 'CrawlerStarterCustomResource', {
+      serviceToken: sfnStarterProvider.serviceToken,
+      resourceType: 'Custom::SfnStarter',
+      properties: {
+        taskId: 'seed-dynamo',
+      },
+    });
 
     this.table = auditTable;
   }
