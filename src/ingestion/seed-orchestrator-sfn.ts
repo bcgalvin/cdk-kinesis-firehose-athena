@@ -78,6 +78,7 @@ export class SfnSeedTask extends Construct {
 
     const ddbSeederTask = new LambdaInvoke(this, 'seed-ddb', {
       lambdaFunction: ddbSeeder,
+      resultPath: JsonPath.DISCARD,
       timeout: Duration.minutes(5),
     });
 
