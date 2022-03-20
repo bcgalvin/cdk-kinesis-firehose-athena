@@ -988,7 +988,7 @@ Object {
         "DatabaseName": Object {
           "Ref": "seederconstructglueresourcesgluedbDAE27AF3",
         },
-        "Name": "seed-crawler",
+        "Name": "test-crawler",
         "Role": Object {
           "Fn::GetAtt": Array [
             "seederconstructglueresourcesMyGlueCrawlerRole11077AC5",
@@ -1489,7 +1489,7 @@ Object {
           "S3Bucket": Object {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "9fb685fb8918765f84df9b5ea37e6653de4c8318c8e2e25909d4d3cc113aef8a.zip",
+          "S3Key": "67897b5c7df30f61b8bc7f5cd1cc06d684ef24d0116384b63ef536e99a534dea.zip",
         },
         "Handler": "bootstrap",
         "Role": Object {
@@ -1695,6 +1695,29 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
+    "seederconstructseedtaskCrawlerStarter23DB5C77": Object {
+      "DependsOn": Array [
+        "seederconstructseedtaskCrawlerStarterServiceRoleDefaultPolicy85F722CC",
+        "seederconstructseedtaskCrawlerStarterServiceRole37A01C33",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "842bde5170d62af3da4ba8fda7fadd59e27a0003136879059d1cb8dd086ef33f.zip",
+        },
+        "Handler": "bootstrap",
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "seederconstructseedtaskCrawlerStarterServiceRole37A01C33",
+            "Arn",
+          ],
+        },
+        "Runtime": "provided.al2",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
     "seederconstructseedtaskCrawlerStarterCustomResource6E31BB0D": Object {
       "DeletionPolicy": "Delete",
       "Properties": Object {
@@ -1801,6 +1824,77 @@ Object {
       },
       "Type": "AWS::IAM::Policy",
     },
+    "seederconstructseedtaskCrawlerStarterServiceRole37A01C33": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "seederconstructseedtaskCrawlerStarterServiceRoleDefaultPolicy85F722CC": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "glue:StartTrigger",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    "arn:",
+                    Object {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":glue:",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":trigger/undefined",
+                  ],
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "seederconstructseedtaskCrawlerStarterServiceRoleDefaultPolicy85F722CC",
+        "Roles": Array [
+          Object {
+            "Ref": "seederconstructseedtaskCrawlerStarterServiceRole37A01C33",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "seederconstructseedtaskStateMachine87A58956": Object {
       "DependsOn": Array [
         "seederconstructseedtaskStateMachineRoleDefaultPolicy81BDA013",
@@ -1819,7 +1913,7 @@ Object {
               Object {
                 "Ref": "seederconstructseedtaskaudittable8E019259",
               },
-              "\\"}},\\"seed-ddb\\":{\\"Next\\":\\"Execute long running task...wait 30 seconds\\",\\"Retry\\":[{\\"ErrorEquals\\":[\\"Lambda.ServiceException\\",\\"Lambda.AWSLambdaException\\",\\"Lambda.SdkClientException\\"],\\"IntervalSeconds\\":2,\\"MaxAttempts\\":6,\\"BackoffRate\\":2}],\\"Type\\":\\"Task\\",\\"TimeoutSeconds\\":300,\\"Resource\\":\\"arn:",
+              "\\"}},\\"seed-ddb\\":{\\"Next\\":\\"Execute long running task...wait 30 seconds\\",\\"Retry\\":[{\\"ErrorEquals\\":[\\"Lambda.ServiceException\\",\\"Lambda.AWSLambdaException\\",\\"Lambda.SdkClientException\\"],\\"IntervalSeconds\\":2,\\"MaxAttempts\\":6,\\"BackoffRate\\":2}],\\"Type\\":\\"Task\\",\\"TimeoutSeconds\\":300,\\"ResultPath\\":null,\\"Resource\\":\\"arn:",
               Object {
                 "Ref": "AWS::Partition",
               },
@@ -1830,7 +1924,18 @@ Object {
                   "Arn",
                 ],
               },
-              "\\",\\"Payload.$\\":\\"$\\"}},\\"Execute long running task...wait 30 seconds\\":{\\"Type\\":\\"Wait\\",\\"Seconds\\":30,\\"Next\\":\\"UpdateDynamoTaskItem\\"},\\"UpdateDynamoTaskItem\\":{\\"End\\":true,\\"Type\\":\\"Task\\",\\"Resource\\":\\"arn:",
+              "\\",\\"Payload.$\\":\\"$\\"}},\\"Execute long running task...wait 30 seconds\\":{\\"Type\\":\\"Wait\\",\\"Seconds\\":30,\\"Next\\":\\"crawler-starter\\"},\\"crawler-starter\\":{\\"Next\\":\\"UpdateDynamoTaskItem\\",\\"Retry\\":[{\\"ErrorEquals\\":[\\"Lambda.ServiceException\\",\\"Lambda.AWSLambdaException\\",\\"Lambda.SdkClientException\\"],\\"IntervalSeconds\\":2,\\"MaxAttempts\\":6,\\"BackoffRate\\":2}],\\"Type\\":\\"Task\\",\\"TimeoutSeconds\\":300,\\"ResultPath\\":null,\\"Resource\\":\\"arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::lambda:invoke\\",\\"Parameters\\":{\\"FunctionName\\":\\"",
+              Object {
+                "Fn::GetAtt": Array [
+                  "seederconstructseedtaskCrawlerStarter23DB5C77",
+                  "Arn",
+                ],
+              },
+              "\\",\\"Payload.$\\":\\"$\\"}},\\"UpdateDynamoTaskItem\\":{\\"End\\":true,\\"Type\\":\\"Task\\",\\"Resource\\":\\"arn:",
               Object {
                 "Ref": "AWS::Partition",
               },
@@ -1913,6 +2018,16 @@ Object {
               "Resource": Object {
                 "Fn::GetAtt": Array [
                   "seederconstructseedtaskddbseeder7E84DA27",
+                  "Arn",
+                ],
+              },
+            },
+            Object {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "seederconstructseedtaskCrawlerStarter23DB5C77",
                   "Arn",
                 ],
               },
@@ -2016,7 +2131,7 @@ Object {
           "S3Bucket": Object {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "9bb1a03bd708f2f361cff845d1c8b33ff4107d8494de94aac751f95a27194a9d.zip",
+          "S3Key": "f55983e2e0a56286947293223948c2ea37cb8acb5084a11f707a8c1e89527dc9.zip",
         },
         "Environment": Object {
           "Variables": Object {
@@ -2138,6 +2253,18 @@ Object {
       },
       "Type": "AWS::IAM::Policy",
     },
+    "seederconstructseedtaskglueTriggerExchanges1B34C94C": Object {
+      "Properties": Object {
+        "Actions": Array [
+          Object {
+            "CrawlerName": "test-crawler",
+          },
+        ],
+        "Description": "Start the Glue Crawler",
+        "Type": "ON_DEMAND",
+      },
+      "Type": "AWS::Glue::Trigger",
+    },
     "seederconstructseedtaskinvokesfn2DCB1D7F": Object {
       "DependsOn": Array [
         "seederconstructseedtaskinvokesfnServiceRoleDefaultPolicyD01F7595",
@@ -2148,7 +2275,7 @@ Object {
           "S3Bucket": Object {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "f4fc487549b8c84e969354e21d19221028e07bb0fa503583f35d172b67f788c2.zip",
+          "S3Key": "a9c64123b01b1c28638c0e52d801414efe466defb5d1b18eef5916b158469cf8.zip",
         },
         "Environment": Object {
           "Variables": Object {

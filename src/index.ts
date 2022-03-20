@@ -5,6 +5,7 @@ import { EventStorage, GlueStorage } from './storage';
 export interface DynamoAthenaSeederProps {
   dataPrefix: string;
   projectName: string;
+  crawlerName: string;
 }
 
 export class DynamoAthenaSeeder extends Construct {
@@ -20,6 +21,7 @@ export class DynamoAthenaSeeder extends Construct {
       bucket: eventStorage.landingBucket,
       prefix: props.dataPrefix,
       project: props.projectName,
+      crawlerName: props.crawlerName,
     });
 
     new S3FirehoseDelivery(this, 's3-firehose-delivery', {
@@ -32,6 +34,7 @@ export class DynamoAthenaSeeder extends Construct {
     new SfnSeedTask(this, 'seed-task', {
       bucket: eventStorage.rawBucket,
       table: eventStorage.table,
+      crawlerName: props.crawlerName,
     });
   }
 }

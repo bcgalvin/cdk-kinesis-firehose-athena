@@ -904,7 +904,7 @@
         "DatabaseName": {
           "Ref": "seederconstructglueresourcesgluedbDAE27AF3"
         },
-        "Name": "seed-crawler",
+        "Name": "test-crawler",
         "SchemaChangePolicy": {
           "DeleteBehavior": "LOG"
         }
@@ -1154,7 +1154,7 @@
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
           },
-          "S3Key": "113467a11f5b5d08f0f244d4166949a9e8a8ffac92af73af31c2cc4052e33635.zip"
+          "S3Key": "78feb8d6b456088cb914978c40a7f9299a9c03df17d009de40169d1669bb587c.zip"
         },
         "Role": {
           "Fn::GetAtt": [
@@ -1435,7 +1435,7 @@
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
           },
-          "S3Key": "7c5c1e8df996aac2f61bc7f645a3aec362abc520122ef26004b1466a69f3458c.zip"
+          "S3Key": "188336e29687fa61a2bfebb9ef04ff9c0bc53a9545795384b2fcce90bda7ec65.zip"
         },
         "Role": {
           "Fn::GetAtt": [
@@ -1460,6 +1460,122 @@
       "DependsOn": [
         "seederconstructseedtaskddbseederServiceRoleDefaultPolicy227EA068",
         "seederconstructseedtaskddbseederServiceRole6987B73E"
+      ]
+    },
+    "seederconstructseedtaskglueTriggerExchanges1B34C94C": {
+      "Type": "AWS::Glue::Trigger",
+      "Properties": {
+        "Actions": [
+          {
+            "CrawlerName": "test-crawler"
+          }
+        ],
+        "Type": "ON_DEMAND",
+        "Description": "Start the Glue Crawler"
+      }
+    },
+    "seederconstructseedtaskCrawlerStarterServiceRole37A01C33": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "seederconstructseedtaskCrawlerStarterServiceRoleDefaultPolicy85F722CC": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "glue:StartTrigger",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":glue:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":trigger/",
+                    {
+                      "Ref": "seederconstructseedtaskglueTriggerExchanges1B34C94C"
+                    }
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "seederconstructseedtaskCrawlerStarterServiceRoleDefaultPolicy85F722CC",
+        "Roles": [
+          {
+            "Ref": "seederconstructseedtaskCrawlerStarterServiceRole37A01C33"
+          }
+        ]
+      }
+    },
+    "seederconstructseedtaskCrawlerStarter23DB5C77": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "S3Key": "110549f0838f1f1879d3c2bb0221a70be63920ce3064a44410e3cf17c3f8249b.zip"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "seederconstructseedtaskCrawlerStarterServiceRole37A01C33",
+            "Arn"
+          ]
+        },
+        "Environment": {
+          "Variables": {
+            "GLUE_TRIGGER_NAME": {
+              "Ref": "seederconstructseedtaskglueTriggerExchanges1B34C94C"
+            }
+          }
+        },
+        "Handler": "bootstrap",
+        "Runtime": "provided.al2"
+      },
+      "DependsOn": [
+        "seederconstructseedtaskCrawlerStarterServiceRoleDefaultPolicy85F722CC",
+        "seederconstructseedtaskCrawlerStarterServiceRole37A01C33"
       ]
     },
     "seederconstructseedtaskStateMachineRole21B840BE": {
@@ -1525,6 +1641,16 @@
               "Resource": {
                 "Fn::GetAtt": [
                   "seederconstructseedtaskddbseeder7E84DA27",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "seederconstructseedtaskCrawlerStarter23DB5C77",
                   "Arn"
                 ]
               }
@@ -1620,7 +1746,18 @@
                   "Arn"
                 ]
               },
-              "\",\"Payload.$\":\"$\"}},\"Execute long running task...wait 30 seconds\":{\"Type\":\"Wait\",\"Seconds\":30,\"Next\":\"UpdateDynamoTaskItem\"},\"UpdateDynamoTaskItem\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+              "\",\"Payload.$\":\"$\"}},\"Execute long running task...wait 30 seconds\":{\"Type\":\"Wait\",\"Seconds\":30,\"Next\":\"crawler-starter\"},\"crawler-starter\":{\"Next\":\"UpdateDynamoTaskItem\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"TimeoutSeconds\":300,\"ResultPath\":null,\"Resource\":\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+              {
+                "Fn::GetAtt": [
+                  "seederconstructseedtaskCrawlerStarter23DB5C77",
+                  "Arn"
+                ]
+              },
+              "\",\"Payload.$\":\"$\"}},\"UpdateDynamoTaskItem\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
               {
                 "Ref": "AWS::Partition"
               },
@@ -1699,7 +1836,7 @@
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
           },
-          "S3Key": "739a9e4104d2c0baa61b825fb0fa4e6ccae58cab1d42c94b2a678728fad83a9f.zip"
+          "S3Key": "65b23c854fa8661e408b0fa68eb133426e8ebad73226a34557ba0a6ddc75724a.zip"
         },
         "Role": {
           "Fn::GetAtt": [

@@ -1,7 +1,9 @@
 import * as path from 'path';
 import { GoFunction } from '@aws-cdk/aws-lambda-go-alpha';
-import { CustomResource, Duration, RemovalPolicy } from 'aws-cdk-lib';
+import { Aws, CustomResource, Duration, RemovalPolicy } from 'aws-cdk-lib';
 import { AttributeType, BillingMode, ITable, Table } from 'aws-cdk-lib/aws-dynamodb';
+import { CfnTrigger } from 'aws-cdk-lib/aws-glue';
+import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
 import { JsonPath, StateMachine, Wait, WaitTime } from 'aws-cdk-lib/aws-stepfunctions';
 import {
@@ -16,6 +18,7 @@ import { Construct } from 'constructs';
 export interface SfnSeedTaskProps {
   bucket: IBucket;
   table: ITable;
+  crawlerName: string;
 }
 
 export class SfnSeedTask extends Construct {
@@ -67,6 +70,8 @@ export class SfnSeedTask extends Construct {
       updateExpression: 'SET #s = :val',
     });
 
+    // Functions
+
     const ddbSeeder = new GoFunction(this, 'ddb-seeder', {
       entry: path.resolve(__dirname, '../lambdas/cmd/dynamodb-seeder'),
       environment: {
@@ -76,13 +81,36 @@ export class SfnSeedTask extends Construct {
       timeout: Duration.minutes(5),
     });
 
+    const crawlerTrigger = new CfnTrigger(this, 'glueTriggerExchanges', {
+      type: 'ON_DEMAND',
+      actions: [
+        {
+          crawlerName: props.crawlerName,
+        },
+      ],
+      description: 'Start the Glue Crawler',
+    });
+
+    const crawlerStarter = new GoFunction(this, 'CrawlerStarter', {
+      entry: path.resolve(__dirname, '../lambdas/cmd/crawler-starter'),
+      environment: {
+        GLUE_TRIGGER_NAME: crawlerTrigger.ref,
+      },
+    });
+
     const ddbSeederTask = new LambdaInvoke(this, 'seed-ddb', {
       lambdaFunction: ddbSeeder,
       resultPath: JsonPath.DISCARD,
       timeout: Duration.minutes(5),
     });
 
-    const definition = logStartTask.next(ddbSeederTask).next(waitX).next(logEndTask);
+    const crawlerStarterTask = new LambdaInvoke(this, 'crawler-starter', {
+      lambdaFunction: crawlerStarter,
+      resultPath: JsonPath.DISCARD,
+      timeout: Duration.minutes(5),
+    });
+
+    const definition = logStartTask.next(ddbSeederTask).next(waitX).next(crawlerStarterTask).next(logEndTask);
     const stateMachine = new StateMachine(this, 'StateMachine', {
       definition,
     });
@@ -94,28 +122,14 @@ export class SfnSeedTask extends Construct {
       },
     });
 
-    // const crawlerTrigger = new CfnTrigger(this, 'glueTriggerExchanges', {
-    //   name: 'seed-crawler-trigger',
-    //   type: 'ON_DEMAND',
-    //   actions: [
-    //     {
-    //       crawlerName: 'seed-crawler',
-    //     },
-    //   ],
-    //   description: 'Start the Glue Crawler',
-    // });
-    //
-    // const crawlerStarter = new GoFunction(this, 'CrawlerStarter', {
-    //   entry: path.resolve(__dirname, '../lambdas/cmd/crawler-starter'),
-    // });
-    // crawlerStarter.addToRolePolicy(
-    //   new PolicyStatement({
-    //     effect: Effect.ALLOW,
-    //     actions: ['glue:StartTrigger'],
-    //     resources: [`arn:${Aws.PARTITION}:glue:${Aws.REGION}:${Aws.ACCOUNT_ID}:trigger/${crawlerTrigger.name}`],
-    //   }),
-    // );
-    //
+    crawlerStarter.addToRolePolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: ['glue:StartTrigger'],
+        resources: [`arn:${Aws.PARTITION}:glue:${Aws.REGION}:${Aws.ACCOUNT_ID}:trigger/${crawlerTrigger.ref}`],
+      }),
+    );
+
     // const crawlerStatusCheckerTimeout = Duration.minutes(5);
     // const crawlerStatusChecker = new GoFunction(this, 'CrawlerStatusChecker', {
     //   entry: path.resolve(__dirname, '../lambdas/cmd/crawler-status-checker'),
