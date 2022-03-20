@@ -11,6 +11,7 @@ export class TestSeederStack extends Stack {
     new DynamoAthenaSeeder(this, 'seeder-construct', {
       projectName: 'test',
       dataPrefix: 'data/',
+      crawlerName: 'test-crawler',
     });
   }
 }

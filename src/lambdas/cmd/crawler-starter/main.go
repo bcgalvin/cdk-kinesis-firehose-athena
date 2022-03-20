@@ -10,23 +10,24 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/glue"
+	log "github.com/sirupsen/logrus"
 )
 
 func handleRequest(ctx context.Context, evnt cfn.Event) (physicalResourceID string, data map[string]interface{}, err error) {
 
 	if evnt.RequestType == cfn.RequestDelete {
-		fmt.Println("Delete event type, skipping")
+		log.Infof("Delete event type, skipping")
 		return
 	}
 
-	fmt.Println("Retrieving trigger name")
+	log.Infof("Retrieving trigger name")
 
 	triggerName, found := evnt.ResourceProperties["TriggerName"].(string)
 	if !found {
 		return physicalResourceID, data, errors.New("TriggerName is required")
 	}
 
-	fmt.Println("Initializing the client")
+	log.Infof("Initializing the client")
 
 	cfg, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
@@ -35,7 +36,7 @@ func handleRequest(ctx context.Context, evnt cfn.Event) (physicalResourceID stri
 
 	glueClient := glue.NewFromConfig(cfg)
 
-	fmt.Println("Activating the trigger", triggerName)
+	log.Infof("Activating the trigger: %s", triggerName)
 
 	_, err = glueClient.StartTrigger(ctx, &glue.StartTriggerInput{
 		Name: aws.String(triggerName),
@@ -43,8 +44,8 @@ func handleRequest(ctx context.Context, evnt cfn.Event) (physicalResourceID stri
 	if err != nil {
 		return physicalResourceID, data, fmt.Errorf("failed to activate the trigger: %w", err)
 	}
-	
-	fmt.Println("Trigger", triggerName, "activated")
+
+	log.Infof("Trigger %s activated", triggerName)
 
 	return
 }

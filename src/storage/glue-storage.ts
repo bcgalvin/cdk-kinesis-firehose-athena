@@ -14,6 +14,7 @@ export interface GlueStorageProps {
   bucket: IBucket;
   stream: IStream;
   prefix: string;
+  crawlerName: string;
 }
 
 export class GlueStorage extends Construct {
@@ -213,7 +214,7 @@ export class GlueStorage extends Construct {
     props.bucket.grantReadWrite(crawlerRole);
 
     new CfnCrawler(this, 'MyGlueCrawler', {
-      name: 'seed-crawler',
+      name: props.crawlerName,
       databaseName: this.database.databaseName,
       role: crawlerRole.roleArn,
       targets: {
