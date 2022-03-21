@@ -8,7 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/rs/zerolog/log"
+	log "github.com/sirupsen/logrus"
 )
 
 func (c *Client) DownloadFile(bucketName, key, filePath string) error {
@@ -24,7 +24,7 @@ func (c *Client) DownloadFile(bucketName, key, filePath string) error {
 		Bucket: aws.String(bucketName),
 		Key:    aws.String(key),
 	})
-	log.Debug().Msgf("Downloading object '%s' in bucket '%s'\n", key, bucketName)
+	log.Debugf("Downloading object '%s' in bucket '%s'\n", key, bucketName)
 	if err != nil {
 		return fmt.Errorf("unable to download file, %s", err)
 	}

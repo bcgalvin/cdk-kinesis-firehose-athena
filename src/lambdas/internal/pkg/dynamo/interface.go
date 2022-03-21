@@ -3,10 +3,11 @@ package dynamo
 import (
 	"context"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/bcgalvin/cdk-kinesis-firehose-athena/internal/pkg/domain"
 )
 
 type Interface interface {
-	WriteCounties(county County, tableName string) error
+	WriteCounties(county domain.County, tableName string) error
 	DeleteAllCounties(tableName string) error
 }
 

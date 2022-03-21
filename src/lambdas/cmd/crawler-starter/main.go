@@ -2,31 +2,17 @@ package main
 
 import (
 	"context"
-	"github.com/aws/aws-sdk-go-v2/service/sfn"
-	"os"
-	"reflect"
-
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/glue"
+	"github.com/aws/aws-sdk-go-v2/service/sfn"
+	stepFn "github.com/bcgalvin/cdk-kinesis-firehose-athena/internal/pkg/sfn"
 	log "github.com/sirupsen/logrus"
+	"os"
 )
 
-type Result struct {
-	Success *sfn.SendTaskSuccessInput
-	Failure *sfn.SendTaskFailureInput
-}
-
-func getType(myvar interface{}) string {
-	t := reflect.TypeOf(myvar)
-	if t.Kind() == reflect.Ptr {
-		return t.Elem().Name()
-	}
-	return t.Name()
-}
-
-func handleRequest(ctx context.Context) (Result, error) {
+func handleRequest(ctx context.Context) (stepFn.Result, error) {
 
 	log.Infof("Retrieving trigger name")
 	triggerName := os.Getenv("GLUE_TRIGGER_NAME")
@@ -46,9 +32,9 @@ func handleRequest(ctx context.Context) (Result, error) {
 		Name: aws.String(triggerName),
 	})
 	if err != nil {
-		return Result{
+		return stepFn.Result{
 			Failure: &sfn.SendTaskFailureInput{
-				Error: aws.String(getType(err)),
+				Error: aws.String(stepFn.GetType(err)),
 				Cause: aws.String(err.Error()),
 			},
 		}, err
@@ -56,7 +42,7 @@ func handleRequest(ctx context.Context) (Result, error) {
 
 	log.Infof("Trigger %s activated", triggerName)
 
-	return Result{
+	return stepFn.Result{
 		Success: &sfn.SendTaskSuccessInput{
 			Output: aws.String("Success"),
 		},
