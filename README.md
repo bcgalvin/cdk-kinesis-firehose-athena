@@ -1,4 +1,4 @@
-# CDK Kinesis Firehose GlueStorage
+# CDK Kinesis Firehose Athena
 
 ---
 
