@@ -24,7 +24,7 @@ export class SfnSeedTask extends Construct {
     const logStartTask = new DynamoPutItem(this, 'Log Run Start', {
       item: {
         PK: DynamoAttributeValue.fromString(JsonPath.stringAt('$.taskId')),
-        SK: DynamoAttributeValue.numberFromString(JsonPath.stringAt(`States.Format('{}', ${'$.timestamp'})`)),
+        SK: DynamoAttributeValue.fromString(JsonPath.stringAt(`States.Format('{}', ${'$.timestamp'})`)),
         Status: DynamoAttributeValue.fromString('TASK RUN START'),
       },
       table: props.auditTable,
@@ -34,7 +34,7 @@ export class SfnSeedTask extends Construct {
     const logSeedSuccessTask = new DynamoPutItem(this, 'Log Seed Success', {
       item: {
         PK: DynamoAttributeValue.fromString(JsonPath.stringAt('$.taskId')),
-        SK: DynamoAttributeValue.numberFromString(JsonPath.stringAt(`States.Format('{}', ${'$.timestamp'})`)),
+        SK: DynamoAttributeValue.fromString(new Date().toString()),
         Status: DynamoAttributeValue.fromString('DYNAMO SEED SUCCESS'),
       },
       table: props.auditTable,
@@ -44,7 +44,7 @@ export class SfnSeedTask extends Construct {
     const logCrawlSuccessTask = new DynamoPutItem(this, 'Log Crawl Success', {
       item: {
         PK: DynamoAttributeValue.fromString(JsonPath.stringAt('$.taskId')),
-        SK: DynamoAttributeValue.numberFromString(JsonPath.stringAt(`States.Format('{}', ${'$.timestamp'})`)),
+        SK: DynamoAttributeValue.fromString(new Date().toString()),
         Status: DynamoAttributeValue.fromString('CRAWL SUCCESS'),
       },
       table: props.auditTable,
@@ -54,7 +54,7 @@ export class SfnSeedTask extends Construct {
     const logEndTask = new DynamoPutItem(this, 'Log Run Success', {
       item: {
         PK: DynamoAttributeValue.fromString(JsonPath.stringAt('$.taskId')),
-        SK: DynamoAttributeValue.numberFromString(JsonPath.stringAt(`States.Format('{}', ${'$.timestamp'})`)),
+        SK: DynamoAttributeValue.fromString(new Date().toString()),
         Status: DynamoAttributeValue.fromString('TASK RUN SUCCESS'),
       },
       table: props.auditTable,
@@ -105,14 +105,14 @@ export class SfnSeedTask extends Construct {
       .next(ddbSeederTask)
       .next(logSeedSuccessTask)
       .next(
-        new Wait(this, 'Wait 60 seconds for seeder', {
-          time: WaitTime.duration(Duration.seconds(60)),
+        new Wait(this, 'Wait 5 minutes for seeder', {
+          time: WaitTime.duration(Duration.minutes(5)),
         }),
       )
       .next(crawlerStarterTask)
       .next(
-        new Wait(this, 'Wait 60 seconds for crawler', {
-          time: WaitTime.duration(Duration.seconds(60)),
+        new Wait(this, 'Wait 5 minutes for crawler', {
+          time: WaitTime.duration(Duration.minutes(5)),
         }),
       )
       .next(logCrawlSuccessTask)

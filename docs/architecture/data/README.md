@@ -12,7 +12,7 @@ these data come from is a nice end-to-end clustering example using PCA and KMean
 This application currently has two entities with one relationship but could be extended to include metadata on the
 modeling runs such as PCA variance explained, principal component values and cluster loadings.
 
-![](erd.png)
+![](../../images/erd.png)
 
 | Entity | PK                 | SK                   |
 |--------|--------------------|----------------------|

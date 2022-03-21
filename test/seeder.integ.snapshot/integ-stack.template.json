@@ -500,6 +500,37 @@
         }
       }
     },
+    "seederconstructeventstorageaudittableF928A6F1": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "KeySchema": [
+          {
+            "AttributeName": "PK",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "SK",
+            "KeyType": "RANGE"
+          }
+        ],
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "PK",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "SK",
+            "AttributeType": "S"
+          }
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "SSESpecification": {
+          "SSEEnabled": true
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
     "seederconstructeventstorageddbtableD582708A": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
@@ -1154,7 +1185,7 @@
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
           },
-          "S3Key": "eff48c63c9c264596bf217518af83b548d94d05752adf618e77c4cd3658f4350.zip"
+          "S3Key": "b38d7473bca7da8e844586f8783ba1fad31637b93d57f1703e77fdefa90e07cb.zip"
         },
         "Role": {
           "Fn::GetAtt": [
@@ -1163,7 +1194,8 @@
           ]
         },
         "Handler": "bootstrap",
-        "Runtime": "provided.al2"
+        "Runtime": "provided.al2",
+        "Timeout": 300
       },
       "DependsOn": [
         "seederconstructs3firehosedeliveryfirehoseenricherlambdasServiceRole6EAC6191"
@@ -1301,35 +1333,6 @@
         }
       }
     },
-    "seederconstructseedtaskaudittable8E019259": {
-      "Type": "AWS::DynamoDB::Table",
-      "Properties": {
-        "KeySchema": [
-          {
-            "AttributeName": "taskId",
-            "KeyType": "HASH"
-          },
-          {
-            "AttributeName": "timestamp",
-            "KeyType": "RANGE"
-          }
-        ],
-        "AttributeDefinitions": [
-          {
-            "AttributeName": "taskId",
-            "AttributeType": "S"
-          },
-          {
-            "AttributeName": "timestamp",
-            "AttributeType": "N"
-          }
-        ],
-        "BillingMode": "PAY_PER_REQUEST",
-        "TableName": "Tasks"
-      },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
-    },
     "seederconstructseedtaskddbseederServiceRole6987B73E": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -1435,7 +1438,7 @@
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
           },
-          "S3Key": "83be770a1f9e2f53fef671b213afc6f4e31b944e3794e76446bd2b91f07a8b09.zip"
+          "S3Key": "303c57304902f1e39019086e2258abb070e141b87dbc9bccab76e0d5007379b2.zip"
         },
         "Role": {
           "Fn::GetAtt": [
@@ -1555,7 +1558,7 @@
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
           },
-          "S3Key": "82cd90a4b9a8cc2a1fd23cca750ad02fbe8784ba5c9ce08f8eea48d989dfc459.zip"
+          "S3Key": "862c4a88156ac2b97a3bd2514e5a4abcc0fc93e5f5565ff0c367f91924fa60ed.zip"
         },
         "Role": {
           "Fn::GetAtt": [
@@ -1571,7 +1574,8 @@
           }
         },
         "Handler": "bootstrap",
-        "Runtime": "provided.al2"
+        "Runtime": "provided.al2",
+        "Timeout": 300
       },
       "DependsOn": [
         "seederconstructseedtaskCrawlerStarterServiceRoleDefaultPolicy85F722CC",
@@ -1629,7 +1633,7 @@
                     },
                     ":table/",
                     {
-                      "Ref": "seederconstructseedtaskaudittable8E019259"
+                      "Ref": "seederconstructeventstorageaudittableF928A6F1"
                     }
                   ]
                 ]
@@ -1656,33 +1660,6 @@
               }
             },
             {
-              "Action": "dynamodb:UpdateItem",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:",
-                    {
-                      "Ref": "AWS::Partition"
-                    },
-                    ":dynamodb:",
-                    {
-                      "Ref": "AWS::Region"
-                    },
-                    ":",
-                    {
-                      "Ref": "AWS::AccountId"
-                    },
-                    ":table/",
-                    {
-                      "Ref": "seederconstructseedtaskaudittable8E019259"
-                    }
-                  ]
-                ]
-              }
-            },
-            {
               "Action": [
                 "dynamodb:BatchWriteItem",
                 "dynamodb:PutItem",
@@ -1694,7 +1671,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "seederconstructseedtaskaudittable8E019259",
+                    "seederconstructeventstorageaudittableF928A6F1",
                     "Arn"
                   ]
                 },
@@ -1727,15 +1704,15 @@
           "Fn::Join": [
             "",
             [
-              "{\"StartAt\":\"Create audit table item\",\"States\":{\"Create audit table item\":{\"Next\":\"seed-ddb\",\"Type\":\"Task\",\"ResultPath\":null,\"Resource\":\"arn:",
+              "{\"StartAt\":\"Log Run Start\",\"States\":{\"Log Run Start\":{\"Next\":\"seed-ddb\",\"Type\":\"Task\",\"ResultPath\":null,\"Resource\":\"arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::dynamodb:putItem\",\"Parameters\":{\"Item\":{\"taskId\":{\"S.$\":\"$.taskId\"},\"timestamp\":{\"N.$\":\"States.Format('{}', $.timestamp)\"},\"Status\":{\"S\":\"STARTED\"}},\"TableName\":\"",
+              ":states:::dynamodb:putItem\",\"Parameters\":{\"Item\":{\"PK\":{\"S.$\":\"$.taskId\"},\"SK\":{\"S.$\":\"States.Format('{}', $.timestamp)\"},\"Status\":{\"S\":\"TASK RUN START\"}},\"TableName\":\"",
               {
-                "Ref": "seederconstructseedtaskaudittable8E019259"
+                "Ref": "seederconstructeventstorageaudittableF928A6F1"
               },
-              "\"}},\"seed-ddb\":{\"Next\":\"Wait 60 seconds for seeder\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"TimeoutSeconds\":300,\"ResultPath\":null,\"Resource\":\"arn:",
+              "\"}},\"seed-ddb\":{\"Next\":\"Log Seed Success\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"TimeoutSeconds\":300,\"ResultPath\":null,\"Resource\":\"arn:",
               {
                 "Ref": "AWS::Partition"
               },
@@ -1746,7 +1723,15 @@
                   "Arn"
                 ]
               },
-              "\",\"Payload.$\":\"$\"}},\"Wait 60 seconds for seeder\":{\"Type\":\"Wait\",\"Seconds\":60,\"Next\":\"crawler-starter\"},\"crawler-starter\":{\"Next\":\"Wait 60 seconds for crawler\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"TimeoutSeconds\":300,\"ResultPath\":null,\"Resource\":\"arn:",
+              "\",\"Payload.$\":\"$\"}},\"Log Seed Success\":{\"Next\":\"Wait 5 minutes for seeder\",\"Type\":\"Task\",\"ResultPath\":null,\"Resource\":\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":states:::dynamodb:putItem\",\"Parameters\":{\"Item\":{\"PK\":{\"S.$\":\"$.taskId\"},\"SK\":{\"S\":\"Mon Mar 21 2022 15:49:48 GMT-0700 (Pacific Daylight Time)\"},\"Status\":{\"S\":\"DYNAMO SEED SUCCESS\"}},\"TableName\":\"",
+              {
+                "Ref": "seederconstructeventstorageaudittableF928A6F1"
+              },
+              "\"}},\"Wait 5 minutes for seeder\":{\"Type\":\"Wait\",\"Seconds\":300,\"Next\":\"crawler-starter\"},\"crawler-starter\":{\"Next\":\"Wait 5 minutes for crawler\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"TimeoutSeconds\":300,\"ResultPath\":null,\"Resource\":\"arn:",
               {
                 "Ref": "AWS::Partition"
               },
@@ -1757,15 +1742,23 @@
                   "Arn"
                 ]
               },
-              "\",\"Payload.$\":\"$\"}},\"Wait 60 seconds for crawler\":{\"Type\":\"Wait\",\"Seconds\":60,\"Next\":\"UpdateDynamoTaskItem\"},\"UpdateDynamoTaskItem\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+              "\",\"Payload.$\":\"$\"}},\"Wait 5 minutes for crawler\":{\"Type\":\"Wait\",\"Seconds\":300,\"Next\":\"Log Crawl Success\"},\"Log Crawl Success\":{\"Next\":\"Log Run Success\",\"Type\":\"Task\",\"ResultPath\":null,\"Resource\":\"arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::dynamodb:updateItem\",\"Parameters\":{\"Key\":{\"taskId\":{\"S.$\":\"$.taskId\"},\"timestamp\":{\"N.$\":\"States.Format('{}', $.timestamp)\"}},\"TableName\":\"",
+              ":states:::dynamodb:putItem\",\"Parameters\":{\"Item\":{\"PK\":{\"S.$\":\"$.taskId\"},\"SK\":{\"S\":\"Mon Mar 21 2022 15:49:48 GMT-0700 (Pacific Daylight Time)\"},\"Status\":{\"S\":\"CRAWL SUCCESS\"}},\"TableName\":\"",
               {
-                "Ref": "seederconstructseedtaskaudittable8E019259"
+                "Ref": "seederconstructeventstorageaudittableF928A6F1"
               },
-              "\",\"ExpressionAttributeNames\":{\"#s\":\"Status\"},\"ExpressionAttributeValues\":{\":val\":{\"S\":\"Done\"}},\"UpdateExpression\":\"SET #s = :val\"}}}}"
+              "\"}},\"Log Run Success\":{\"End\":true,\"Type\":\"Task\",\"ResultPath\":null,\"Resource\":\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":states:::dynamodb:putItem\",\"Parameters\":{\"Item\":{\"PK\":{\"S.$\":\"$.taskId\"},\"SK\":{\"S\":\"Mon Mar 21 2022 15:49:48 GMT-0700 (Pacific Daylight Time)\"},\"Status\":{\"S\":\"TASK RUN SUCCESS\"}},\"TableName\":\"",
+              {
+                "Ref": "seederconstructeventstorageaudittableF928A6F1"
+              },
+              "\"}}}}"
             ]
           ]
         }
@@ -1836,7 +1829,7 @@
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
           },
-          "S3Key": "2193a25ff75cc46e04bf6963d6a985da2595446776881f5a6e4b150c35f5a8a3.zip"
+          "S3Key": "8da7d8f04e4cc1d6015e37c9f1b946082bf87d691c34ba7e0cd3c5930103514a.zip"
         },
         "Role": {
           "Fn::GetAtt": [

@@ -48,7 +48,7 @@ export class EventStorage extends Construct {
       },
       sortKey: {
         name: 'SK',
-        type: AttributeType.NUMBER,
+        type: AttributeType.STRING,
       },
       removalPolicy: RemovalPolicy.DESTROY,
       encryption: TableEncryption.AWS_MANAGED,

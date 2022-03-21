@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { GoFunction } from '@aws-cdk/aws-lambda-go-alpha';
-import { Aws, RemovalPolicy } from 'aws-cdk-lib';
+import { Aws, Duration, RemovalPolicy } from 'aws-cdk-lib';
 
 import { ArnPrincipal, Effect, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IStream } from 'aws-cdk-lib/aws-kinesis';
@@ -59,6 +59,7 @@ export class S3FirehoseDelivery extends Construct {
     this.kinesisDeliveryLambda = new GoFunction(this, 'firehose-enricher-lambdas', {
       entry: path.resolve(__dirname, '../lambdas/cmd/firehose-enricher'),
       logRetention: RetentionDays.THREE_DAYS,
+      timeout: Duration.minutes(5),
     });
 
     props.bucket.addToResourcePolicy(

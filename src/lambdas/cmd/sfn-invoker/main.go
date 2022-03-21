@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/aws/aws-lambda-go/cfn"
+	"github.com/aws/aws-sdk-go-v2/aws"
 	log "github.com/sirupsen/logrus"
 	"os"
 	"time"
@@ -12,6 +13,7 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/sfn"
+	stepFn "github.com/bcgalvin/cdk-kinesis-firehose-athena/internal/pkg/sfn"
 )
 
 type StepFunctionInput struct {
@@ -19,7 +21,7 @@ type StepFunctionInput struct {
 	Timestamp int64  `json:"timestamp"`
 }
 
-func HandleRequest(ctx context.Context, event cfn.Event) (string, error) {
+func HandleRequest(ctx context.Context, event cfn.Event) (stepFn.Result, error) {
 	var taskId string
 	var found bool
 	taskId, found = event.ResourceProperties["taskId"].(string)
@@ -60,12 +62,23 @@ func HandleRequest(ctx context.Context, event cfn.Event) (string, error) {
 	result, err := client.StartExecution(ctx, input)
 	if err != nil {
 		log.Printf("StartExecution error: %v\n", err)
-		return "", err
+		return stepFn.Result{
+			Failure: &sfn.SendTaskFailureInput{
+				Error: aws.String(stepFn.GetType(err)),
+				Cause: aws.String(err.Error()),
+			},
+		}, err
 	} else {
 		log.Printf("Started step function executed: %v\n", result)
 	}
 
-	return fmt.Sprintf("Started step function execution id %s!", stateMachineExcutionName), nil
+	output := fmt.Sprintf("{\"\taskId\": \"%s\"", stateMachineExcutionName)
+
+	return stepFn.Result{
+		Success: &sfn.SendTaskSuccessInput{
+			Output: aws.String(output),
+		},
+	}, nil
 }
 
 func main() {
