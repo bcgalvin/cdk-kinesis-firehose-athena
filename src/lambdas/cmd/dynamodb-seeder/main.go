@@ -7,35 +7,23 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/sfn"
+	"github.com/bcgalvin/cdk-kinesis-firehose-athena/internal/pkg/domain"
 	"github.com/bcgalvin/cdk-kinesis-firehose-athena/internal/pkg/dynamo"
 	"github.com/bcgalvin/cdk-kinesis-firehose-athena/internal/pkg/s3"
+	stepFn "github.com/bcgalvin/cdk-kinesis-firehose-athena/internal/pkg/sfn"
 	log "github.com/sirupsen/logrus"
 	"os"
-	"reflect"
 )
 
-type Result struct {
-	Success *sfn.SendTaskSuccessInput
-	Failure *sfn.SendTaskFailureInput
-}
-
-func getType(myvar interface{}) string {
-	t := reflect.TypeOf(myvar)
-	if t.Kind() == reflect.Ptr {
-		return t.Elem().Name()
-	}
-	return t.Name()
-}
-
-func handleRequest(ctx context.Context) (Result, error) {
+func handleRequest(ctx context.Context) (stepFn.Result, error) {
 	log.SetFormatter(&log.JSONFormatter{})
 	s3BucketName := os.Getenv("S3_BUCKET")
 	ddbTableName := os.Getenv("DDB_TABLE")
 	cfg, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
-		return Result{
+		return stepFn.Result{
 			Failure: &sfn.SendTaskFailureInput{
-				Error: aws.String(getType(err)),
+				Error: aws.String(stepFn.GetType(err)),
 				Cause: aws.String(err.Error()),
 			},
 		}, err
@@ -46,18 +34,18 @@ func handleRequest(ctx context.Context) (Result, error) {
 
 	err = s3Client.DownloadFile(s3BucketName, "data/counties.csv", "/tmp/counties.csv")
 	if err != nil {
-		return Result{
+		return stepFn.Result{
 			Failure: &sfn.SendTaskFailureInput{
-				Error: aws.String(getType(err)),
+				Error: aws.String(stepFn.GetType(err)),
 				Cause: aws.String(err.Error()),
 			},
 		}, err
 	}
 	f, err := os.Open("/tmp/counties.csv")
 	if err != nil {
-		return Result{
+		return stepFn.Result{
 			Failure: &sfn.SendTaskFailureInput{
-				Error: aws.String(getType(err)),
+				Error: aws.String(stepFn.GetType(err)),
 				Cause: aws.String(err.Error()),
 			},
 		}, err
@@ -67,11 +55,11 @@ func handleRequest(ctx context.Context) (Result, error) {
 
 	records, err := readData("/tmp/counties.csv")
 	log.Printf("records: %+v\n", records)
-	var counties []*dynamo.County
+	var counties []*domain.County
 
 	for _, record := range records {
 
-		county := dynamo.County{
+		county := domain.County{
 			CensusId:        record[0],
 			State:           record[1],
 			County:          record[2],
@@ -116,14 +104,14 @@ func handleRequest(ctx context.Context) (Result, error) {
 
 	err = ddbClient.WriteCounties(ctx, counties, ddbTableName)
 	if err != nil {
-		return Result{
+		return stepFn.Result{
 			Failure: &sfn.SendTaskFailureInput{
-				Error: aws.String(getType(err)),
+				Error: aws.String(stepFn.GetType(err)),
 				Cause: aws.String(err.Error()),
 			},
 		}, err
 	}
-	return Result{
+	return stepFn.Result{
 		Success: &sfn.SendTaskSuccessInput{
 			Output: aws.String("Success"),
 		},

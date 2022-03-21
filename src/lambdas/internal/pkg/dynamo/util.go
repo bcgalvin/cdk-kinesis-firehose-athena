@@ -2,6 +2,7 @@ package dynamo
 
 import (
 	"fmt"
+	"github.com/bcgalvin/cdk-kinesis-firehose-athena/internal/pkg/domain"
 	"math/rand"
 	"time"
 )
@@ -31,7 +32,7 @@ func zipKeys(a []string, b []string) ([]stringTuple, error) {
 	return keys, nil
 }
 
-func chunkBy(items []*County, size int) (chunks [][]*County) {
+func chunkBy(items []*domain.County, size int) (chunks [][]*domain.County) {
 	for size < len(items) {
 		items, chunks = items[size:], append(chunks, items[0:size:size])
 	}

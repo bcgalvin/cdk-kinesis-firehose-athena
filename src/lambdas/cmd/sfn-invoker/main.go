@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/aws/aws-lambda-go/cfn"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"os"
 	"time"
 
