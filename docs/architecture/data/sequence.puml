@@ -1,0 +1,12 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+skinparam style strictuml
+autonumber
+
+"S3 Raw Bucket" -> DynamoDb: Data is delivered to DynamoDb \nvia DynamoDbSeeder Lambda
+DynamoDb -> "Kinesis Firehose": Kinesis Stream attached to table\n is used as source for \nKinesis Firehose Delivery
+"Kinesis Firehose" -> "S3 Landing Bucket": Data is streamed to landing bucket \n and is dynamically partitioned by\n year/month/date \n\nThese partitions are extracted from the \ncreatedAt field in the DynamoDb Table
+"S3 Landing Bucket" -> "Glue Crawler": Updates Glue catalogue metadata
+"Glue Crawler" -> "Profit": Data is now available for business users and ELT \nframeworks through athena/redshift spectrum
+
+@enduml
