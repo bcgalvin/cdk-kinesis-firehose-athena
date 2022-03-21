@@ -20,6 +20,7 @@ export class EventStorage extends Construct {
   public readonly stagingBucket: IBucket;
   public readonly stream: IStream;
   public readonly table: ITable;
+  public readonly auditTable: ITable;
 
   constructor(scope: Construct, id: string, props: EventStorageProps) {
     super(scope, id);
@@ -38,6 +39,20 @@ export class EventStorage extends Construct {
       streamName: props?.streamName || undefined,
       encryption: StreamEncryption.MANAGED,
       streamMode: StreamMode.ON_DEMAND,
+    });
+
+    this.auditTable = new Table(this, 'audit-table', {
+      partitionKey: {
+        name: 'PK',
+        type: AttributeType.STRING,
+      },
+      sortKey: {
+        name: 'SK',
+        type: AttributeType.NUMBER,
+      },
+      removalPolicy: RemovalPolicy.DESTROY,
+      encryption: TableEncryption.AWS_MANAGED,
+      billingMode: BillingMode.PAY_PER_REQUEST,
     });
 
     this.table = new Table(this, 'ddb-table', {

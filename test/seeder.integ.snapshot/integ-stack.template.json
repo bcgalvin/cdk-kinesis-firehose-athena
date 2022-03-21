@@ -799,7 +799,7 @@
             "SerdeInfo": {
               "SerializationLibrary": "org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe"
             },
-            "StoredAsSubDirectories": false
+            "StoredAsSubDirectories": true
           },
           "TableType": "EXTERNAL_TABLE"
         }
@@ -1154,7 +1154,7 @@
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
           },
-          "S3Key": "78feb8d6b456088cb914978c40a7f9299a9c03df17d009de40169d1669bb587c.zip"
+          "S3Key": "eff48c63c9c264596bf217518af83b548d94d05752adf618e77c4cd3658f4350.zip"
         },
         "Role": {
           "Fn::GetAtt": [
@@ -1435,7 +1435,7 @@
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
           },
-          "S3Key": "188336e29687fa61a2bfebb9ef04ff9c0bc53a9545795384b2fcce90bda7ec65.zip"
+          "S3Key": "83be770a1f9e2f53fef671b213afc6f4e31b944e3794e76446bd2b91f07a8b09.zip"
         },
         "Role": {
           "Fn::GetAtt": [
@@ -1555,7 +1555,7 @@
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
           },
-          "S3Key": "110549f0838f1f1879d3c2bb0221a70be63920ce3064a44410e3cf17c3f8249b.zip"
+          "S3Key": "82cd90a4b9a8cc2a1fd23cca750ad02fbe8784ba5c9ce08f8eea48d989dfc459.zip"
         },
         "Role": {
           "Fn::GetAtt": [
@@ -1727,7 +1727,7 @@
           "Fn::Join": [
             "",
             [
-              "{\"StartAt\":\"create-ddb-item\",\"States\":{\"create-ddb-item\":{\"Next\":\"seed-ddb\",\"Type\":\"Task\",\"ResultPath\":null,\"Resource\":\"arn:",
+              "{\"StartAt\":\"Create audit table item\",\"States\":{\"Create audit table item\":{\"Next\":\"seed-ddb\",\"Type\":\"Task\",\"ResultPath\":null,\"Resource\":\"arn:",
               {
                 "Ref": "AWS::Partition"
               },
@@ -1735,7 +1735,7 @@
               {
                 "Ref": "seederconstructseedtaskaudittable8E019259"
               },
-              "\"}},\"seed-ddb\":{\"Next\":\"Execute long running task...wait 30 seconds\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"TimeoutSeconds\":300,\"ResultPath\":null,\"Resource\":\"arn:",
+              "\"}},\"seed-ddb\":{\"Next\":\"Wait 60 seconds for seeder\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"TimeoutSeconds\":300,\"ResultPath\":null,\"Resource\":\"arn:",
               {
                 "Ref": "AWS::Partition"
               },
@@ -1746,7 +1746,7 @@
                   "Arn"
                 ]
               },
-              "\",\"Payload.$\":\"$\"}},\"Execute long running task...wait 30 seconds\":{\"Type\":\"Wait\",\"Seconds\":30,\"Next\":\"crawler-starter\"},\"crawler-starter\":{\"Next\":\"UpdateDynamoTaskItem\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"TimeoutSeconds\":300,\"ResultPath\":null,\"Resource\":\"arn:",
+              "\",\"Payload.$\":\"$\"}},\"Wait 60 seconds for seeder\":{\"Type\":\"Wait\",\"Seconds\":60,\"Next\":\"crawler-starter\"},\"crawler-starter\":{\"Next\":\"Wait 60 seconds for crawler\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"TimeoutSeconds\":300,\"ResultPath\":null,\"Resource\":\"arn:",
               {
                 "Ref": "AWS::Partition"
               },
@@ -1757,7 +1757,7 @@
                   "Arn"
                 ]
               },
-              "\",\"Payload.$\":\"$\"}},\"UpdateDynamoTaskItem\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+              "\",\"Payload.$\":\"$\"}},\"Wait 60 seconds for crawler\":{\"Type\":\"Wait\",\"Seconds\":60,\"Next\":\"UpdateDynamoTaskItem\"},\"UpdateDynamoTaskItem\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
               {
                 "Ref": "AWS::Partition"
               },
@@ -1836,7 +1836,7 @@
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
           },
-          "S3Key": "65b23c854fa8661e408b0fa68eb133426e8ebad73226a34557ba0a6ddc75724a.zip"
+          "S3Key": "2193a25ff75cc46e04bf6963d6a985da2595446776881f5a6e4b150c35f5a8a3.zip"
         },
         "Role": {
           "Fn::GetAtt": [

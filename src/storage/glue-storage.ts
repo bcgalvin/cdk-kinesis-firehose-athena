@@ -183,6 +183,7 @@ export class GlueStorage extends Construct {
         },
       ],
       dataFormat: DataFormat.PARQUET,
+      storedAsSubDirectories: true,
       s3Prefix: props.prefix,
       partitionKeys: [
         {

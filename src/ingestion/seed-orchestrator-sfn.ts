@@ -1,77 +1,67 @@
 import * as path from 'path';
 import { GoFunction } from '@aws-cdk/aws-lambda-go-alpha';
-import { Aws, CustomResource, Duration, RemovalPolicy } from 'aws-cdk-lib';
-import { AttributeType, BillingMode, ITable, Table } from 'aws-cdk-lib/aws-dynamodb';
+import { Aws, CustomResource, Duration } from 'aws-cdk-lib';
+import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { CfnTrigger } from 'aws-cdk-lib/aws-glue';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
 import { JsonPath, StateMachine, Wait, WaitTime } from 'aws-cdk-lib/aws-stepfunctions';
-import {
-  DynamoAttributeValue,
-  DynamoPutItem,
-  DynamoUpdateItem,
-  LambdaInvoke,
-} from 'aws-cdk-lib/aws-stepfunctions-tasks';
+import { DynamoAttributeValue, DynamoPutItem, LambdaInvoke } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import { Provider } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 
 export interface SfnSeedTaskProps {
   bucket: IBucket;
+  auditTable: ITable;
   table: ITable;
   crawlerName: string;
 }
 
 export class SfnSeedTask extends Construct {
-  public readonly table: ITable;
-
   constructor(scope: Construct, id: string, props: SfnSeedTaskProps) {
     super(scope, id);
 
-    const auditTable = new Table(this, 'audit-table', {
-      partitionKey: {
-        name: 'taskId',
-        type: AttributeType.STRING,
-      },
-      sortKey: {
-        name: 'timestamp',
-        type: AttributeType.NUMBER,
-      },
-      tableName: 'Tasks',
-      billingMode: BillingMode.PAY_PER_REQUEST,
-      removalPolicy: RemovalPolicy.DESTROY,
-    });
-
-    const logStartTask = new DynamoPutItem(this, 'create-ddb-item', {
+    const logStartTask = new DynamoPutItem(this, 'Log Run Start', {
       item: {
-        taskId: DynamoAttributeValue.fromString(JsonPath.stringAt('$.taskId')),
-        timestamp: DynamoAttributeValue.numberFromString(JsonPath.stringAt(`States.Format('{}', ${'$.timestamp'})`)),
-        Status: DynamoAttributeValue.fromString('STARTED'),
+        PK: DynamoAttributeValue.fromString(JsonPath.stringAt('$.taskId')),
+        SK: DynamoAttributeValue.numberFromString(JsonPath.stringAt(`States.Format('{}', ${'$.timestamp'})`)),
+        Status: DynamoAttributeValue.fromString('TASK RUN START'),
       },
-      table: auditTable,
+      table: props.auditTable,
       resultPath: JsonPath.DISCARD,
     });
 
-    const waitX = new Wait(this, 'Execute long running task...wait 30 seconds', {
-      time: WaitTime.duration(Duration.seconds(30)),
+    const logSeedSuccessTask = new DynamoPutItem(this, 'Log Seed Success', {
+      item: {
+        PK: DynamoAttributeValue.fromString(JsonPath.stringAt('$.taskId')),
+        SK: DynamoAttributeValue.numberFromString(JsonPath.stringAt(`States.Format('{}', ${'$.timestamp'})`)),
+        Status: DynamoAttributeValue.fromString('DYNAMO SEED SUCCESS'),
+      },
+      table: props.auditTable,
+      resultPath: JsonPath.DISCARD,
     });
 
-    const logEndTask = new DynamoUpdateItem(this, 'UpdateDynamoTaskItem', {
-      key: {
-        taskId: DynamoAttributeValue.fromString(JsonPath.stringAt('$.taskId')),
-        timestamp: DynamoAttributeValue.numberFromString(JsonPath.stringAt(`States.Format('{}', ${'$.timestamp'})`)),
+    const logCrawlSuccessTask = new DynamoPutItem(this, 'Log Crawl Success', {
+      item: {
+        PK: DynamoAttributeValue.fromString(JsonPath.stringAt('$.taskId')),
+        SK: DynamoAttributeValue.numberFromString(JsonPath.stringAt(`States.Format('{}', ${'$.timestamp'})`)),
+        Status: DynamoAttributeValue.fromString('CRAWL SUCCESS'),
       },
-      table: auditTable,
-      expressionAttributeValues: {
-        ':val': DynamoAttributeValue.fromString('Done'),
+      table: props.auditTable,
+      resultPath: JsonPath.DISCARD,
+    });
+
+    const logEndTask = new DynamoPutItem(this, 'Log Run Success', {
+      item: {
+        PK: DynamoAttributeValue.fromString(JsonPath.stringAt('$.taskId')),
+        SK: DynamoAttributeValue.numberFromString(JsonPath.stringAt(`States.Format('{}', ${'$.timestamp'})`)),
+        Status: DynamoAttributeValue.fromString('TASK RUN SUCCESS'),
       },
-      expressionAttributeNames: {
-        '#s': 'Status',
-      },
-      updateExpression: 'SET #s = :val',
+      table: props.auditTable,
+      resultPath: JsonPath.DISCARD,
     });
 
     // Functions
-
     const ddbSeeder = new GoFunction(this, 'ddb-seeder', {
       entry: path.resolve(__dirname, '../lambdas/cmd/dynamodb-seeder'),
       environment: {
@@ -96,6 +86,7 @@ export class SfnSeedTask extends Construct {
       environment: {
         GLUE_TRIGGER_NAME: crawlerTrigger.ref,
       },
+      timeout: Duration.minutes(5),
     });
 
     const ddbSeederTask = new LambdaInvoke(this, 'seed-ddb', {
@@ -110,7 +101,22 @@ export class SfnSeedTask extends Construct {
       timeout: Duration.minutes(5),
     });
 
-    const definition = logStartTask.next(ddbSeederTask).next(waitX).next(crawlerStarterTask).next(logEndTask);
+    const definition = logStartTask
+      .next(ddbSeederTask)
+      .next(logSeedSuccessTask)
+      .next(
+        new Wait(this, 'Wait 60 seconds for seeder', {
+          time: WaitTime.duration(Duration.seconds(60)),
+        }),
+      )
+      .next(crawlerStarterTask)
+      .next(
+        new Wait(this, 'Wait 60 seconds for crawler', {
+          time: WaitTime.duration(Duration.seconds(60)),
+        }),
+      )
+      .next(logCrawlSuccessTask)
+      .next(logEndTask);
     const stateMachine = new StateMachine(this, 'StateMachine', {
       definition,
     });
@@ -130,22 +136,9 @@ export class SfnSeedTask extends Construct {
       }),
     );
 
-    // const crawlerStatusCheckerTimeout = Duration.minutes(5);
-    // const crawlerStatusChecker = new GoFunction(this, 'CrawlerStatusChecker', {
-    //   entry: path.resolve(__dirname, '../lambdas/cmd/crawler-status-checker'),
-    //   timeout: crawlerStatusCheckerTimeout,
-    // });
-    // crawlerStatusChecker.addToRolePolicy(
-    //   new PolicyStatement({
-    //     effect: Effect.ALLOW,
-    //     actions: ['glue:GetCrawler'],
-    //     resources: [`arn:${Aws.PARTITION}:glue:${Aws.REGION}:${Aws.ACCOUNT_ID}:crawler/seed-crawler`],
-    //   }),
-    // );
-
     props.bucket.grantRead(ddbSeeder);
     props.table.grantWriteData(ddbSeeder);
-    auditTable.grantWriteData(stateMachine);
+    props.auditTable.grantWriteData(stateMachine);
     stateMachine.grantStartExecution(invokeStepFunction);
 
     const sfnStarterProvider = new Provider(this, 'CrawlerStarterProvider', {
@@ -159,7 +152,5 @@ export class SfnSeedTask extends Construct {
         taskId: 'seed-dynamo',
       },
     });
-
-    this.table = auditTable;
   }
 }

@@ -34,6 +34,7 @@ export class DynamoAthenaSeeder extends Construct {
     new SfnSeedTask(this, 'seed-task', {
       bucket: eventStorage.rawBucket,
       table: eventStorage.table,
+      auditTable: eventStorage.auditTable,
       crawlerName: props.crawlerName,
     });
   }

@@ -49,7 +49,7 @@ func chunkKeys(items []stringTuple, size int) (chunks [][]stringTuple) {
 }
 
 func randate() time.Time {
-	min := time.Date(2022, 1, 0, 0, 0, 0, 0, time.UTC).Unix()
+	min := time.Date(2022, 3, 0, 0, 0, 0, 0, time.UTC).Unix()
 	max := time.Date(2022, 3, 23, 0, 0, 0, 0, time.UTC).Unix()
 	delta := max - min
 
