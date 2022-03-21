@@ -2,4 +2,3 @@
 
 ---
 
-![Alt text here](template.svg)
