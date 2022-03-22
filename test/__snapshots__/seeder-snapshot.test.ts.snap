@@ -404,7 +404,7 @@ Object {
           },
           Object {
             "AttributeName": "SK",
-            "AttributeType": "N",
+            "AttributeType": "S",
           },
         ],
         "BillingMode": "PAY_PER_REQUEST",
@@ -1520,7 +1520,7 @@ Object {
           "S3Bucket": Object {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "8e2f935d47210612cee9bde073fb3c60f01a33e6be065cf46fc77df60d6db29d.zip",
+          "S3Key": "26d20a87baa110db27310b9d847da66902c0fcbaf7ee59d3b5726a574bd61c15.zip",
         },
         "Handler": "bootstrap",
         "Role": Object {
@@ -1530,6 +1530,7 @@ Object {
           ],
         },
         "Runtime": "provided.al2",
+        "Timeout": 300,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -1736,7 +1737,7 @@ Object {
           "S3Bucket": Object {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "5184c6c5ee0f13a02f0f082aebb31519a38bf39238be0eb70657858774a876bd.zip",
+          "S3Key": "03f8f8919d0d742b2e83d3ab350ba721d8204f0bd2ec896ec46a46a7d546f0db.zip",
         },
         "Environment": Object {
           "Variables": Object {
@@ -1951,7 +1952,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":states:::dynamodb:putItem\\",\\"Parameters\\":{\\"Item\\":{\\"PK\\":{\\"S.$\\":\\"$.taskId\\"},\\"SK\\":{\\"N.$\\":\\"States.Format('{}', $.timestamp)\\"},\\"Status\\":{\\"S\\":\\"TASK RUN START\\"}},\\"TableName\\":\\"",
+              ":states:::dynamodb:putItem\\",\\"Parameters\\":{\\"Item\\":{\\"PK\\":{\\"S.$\\":\\"$.taskId\\"},\\"SK\\":{\\"S.$\\":\\"States.Format('{}', $.timestamp)\\"},\\"Status\\":{\\"S\\":\\"TASK RUN START\\"}},\\"TableName\\":\\"",
               Object {
                 "Ref": "seederconstructeventstorageaudittableF928A6F1",
               },
@@ -1966,15 +1967,15 @@ Object {
                   "Arn",
                 ],
               },
-              "\\",\\"Payload.$\\":\\"$\\"}},\\"Log Seed Success\\":{\\"Next\\":\\"Wait 60 seconds for seeder\\",\\"Type\\":\\"Task\\",\\"ResultPath\\":null,\\"Resource\\":\\"arn:",
+              "\\",\\"Payload.$\\":\\"$\\"}},\\"Log Seed Success\\":{\\"Next\\":\\"Wait 5 minutes for seeder\\",\\"Type\\":\\"Task\\",\\"ResultPath\\":null,\\"Resource\\":\\"arn:",
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":states:::dynamodb:putItem\\",\\"Parameters\\":{\\"Item\\":{\\"PK\\":{\\"S.$\\":\\"$.taskId\\"},\\"SK\\":{\\"N.$\\":\\"States.Format('{}', $.timestamp)\\"},\\"Status\\":{\\"S\\":\\"DYNAMO SEED SUCCESS\\"}},\\"TableName\\":\\"",
+              ":states:::dynamodb:putItem\\",\\"Parameters\\":{\\"Item\\":{\\"PK\\":{\\"S.$\\":\\"$.taskId\\"},\\"SK\\":{\\"S\\":\\"Tue Mar 22 2022 10:19:54 GMT-0700 (Pacific Daylight Time)\\"},\\"Status\\":{\\"S\\":\\"DYNAMO SEED SUCCESS\\"}},\\"TableName\\":\\"",
               Object {
                 "Ref": "seederconstructeventstorageaudittableF928A6F1",
               },
-              "\\"}},\\"Wait 60 seconds for seeder\\":{\\"Type\\":\\"Wait\\",\\"Seconds\\":60,\\"Next\\":\\"crawler-starter\\"},\\"crawler-starter\\":{\\"Next\\":\\"Wait 60 seconds for crawler\\",\\"Retry\\":[{\\"ErrorEquals\\":[\\"Lambda.ServiceException\\",\\"Lambda.AWSLambdaException\\",\\"Lambda.SdkClientException\\"],\\"IntervalSeconds\\":2,\\"MaxAttempts\\":6,\\"BackoffRate\\":2}],\\"Type\\":\\"Task\\",\\"TimeoutSeconds\\":300,\\"ResultPath\\":null,\\"Resource\\":\\"arn:",
+              "\\"}},\\"Wait 5 minutes for seeder\\":{\\"Type\\":\\"Wait\\",\\"Seconds\\":300,\\"Next\\":\\"crawler-starter\\"},\\"crawler-starter\\":{\\"Next\\":\\"Wait 5 minutes for crawler\\",\\"Retry\\":[{\\"ErrorEquals\\":[\\"Lambda.ServiceException\\",\\"Lambda.AWSLambdaException\\",\\"Lambda.SdkClientException\\"],\\"IntervalSeconds\\":2,\\"MaxAttempts\\":6,\\"BackoffRate\\":2}],\\"Type\\":\\"Task\\",\\"TimeoutSeconds\\":300,\\"ResultPath\\":null,\\"Resource\\":\\"arn:",
               Object {
                 "Ref": "AWS::Partition",
               },
@@ -1985,11 +1986,11 @@ Object {
                   "Arn",
                 ],
               },
-              "\\",\\"Payload.$\\":\\"$\\"}},\\"Wait 60 seconds for crawler\\":{\\"Type\\":\\"Wait\\",\\"Seconds\\":60,\\"Next\\":\\"Log Crawl Success\\"},\\"Log Crawl Success\\":{\\"Next\\":\\"Log Run Success\\",\\"Type\\":\\"Task\\",\\"ResultPath\\":null,\\"Resource\\":\\"arn:",
+              "\\",\\"Payload.$\\":\\"$\\"}},\\"Wait 5 minutes for crawler\\":{\\"Type\\":\\"Wait\\",\\"Seconds\\":300,\\"Next\\":\\"Log Crawl Success\\"},\\"Log Crawl Success\\":{\\"Next\\":\\"Log Run Success\\",\\"Type\\":\\"Task\\",\\"ResultPath\\":null,\\"Resource\\":\\"arn:",
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":states:::dynamodb:putItem\\",\\"Parameters\\":{\\"Item\\":{\\"PK\\":{\\"S.$\\":\\"$.taskId\\"},\\"SK\\":{\\"N.$\\":\\"States.Format('{}', $.timestamp)\\"},\\"Status\\":{\\"S\\":\\"CRAWL SUCCESS\\"}},\\"TableName\\":\\"",
+              ":states:::dynamodb:putItem\\",\\"Parameters\\":{\\"Item\\":{\\"PK\\":{\\"S.$\\":\\"$.taskId\\"},\\"SK\\":{\\"S\\":\\"Tue Mar 22 2022 10:19:54 GMT-0700 (Pacific Daylight Time)\\"},\\"Status\\":{\\"S\\":\\"CRAWL SUCCESS\\"}},\\"TableName\\":\\"",
               Object {
                 "Ref": "seederconstructeventstorageaudittableF928A6F1",
               },
@@ -1997,7 +1998,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":states:::dynamodb:putItem\\",\\"Parameters\\":{\\"Item\\":{\\"PK\\":{\\"S.$\\":\\"$.taskId\\"},\\"SK\\":{\\"N.$\\":\\"States.Format('{}', $.timestamp)\\"},\\"Status\\":{\\"S\\":\\"TASK RUN SUCCESS\\"}},\\"TableName\\":\\"",
+              ":states:::dynamodb:putItem\\",\\"Parameters\\":{\\"Item\\":{\\"PK\\":{\\"S.$\\":\\"$.taskId\\"},\\"SK\\":{\\"S\\":\\"Tue Mar 22 2022 10:19:54 GMT-0700 (Pacific Daylight Time)\\"},\\"Status\\":{\\"S\\":\\"TASK RUN SUCCESS\\"}},\\"TableName\\":\\"",
               Object {
                 "Ref": "seederconstructeventstorageaudittableF928A6F1",
               },
@@ -2133,7 +2134,7 @@ Object {
           "S3Bucket": Object {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "6645cc1adc8ba0716523267816f2fb87ab7df2c96acb231d94fd3f11e0f2eef4.zip",
+          "S3Key": "046e2345fed1e19463eae67df3b70aa85bc6335350a14587e4d6b5dc120c6b73.zip",
         },
         "Environment": Object {
           "Variables": Object {
@@ -2277,7 +2278,7 @@ Object {
           "S3Bucket": Object {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "acc91e9ae3c6f1842752adad772b1095aa8f4248ca537ba2cb9628a8aa97e489.zip",
+          "S3Key": "0cba852a5216d2a2ec2c038bc55d01f4d677fe2ecf01b645bf11bb0fe89d7c64.zip",
         },
         "Environment": Object {
           "Variables": Object {
