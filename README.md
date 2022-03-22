@@ -25,6 +25,10 @@ provided by the CDK.
 The example data generation script can be found under `assets/data` and a bit more information can be found
 under [docs/architecture/data ](https://github.com/bcgalvin/cdk-kinesis-firehose-athena/tree/main/docs/architecture/data)
 
+#### Dynamo
+
+![](./docs/images/dynamo.png)
+
 #### S3
 
 ![](./docs/images/s3.png)
