@@ -36,12 +36,16 @@ chunks of that size and a goroutine is spawned to process each resulting slice.
 
 #### 2. Kinesis
 
+![](./docs/images/kinesis.png)
 ![](./docs/images/s3.png)
+<div style="text-align: center;"><i>Dynamic partitions generated from the createdAt field in Dynamodb</i></div>   
+
+#### 3. Glue
+
+![](./docs/images/glue.png)
+![](./docs/images/glue-table.png)
+<div style="text-align: center;"><i>The table in Athena now queryable to end users</i></div>   
 
 #### Step Function
 
 ![](./docs/images/step-function.png)
-
-#### Athena Table
-
-![](./docs/images/glue-table.png)
