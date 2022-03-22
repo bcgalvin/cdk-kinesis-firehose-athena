@@ -14,7 +14,7 @@ uses `year`, `month`, `date` based on the createdAt field in the example dataset
 ![](./docs/images/arch.png)
 ---
 
-#### Setup
+#### 1. Setup
 
 ![](./docs/images/setup.png)
 
@@ -22,14 +22,19 @@ To simulate an active application, data is seeded to the DynamoDB table after th
 the [s3 bucket deployment construct](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_s3_deployment.BucketDeployment.html)
 provided by the CDK.
 
-The example data generation script can be found under `assets/data` and a bit more information can be found
-under [docs/architecture/data ](https://github.com/bcgalvin/cdk-kinesis-firehose-athena/tree/main/docs/architecture/data)
+The example data generation script can be found under `assets/data` and a bit more information on the dynamodb table
+definition can be found
+under [docs/architecture/data](https://github.com/bcgalvin/cdk-kinesis-firehose-athena/tree/main/docs/architecture/data)
+.
 
-#### Dynamo
+The DynamoDB Seeder lambda function simply downloads the example data from the raw s3 bucket and then writes to dynamodb
+via the `BatchWriteItem` operation. This api call accepts up to 25 records at a time so the input data is split into
+chunks of that size and a goroutine is spawned to process each resulting slice.
 
 ![](./docs/images/dynamo.png)
+<div style="text-align: center;"><i>The resulting dynamo table</i></div>   
 
-#### S3
+#### 2. Kinesis
 
 ![](./docs/images/s3.png)
 
