@@ -1,4 +1,4 @@
-j# CDK Kinesis Firehose Athena
+# CDK Kinesis Firehose Athena
 
 ---
 Example cdk library demonstrating how to sync data originating from DynamoDB to a data warehouse using Kinesis Data
