@@ -1185,7 +1185,7 @@
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
           },
-          "S3Key": "c45d1eae0863d9f1eab02df907d833887c6ff5224faddedf82ebad3a99fdd813.zip"
+          "S3Key": "4264d4abfee55984e8b059e3dc2e59a8fd3948289efc77359fc9efc3f967b9ce.zip"
         },
         "Role": {
           "Fn::GetAtt": [
@@ -1438,7 +1438,7 @@
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
           },
-          "S3Key": "73e8c150e5c16282c42b28943c1e3267bd6e75f0c63d6e677a88aad39535ffaf.zip"
+          "S3Key": "af2ead5a46b6ca5db194d922348604541308f75b828ddc4b8401ce9ddfefe92d.zip"
         },
         "Role": {
           "Fn::GetAtt": [
@@ -1558,7 +1558,7 @@
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
           },
-          "S3Key": "409fb9a1e1c0d3b93270e29d9c8c8cb5f89ce80ddec04346992e85eb5d6bead5.zip"
+          "S3Key": "fe241257bfdad2e867f4f5615f62b55a83886d74485131efc873edcc26bc4737.zip"
         },
         "Role": {
           "Fn::GetAtt": [
@@ -1727,7 +1727,7 @@
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::dynamodb:putItem\",\"Parameters\":{\"Item\":{\"PK\":{\"S.$\":\"$.taskId\"},\"SK\":{\"S\":\"Mon Mar 21 2022 16:18:48 GMT-0700 (Pacific Daylight Time)\"},\"Status\":{\"S\":\"DYNAMO SEED SUCCESS\"}},\"TableName\":\"",
+              ":states:::dynamodb:putItem\",\"Parameters\":{\"Item\":{\"PK\":{\"S.$\":\"$.taskId\"},\"SK\":{\"S\":\"Mon Mar 21 2022 18:32:58 GMT-0700 (Pacific Daylight Time)\"},\"Status\":{\"S\":\"DYNAMO SEED SUCCESS\"}},\"TableName\":\"",
               {
                 "Ref": "seederconstructeventstorageaudittableF928A6F1"
               },
@@ -1746,7 +1746,7 @@
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::dynamodb:putItem\",\"Parameters\":{\"Item\":{\"PK\":{\"S.$\":\"$.taskId\"},\"SK\":{\"S\":\"Mon Mar 21 2022 16:18:48 GMT-0700 (Pacific Daylight Time)\"},\"Status\":{\"S\":\"CRAWL SUCCESS\"}},\"TableName\":\"",
+              ":states:::dynamodb:putItem\",\"Parameters\":{\"Item\":{\"PK\":{\"S.$\":\"$.taskId\"},\"SK\":{\"S\":\"Mon Mar 21 2022 18:32:58 GMT-0700 (Pacific Daylight Time)\"},\"Status\":{\"S\":\"CRAWL SUCCESS\"}},\"TableName\":\"",
               {
                 "Ref": "seederconstructeventstorageaudittableF928A6F1"
               },
@@ -1754,7 +1754,7 @@
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::dynamodb:putItem\",\"Parameters\":{\"Item\":{\"PK\":{\"S.$\":\"$.taskId\"},\"SK\":{\"S\":\"Mon Mar 21 2022 16:18:48 GMT-0700 (Pacific Daylight Time)\"},\"Status\":{\"S\":\"TASK RUN SUCCESS\"}},\"TableName\":\"",
+              ":states:::dynamodb:putItem\",\"Parameters\":{\"Item\":{\"PK\":{\"S.$\":\"$.taskId\"},\"SK\":{\"S\":\"Mon Mar 21 2022 18:32:58 GMT-0700 (Pacific Daylight Time)\"},\"Status\":{\"S\":\"TASK RUN SUCCESS\"}},\"TableName\":\"",
               {
                 "Ref": "seederconstructeventstorageaudittableF928A6F1"
               },
@@ -1829,7 +1829,7 @@
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
           },
-          "S3Key": "4f7f541efe4e0ecc1f07579a4d3564d5064ed5c5a60197b069e05355cad29d1e.zip"
+          "S3Key": "0cd341694d7421d8da93ba275e07225b49efacb14406a56a1dcaaa08bd0b7a9d.zip"
         },
         "Role": {
           "Fn::GetAtt": [
