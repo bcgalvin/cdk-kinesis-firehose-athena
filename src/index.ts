@@ -3,9 +3,9 @@ import { S3FirehoseDelivery, SfnSeedTask } from './ingestion';
 import { EventStorage, GlueStorage } from './storage';
 
 export interface DynamoAthenaSeederProps {
-  dataPrefix: string;
-  projectName: string;
-  crawlerName: string;
+  readonly dataPrefix: string;
+  readonly projectName: string;
+  readonly crawlerName: string;
 }
 
 export class DynamoAthenaSeeder extends Construct {

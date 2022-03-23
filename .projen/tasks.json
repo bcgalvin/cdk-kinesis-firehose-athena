@@ -271,25 +271,25 @@
           "exec": "yarn upgrade npm-check-updates"
         },
         {
-          "exec": "npm-check-updates --dep dev --upgrade --target=minor --reject='@aws-cdk/aws-glue-alpha,@aws-cdk/aws-kinesisfirehose-destinations-alpha,@aws-cdk/aws-lambda-go-alpha,aws-cdk-lib,constructs,projen'"
+          "exec": "npm-check-updates --dep dev --upgrade --target=minor --reject='@aws-cdk/aws-glue-alpha,@aws-cdk/aws-kinesisfirehose-alpha,@aws-cdk/aws-kinesisfirehose-destinations-alpha,@aws-cdk/aws-lambda-go-alpha,aws-cdk-lib,constructs,projen'"
         },
         {
-          "exec": "npm-check-updates --dep optional --upgrade --target=minor --reject='@aws-cdk/aws-glue-alpha,@aws-cdk/aws-kinesisfirehose-destinations-alpha,@aws-cdk/aws-lambda-go-alpha,aws-cdk-lib,constructs,projen'"
+          "exec": "npm-check-updates --dep optional --upgrade --target=minor --reject='@aws-cdk/aws-glue-alpha,@aws-cdk/aws-kinesisfirehose-alpha,@aws-cdk/aws-kinesisfirehose-destinations-alpha,@aws-cdk/aws-lambda-go-alpha,aws-cdk-lib,constructs,projen'"
         },
         {
-          "exec": "npm-check-updates --dep peer --upgrade --target=minor --reject='@aws-cdk/aws-glue-alpha,@aws-cdk/aws-kinesisfirehose-destinations-alpha,@aws-cdk/aws-lambda-go-alpha,aws-cdk-lib,constructs,projen'"
+          "exec": "npm-check-updates --dep peer --upgrade --target=minor --reject='@aws-cdk/aws-glue-alpha,@aws-cdk/aws-kinesisfirehose-alpha,@aws-cdk/aws-kinesisfirehose-destinations-alpha,@aws-cdk/aws-lambda-go-alpha,aws-cdk-lib,constructs,projen'"
         },
         {
-          "exec": "npm-check-updates --dep prod --upgrade --target=minor --reject='@aws-cdk/aws-glue-alpha,@aws-cdk/aws-kinesisfirehose-destinations-alpha,@aws-cdk/aws-lambda-go-alpha,aws-cdk-lib,constructs,projen'"
+          "exec": "npm-check-updates --dep prod --upgrade --target=minor --reject='@aws-cdk/aws-glue-alpha,@aws-cdk/aws-kinesisfirehose-alpha,@aws-cdk/aws-kinesisfirehose-destinations-alpha,@aws-cdk/aws-lambda-go-alpha,aws-cdk-lib,constructs,projen'"
         },
         {
-          "exec": "npm-check-updates --dep bundle --upgrade --target=minor --reject='@aws-cdk/aws-glue-alpha,@aws-cdk/aws-kinesisfirehose-destinations-alpha,@aws-cdk/aws-lambda-go-alpha,aws-cdk-lib,constructs,projen'"
+          "exec": "npm-check-updates --dep bundle --upgrade --target=minor --reject='@aws-cdk/aws-glue-alpha,@aws-cdk/aws-kinesisfirehose-alpha,@aws-cdk/aws-kinesisfirehose-destinations-alpha,@aws-cdk/aws-lambda-go-alpha,aws-cdk-lib,constructs,projen'"
         },
         {
           "exec": "yarn install --check-files"
         },
         {
-          "exec": "yarn upgrade @aws-cdk/aws-glue-alpha @aws-cdk/aws-kinesisfirehose-destinations-alpha @aws-cdk/aws-lambda-go-alpha @types/cfn-response @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk-lib aws-cdk constructs eslint-config-prettier eslint-import-resolver-node eslint-import-resolver-typescript eslint-plugin-import eslint-plugin-prettier eslint jest jest-junit jsii jsii-diff jsii-docgen jsii-pacmak json-schema npm-check-updates prettier ts-jest ts-node typescript @aws-cdk/aws-glue-alpha @aws-cdk/aws-kinesisfirehose-destinations-alpha @aws-cdk/aws-lambda-go-alpha aws-cdk-lib constructs @aws-cdk/aws-glue-alpha @aws-cdk/aws-kinesisfirehose-destinations-alpha @aws-cdk/aws-lambda-go-alpha aws-cdk-lib constructs"
+          "exec": "yarn upgrade @aws-cdk/aws-glue-alpha @aws-cdk/aws-kinesisfirehose-alpha @aws-cdk/aws-kinesisfirehose-destinations-alpha @aws-cdk/aws-lambda-go-alpha @types/cfn-response @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk-lib aws-cdk constructs eslint-config-prettier eslint-import-resolver-node eslint-import-resolver-typescript eslint-plugin-import eslint-plugin-prettier eslint jest jest-junit jsii jsii-diff jsii-docgen jsii-pacmak json-schema npm-check-updates prettier ts-jest ts-node typescript @aws-cdk/aws-glue-alpha @aws-cdk/aws-kinesisfirehose-alpha @aws-cdk/aws-kinesisfirehose-destinations-alpha @aws-cdk/aws-lambda-go-alpha aws-cdk-lib constructs @aws-cdk/aws-glue-alpha @aws-cdk/aws-kinesisfirehose-alpha @aws-cdk/aws-kinesisfirehose-destinations-alpha @aws-cdk/aws-lambda-go-alpha aws-cdk-lib constructs"
         },
         {
           "exec": "npx projen"

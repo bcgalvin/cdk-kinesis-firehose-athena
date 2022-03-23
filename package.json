@@ -41,6 +41,7 @@
   },
   "devDependencies": {
     "@aws-cdk/aws-glue-alpha": "2.17.0-alpha.0",
+    "@aws-cdk/aws-kinesisfirehose-alpha": "2.17.0-alpha.0",
     "@aws-cdk/aws-kinesisfirehose-destinations-alpha": "2.17.0-alpha.0",
     "@aws-cdk/aws-lambda-go-alpha": "2.17.0-alpha.0",
     "@types/cfn-response": "^1.0.5",
@@ -61,30 +62,34 @@
     "jest-junit": "^13",
     "jsii": "^1.55.1",
     "jsii-diff": "^1.55.1",
-    "jsii-docgen": "^6.2.3",
+    "jsii-docgen": "^6.2.4",
     "jsii-pacmak": "^1.55.1",
     "json-schema": "^0.4.0",
     "npm-check-updates": "^12",
     "prettier": "^2.6.0",
-    "projen": "^0.53.6",
+    "projen": "^0.53.8",
     "ts-jest": "^27.1.3",
     "ts-node": "^10.7.0",
     "typescript": "^4.6.2"
   },
   "peerDependencies": {
-    "@aws-cdk/aws-glue-alpha": "2.17.0-alpha.0",
-    "@aws-cdk/aws-kinesisfirehose-destinations-alpha": "2.17.0-alpha.0",
-    "@aws-cdk/aws-lambda-go-alpha": "2.17.0-alpha.0",
     "aws-cdk-lib": "^2.17.0",
     "constructs": "^10.0.5"
   },
   "dependencies": {
     "@aws-cdk/aws-glue-alpha": "2.17.0-alpha.0",
+    "@aws-cdk/aws-kinesisfirehose-alpha": "2.17.0-alpha.0",
     "@aws-cdk/aws-kinesisfirehose-destinations-alpha": "2.17.0-alpha.0",
     "@aws-cdk/aws-lambda-go-alpha": "2.17.0-alpha.0",
     "aws-cdk-lib": "2.17.0",
     "constructs": "10.0.5"
   },
+  "bundledDependencies": [
+    "@aws-cdk/aws-glue-alpha",
+    "@aws-cdk/aws-kinesisfirehose-alpha",
+    "@aws-cdk/aws-kinesisfirehose-destinations-alpha",
+    "@aws-cdk/aws-lambda-go-alpha"
+  ],
   "keywords": [
     "athena",
     "aws-cdk",

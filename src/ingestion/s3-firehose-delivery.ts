@@ -56,7 +56,7 @@ export class S3FirehoseDelivery extends Construct {
       },
     });
 
-    this.kinesisDeliveryLambda = new GoFunction(this, 'firehose-enricher-lambdas', {
+    this.kinesisDeliveryLambda = new GoFunction(this, 'firehose-enricher', {
       entry: path.resolve(__dirname, '../lambdas/cmd/firehose-enricher'),
       logRetention: RetentionDays.THREE_DAYS,
       timeout: Duration.minutes(5),

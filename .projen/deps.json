@@ -6,6 +6,11 @@
       "type": "build"
     },
     {
+      "name": "@aws-cdk/aws-kinesisfirehose-alpha",
+      "version": "2.17.0-alpha.0",
+      "type": "build"
+    },
+    {
       "name": "@aws-cdk/aws-kinesisfirehose-destinations-alpha",
       "version": "2.17.0-alpha.0",
       "type": "build"
@@ -135,17 +140,22 @@
     {
       "name": "@aws-cdk/aws-glue-alpha",
       "version": "2.17.0-alpha.0",
-      "type": "peer"
+      "type": "bundled"
+    },
+    {
+      "name": "@aws-cdk/aws-kinesisfirehose-alpha",
+      "version": "2.17.0-alpha.0",
+      "type": "bundled"
     },
     {
       "name": "@aws-cdk/aws-kinesisfirehose-destinations-alpha",
       "version": "2.17.0-alpha.0",
-      "type": "peer"
+      "type": "bundled"
     },
     {
       "name": "@aws-cdk/aws-lambda-go-alpha",
       "version": "2.17.0-alpha.0",
-      "type": "peer"
+      "type": "bundled"
     },
     {
       "name": "aws-cdk-lib",
@@ -159,6 +169,11 @@
     },
     {
       "name": "@aws-cdk/aws-glue-alpha",
+      "version": "2.17.0-alpha.0",
+      "type": "runtime"
+    },
+    {
+      "name": "@aws-cdk/aws-kinesisfirehose-alpha",
       "version": "2.17.0-alpha.0",
       "type": "runtime"
     },

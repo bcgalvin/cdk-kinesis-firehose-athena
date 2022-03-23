@@ -34,7 +34,7 @@ export class SfnSeedTask extends Construct {
     const logSeedSuccessTask = new DynamoPutItem(this, 'Log Seed Success', {
       item: {
         PK: DynamoAttributeValue.fromString(JsonPath.stringAt('$.taskId')),
-        SK: DynamoAttributeValue.fromString(new Date().toString()),
+        SK: DynamoAttributeValue.fromString(Math.floor(new Date().getTime() / 1000).toString()),
         Status: DynamoAttributeValue.fromString('DYNAMO SEED SUCCESS'),
       },
       table: props.auditTable,
@@ -44,7 +44,7 @@ export class SfnSeedTask extends Construct {
     const logCrawlSuccessTask = new DynamoPutItem(this, 'Log Crawl Success', {
       item: {
         PK: DynamoAttributeValue.fromString(JsonPath.stringAt('$.taskId')),
-        SK: DynamoAttributeValue.fromString(new Date().toString()),
+        SK: DynamoAttributeValue.fromString(Math.floor(new Date().getTime() / 1000).toString()),
         Status: DynamoAttributeValue.fromString('CRAWL SUCCESS'),
       },
       table: props.auditTable,
@@ -54,7 +54,7 @@ export class SfnSeedTask extends Construct {
     const logEndTask = new DynamoPutItem(this, 'Log Run Success', {
       item: {
         PK: DynamoAttributeValue.fromString(JsonPath.stringAt('$.taskId')),
-        SK: DynamoAttributeValue.fromString(new Date().toString()),
+        SK: DynamoAttributeValue.fromString(Math.floor(new Date().getTime() / 1000).toString()),
         Status: DynamoAttributeValue.fromString('TASK RUN SUCCESS'),
       },
       table: props.auditTable,

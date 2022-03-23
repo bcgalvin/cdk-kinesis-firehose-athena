@@ -7,6 +7,7 @@ const deps = [
   'constructs@10.0.5',
   `@aws-cdk/aws-lambda-go-alpha@${cdkVersion}-alpha.0`,
   `@aws-cdk/aws-glue-alpha@${cdkVersion}-alpha.0`,
+  `@aws-cdk/aws-kinesisfirehose-alpha@${cdkVersion}-alpha.0`,
   `@aws-cdk/aws-kinesisfirehose-destinations-alpha@${cdkVersion}-alpha.0`,
 ];
 
@@ -39,7 +40,12 @@ const project = new awscdk.AwsCdkConstructLibrary({
   cdkVersion: cdkVersion,
   deps: deps,
   devDeps: [...deps, 'eslint-config-prettier', 'eslint-plugin-prettier', 'prettier', '@types/cfn-response'],
-  peerDeps: deps,
+  bundledDeps: [
+    `@aws-cdk/aws-lambda-go-alpha@${cdkVersion}-alpha.0`,
+    `@aws-cdk/aws-glue-alpha@${cdkVersion}-alpha.0`,
+    `@aws-cdk/aws-kinesisfirehose-alpha@${cdkVersion}-alpha.0`,
+    `@aws-cdk/aws-kinesisfirehose-destinations-alpha@${cdkVersion}-alpha.0`,
+  ],
   depsUpgrade: true,
   autoApproveUpgrades: true,
   autoApproveOptions: {
