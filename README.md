@@ -77,10 +77,9 @@ information, it becomes free to query in `Athena` and `Redshift Spectrum`.
 
 #### Orchestration
 
-![](./docs/images/step-function.png)
-
 For this demonstration we used `Step Functions` to seed Dynamo with data and kick off the crawler using a basic wait
 step to allow for processes to complete. In a more realistic scenario, we wouldn't need the seed operation and would set
 the crawler to run based off of data landing in s3 or at a regular interval
 using [EventBridge](https://aws.amazon.com/eventbridge/).
 
+![](./docs/images/step-function.png)
