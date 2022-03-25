@@ -17,7 +17,7 @@ const (
 	testParameterPrefix = "/test/parameter"
 )
 
-func TestClient_GetCommonParameter_ExpectedValue(t *testing.T) {
+func TestClient_GetParameter_ExpectedValue(t *testing.T) {
 	testBucketName := "my-test-bucket"
 	mockSsm := new(ssmMockClient)
 	client := &Client{mockSsm}
@@ -30,7 +30,7 @@ func TestClient_GetCommonParameter_ExpectedValue(t *testing.T) {
 	assert.Equal(t, testBucketName, actual)
 }
 
-func TestClient_GetCommonParameter_Error(t *testing.T) {
+func TestClient_GetParameter_Error(t *testing.T) {
 	mockSsm := new(ssmMockClient)
 	client := &Client{mockSsm}
 	ctx := context.Background()
@@ -40,7 +40,7 @@ func TestClient_GetCommonParameter_Error(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestClient_GetCommonParameter_NoValue(t *testing.T) {
+func TestClient_GetParameter_NoValue(t *testing.T) {
 	mockSsm := new(ssmMockClient)
 	client := &Client{mockSsm}
 	ctx := context.Background()
