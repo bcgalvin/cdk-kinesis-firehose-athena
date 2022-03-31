@@ -661,7 +661,7 @@ Object {
           "S3Bucket": Object {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "f331b32a8ad8983464106a58e420e7bc7e6341ba2ffb8ac9ad350d7e32845d95.zip",
+          "S3Key": "55f133baccc1d0e4666b88328d51a8c2ff354c919b8e0fa9f045123a19df1b4e.zip",
         },
         "Description": "/opt/awscli/aws",
       },
@@ -1520,7 +1520,7 @@ Object {
           "S3Bucket": Object {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "6f915576eade5fa97d0aab0f05f720c72172e0774d8aaadb3ae12d43feb1290f.zip",
+          "S3Key": "49c8f528703b8bcf2d1d0249eb178727a17e3759ce4296e3c50c4d40b115e1e4.zip",
         },
         "Handler": "bootstrap",
         "Role": Object {
@@ -1662,12 +1662,28 @@ Object {
             Object {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::GetAtt": Array [
-                  "seederconstructs3firehosedeliveryfirehoseenricherEE11BDA8",
-                  "Arn",
-                ],
-              },
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "seederconstructs3firehosedeliveryfirehoseenricherEE11BDA8",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "seederconstructs3firehosedeliveryfirehoseenricherEE11BDA8",
+                          "Arn",
+                        ],
+                      },
+                      ":*",
+                    ],
+                  ],
+                },
+              ],
             },
           ],
           "Version": "2012-10-17",
@@ -1737,7 +1753,7 @@ Object {
           "S3Bucket": Object {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "ea189e2df578341ff1740aa29cba459289fa3908e23bf57753a342c85a007444.zip",
+          "S3Key": "ac374c67cf497ea8020fd46c108d2dd8d3660bc388d1ad2165e440193a3b9573.zip",
         },
         "Environment": Object {
           "Variables": Object {
@@ -1845,12 +1861,28 @@ Object {
             Object {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::GetAtt": Array [
-                  "seederconstructseedtaskinvokesfn2DCB1D7F",
-                  "Arn",
-                ],
-              },
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "seederconstructseedtaskinvokesfn2DCB1D7F",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "seederconstructseedtaskinvokesfn2DCB1D7F",
+                          "Arn",
+                        ],
+                      },
+                      ":*",
+                    ],
+                  ],
+                },
+              ],
             },
           ],
           "Version": "2012-10-17",
@@ -1971,7 +2003,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":states:::dynamodb:putItem\\",\\"Parameters\\":{\\"Item\\":{\\"PK\\":{\\"S.$\\":\\"$.taskId\\"},\\"SK\\":{\\"S\\":\\"1648329948\\"},\\"Status\\":{\\"S\\":\\"DYNAMO SEED SUCCESS\\"}},\\"TableName\\":\\"",
+              ":states:::dynamodb:putItem\\",\\"Parameters\\":{\\"Item\\":{\\"PK\\":{\\"S.$\\":\\"$.taskId\\"},\\"SK\\":{\\"S\\":\\"1648697664\\"},\\"Status\\":{\\"S\\":\\"DYNAMO SEED SUCCESS\\"}},\\"TableName\\":\\"",
               Object {
                 "Ref": "seederconstructeventstorageaudittableF928A6F1",
               },
@@ -1990,7 +2022,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":states:::dynamodb:putItem\\",\\"Parameters\\":{\\"Item\\":{\\"PK\\":{\\"S.$\\":\\"$.taskId\\"},\\"SK\\":{\\"S\\":\\"1648329948\\"},\\"Status\\":{\\"S\\":\\"CRAWL SUCCESS\\"}},\\"TableName\\":\\"",
+              ":states:::dynamodb:putItem\\",\\"Parameters\\":{\\"Item\\":{\\"PK\\":{\\"S.$\\":\\"$.taskId\\"},\\"SK\\":{\\"S\\":\\"1648697664\\"},\\"Status\\":{\\"S\\":\\"CRAWL SUCCESS\\"}},\\"TableName\\":\\"",
               Object {
                 "Ref": "seederconstructeventstorageaudittableF928A6F1",
               },
@@ -1998,7 +2030,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":states:::dynamodb:putItem\\",\\"Parameters\\":{\\"Item\\":{\\"PK\\":{\\"S.$\\":\\"$.taskId\\"},\\"SK\\":{\\"S\\":\\"1648329948\\"},\\"Status\\":{\\"S\\":\\"TASK RUN SUCCESS\\"}},\\"TableName\\":\\"",
+              ":states:::dynamodb:putItem\\",\\"Parameters\\":{\\"Item\\":{\\"PK\\":{\\"S.$\\":\\"$.taskId\\"},\\"SK\\":{\\"S\\":\\"1648697664\\"},\\"Status\\":{\\"S\\":\\"TASK RUN SUCCESS\\"}},\\"TableName\\":\\"",
               Object {
                 "Ref": "seederconstructeventstorageaudittableF928A6F1",
               },
@@ -2074,22 +2106,54 @@ Object {
             Object {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::GetAtt": Array [
-                  "seederconstructseedtaskddbseeder7E84DA27",
-                  "Arn",
-                ],
-              },
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "seederconstructseedtaskddbseeder7E84DA27",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "seederconstructseedtaskddbseeder7E84DA27",
+                          "Arn",
+                        ],
+                      },
+                      ":*",
+                    ],
+                  ],
+                },
+              ],
             },
             Object {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::GetAtt": Array [
-                  "seederconstructseedtaskCrawlerStarter23DB5C77",
-                  "Arn",
-                ],
-              },
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "seederconstructseedtaskCrawlerStarter23DB5C77",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "seederconstructseedtaskCrawlerStarter23DB5C77",
+                          "Arn",
+                        ],
+                      },
+                      ":*",
+                    ],
+                  ],
+                },
+              ],
             },
             Object {
               "Action": Array [
@@ -2134,7 +2198,7 @@ Object {
           "S3Bucket": Object {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "27e76f0bd0462ee1f48941fdbe45315df8b48319b45feca02d0c021ee78fa446.zip",
+          "S3Key": "06a63dc25cc92afbc2c040f87c85b6b6207017cf0765189a854a0ca31faf1d52.zip",
         },
         "Environment": Object {
           "Variables": Object {
@@ -2278,7 +2342,7 @@ Object {
           "S3Bucket": Object {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "490b726d853e3cd5069f26864fdd95087646aeed52c8e97b8096bd34967b629d.zip",
+          "S3Key": "f9179d1875e6f8d4dba6c17574963198451b6a3cf902b9cdcc560055aa304467.zip",
         },
         "Environment": Object {
           "Variables": Object {
