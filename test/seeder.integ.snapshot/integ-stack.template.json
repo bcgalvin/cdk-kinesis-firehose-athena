@@ -456,7 +456,7 @@
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
           },
-          "S3Key": "f331b32a8ad8983464106a58e420e7bc7e6341ba2ffb8ac9ad350d7e32845d95.zip"
+          "S3Key": "55f133baccc1d0e4666b88328d51a8c2ff354c919b8e0fa9f045123a19df1b4e.zip"
         },
         "Description": "/opt/awscli/aws"
       }
@@ -1129,12 +1129,28 @@
             {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "seederconstructs3firehosedeliveryfirehoseenricherEE11BDA8",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "seederconstructs3firehosedeliveryfirehoseenricherEE11BDA8",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "seederconstructs3firehosedeliveryfirehoseenricherEE11BDA8",
+                          "Arn"
+                        ]
+                      },
+                      ":*"
+                    ]
+                  ]
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"
@@ -1185,7 +1201,7 @@
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
           },
-          "S3Key": "e5a5ca07e3bc38a568488223b2c0c4f48367aff9a2b9da661d1c2ef4b387aea0.zip"
+          "S3Key": "f87d4ceaa212929ccba881075c303beae9a4bd011782702c0470dc047e63b21a.zip"
         },
         "Role": {
           "Fn::GetAtt": [
@@ -1438,7 +1454,7 @@
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
           },
-          "S3Key": "6ead9ae2cddfdfb3bf28e83899af5b24a0f3c4b21b841956f9d3031520d47edf.zip"
+          "S3Key": "9e819cab261928bd965af4da8b92cba7774e9d4e2f87b5ded1afcd85618ed9d5.zip"
         },
         "Role": {
           "Fn::GetAtt": [
@@ -1558,7 +1574,7 @@
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
           },
-          "S3Key": "2043a3b0b6f511550098b6406b835d68d999e283e8021bc5bb9aa1fbb9d4fb81.zip"
+          "S3Key": "914962325712c2a31236e2aa7ac65559c8409ababd79050ec952da31329ca8e7.zip"
         },
         "Role": {
           "Fn::GetAtt": [
@@ -1642,22 +1658,54 @@
             {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "seederconstructseedtaskddbseeder7E84DA27",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "seederconstructseedtaskddbseeder7E84DA27",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "seederconstructseedtaskddbseeder7E84DA27",
+                          "Arn"
+                        ]
+                      },
+                      ":*"
+                    ]
+                  ]
+                }
+              ]
             },
             {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "seederconstructseedtaskCrawlerStarter23DB5C77",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "seederconstructseedtaskCrawlerStarter23DB5C77",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "seederconstructseedtaskCrawlerStarter23DB5C77",
+                          "Arn"
+                        ]
+                      },
+                      ":*"
+                    ]
+                  ]
+                }
+              ]
             },
             {
               "Action": [
@@ -1727,7 +1775,7 @@
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::dynamodb:putItem\",\"Parameters\":{\"Item\":{\"PK\":{\"S.$\":\"$.taskId\"},\"SK\":{\"S\":\"1648507177\"},\"Status\":{\"S\":\"DYNAMO SEED SUCCESS\"}},\"TableName\":\"",
+              ":states:::dynamodb:putItem\",\"Parameters\":{\"Item\":{\"PK\":{\"S.$\":\"$.taskId\"},\"SK\":{\"S\":\"1648750362\"},\"Status\":{\"S\":\"DYNAMO SEED SUCCESS\"}},\"TableName\":\"",
               {
                 "Ref": "seederconstructeventstorageaudittableF928A6F1"
               },
@@ -1746,7 +1794,7 @@
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::dynamodb:putItem\",\"Parameters\":{\"Item\":{\"PK\":{\"S.$\":\"$.taskId\"},\"SK\":{\"S\":\"1648507177\"},\"Status\":{\"S\":\"CRAWL SUCCESS\"}},\"TableName\":\"",
+              ":states:::dynamodb:putItem\",\"Parameters\":{\"Item\":{\"PK\":{\"S.$\":\"$.taskId\"},\"SK\":{\"S\":\"1648750362\"},\"Status\":{\"S\":\"CRAWL SUCCESS\"}},\"TableName\":\"",
               {
                 "Ref": "seederconstructeventstorageaudittableF928A6F1"
               },
@@ -1754,7 +1802,7 @@
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::dynamodb:putItem\",\"Parameters\":{\"Item\":{\"PK\":{\"S.$\":\"$.taskId\"},\"SK\":{\"S\":\"1648507177\"},\"Status\":{\"S\":\"TASK RUN SUCCESS\"}},\"TableName\":\"",
+              ":states:::dynamodb:putItem\",\"Parameters\":{\"Item\":{\"PK\":{\"S.$\":\"$.taskId\"},\"SK\":{\"S\":\"1648750362\"},\"Status\":{\"S\":\"TASK RUN SUCCESS\"}},\"TableName\":\"",
               {
                 "Ref": "seederconstructeventstorageaudittableF928A6F1"
               },
@@ -1829,7 +1877,7 @@
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
           },
-          "S3Key": "970bd5821ce030f810ccfb395a075b751fa76468de8d36c5055b33b9559b7c5b.zip"
+          "S3Key": "401c96dd348efdade10719a867eb34a84b7eea06060e612618fea30f707a47d7.zip"
         },
         "Role": {
           "Fn::GetAtt": [
@@ -1891,12 +1939,28 @@
             {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "seederconstructseedtaskinvokesfn2DCB1D7F",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "seederconstructseedtaskinvokesfn2DCB1D7F",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "seederconstructseedtaskinvokesfn2DCB1D7F",
+                          "Arn"
+                        ]
+                      },
+                      ":*"
+                    ]
+                  ]
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"

@@ -1,6 +1,6 @@
 const { awscdk } = require('projen');
 
-const cdkVersion = '2.18.0';
+const cdkVersion = '2.19.0';
 const commonIgnore = ['.idea', '.Rproj', '.vscode', 'cdk.context.json', '.DS_Store'];
 const deps = [
   `aws-cdk-lib@${cdkVersion}`,
