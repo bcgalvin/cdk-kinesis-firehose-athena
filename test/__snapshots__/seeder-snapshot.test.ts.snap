@@ -661,7 +661,7 @@ Object {
           "S3Bucket": Object {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "55f133baccc1d0e4666b88328d51a8c2ff354c919b8e0fa9f045123a19df1b4e.zip",
+          "S3Key": "92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4.zip",
         },
         "Description": "/opt/awscli/aws",
       },
@@ -1520,7 +1520,7 @@ Object {
           "S3Bucket": Object {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "f87d4ceaa212929ccba881075c303beae9a4bd011782702c0470dc047e63b21a.zip",
+          "S3Key": "a73f852869929c0c6e06383edd142e6f2b8ac680698d1848aee8ea5cfbf047f4.zip",
         },
         "Handler": "bootstrap",
         "Role": Object {
@@ -1753,7 +1753,7 @@ Object {
           "S3Bucket": Object {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "914962325712c2a31236e2aa7ac65559c8409ababd79050ec952da31329ca8e7.zip",
+          "S3Key": "a1450ab46d56f1132576c826c6d74f7cdf60b8b8e75016edc1384ccc008c56bd.zip",
         },
         "Environment": Object {
           "Variables": Object {
@@ -2003,7 +2003,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":states:::dynamodb:putItem\\",\\"Parameters\\":{\\"Item\\":{\\"PK\\":{\\"S.$\\":\\"$.taskId\\"},\\"SK\\":{\\"S\\":\\"1649015787\\"},\\"Status\\":{\\"S\\":\\"DYNAMO SEED SUCCESS\\"}},\\"TableName\\":\\"",
+              ":states:::dynamodb:putItem\\",\\"Parameters\\":{\\"Item\\":{\\"PK\\":{\\"S.$\\":\\"$.taskId\\"},\\"SK\\":{\\"S\\":\\"1649433119\\"},\\"Status\\":{\\"S\\":\\"DYNAMO SEED SUCCESS\\"}},\\"TableName\\":\\"",
               Object {
                 "Ref": "seederconstructeventstorageaudittableF928A6F1",
               },
@@ -2022,7 +2022,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":states:::dynamodb:putItem\\",\\"Parameters\\":{\\"Item\\":{\\"PK\\":{\\"S.$\\":\\"$.taskId\\"},\\"SK\\":{\\"S\\":\\"1649015787\\"},\\"Status\\":{\\"S\\":\\"CRAWL SUCCESS\\"}},\\"TableName\\":\\"",
+              ":states:::dynamodb:putItem\\",\\"Parameters\\":{\\"Item\\":{\\"PK\\":{\\"S.$\\":\\"$.taskId\\"},\\"SK\\":{\\"S\\":\\"1649433119\\"},\\"Status\\":{\\"S\\":\\"CRAWL SUCCESS\\"}},\\"TableName\\":\\"",
               Object {
                 "Ref": "seederconstructeventstorageaudittableF928A6F1",
               },
@@ -2030,7 +2030,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":states:::dynamodb:putItem\\",\\"Parameters\\":{\\"Item\\":{\\"PK\\":{\\"S.$\\":\\"$.taskId\\"},\\"SK\\":{\\"S\\":\\"1649015787\\"},\\"Status\\":{\\"S\\":\\"TASK RUN SUCCESS\\"}},\\"TableName\\":\\"",
+              ":states:::dynamodb:putItem\\",\\"Parameters\\":{\\"Item\\":{\\"PK\\":{\\"S.$\\":\\"$.taskId\\"},\\"SK\\":{\\"S\\":\\"1649433119\\"},\\"Status\\":{\\"S\\":\\"TASK RUN SUCCESS\\"}},\\"TableName\\":\\"",
               Object {
                 "Ref": "seederconstructeventstorageaudittableF928A6F1",
               },
@@ -2198,7 +2198,7 @@ Object {
           "S3Bucket": Object {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "9e819cab261928bd965af4da8b92cba7774e9d4e2f87b5ded1afcd85618ed9d5.zip",
+          "S3Key": "13273bbcfd2dd2923fb28d3cb720956bf9884e71b52b7a886b5ff558775be8be.zip",
         },
         "Environment": Object {
           "Variables": Object {
@@ -2342,7 +2342,7 @@ Object {
           "S3Bucket": Object {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "401c96dd348efdade10719a867eb34a84b7eea06060e612618fea30f707a47d7.zip",
+          "S3Key": "16425f132126fb41eb4a8848409ecdbd65663437235262aae991b39685848fdd.zip",
         },
         "Environment": Object {
           "Variables": Object {
