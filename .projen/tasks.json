@@ -70,7 +70,7 @@
       "description": "Only compile",
       "steps": [
         {
-          "exec": "jsii --silence-warnings=reserved-word --no-fix-peer-dependencies"
+          "exec": "jsii --silence-warnings=reserved-word"
         }
       ]
     },
@@ -122,6 +122,24 @@
         }
       ]
     },
+    "install": {
+      "name": "install",
+      "description": "Install project dependencies and update lockfile (non-frozen)",
+      "steps": [
+        {
+          "exec": "yarn install --check-files"
+        }
+      ]
+    },
+    "install:ci": {
+      "name": "install:ci",
+      "description": "Install project dependencies using frozen lockfile",
+      "steps": [
+        {
+          "exec": "yarn install --check-files --frozen-lockfile"
+        }
+      ]
+    },
     "integ:seeder:assert": {
       "name": "integ:seeder:assert",
       "description": "assert the snapshot of integration test 'seeder'",
@@ -130,7 +148,7 @@
           "exec": "[ -d \"test/seeder.integ.snapshot\" ] || (echo \"No snapshot available for integration test 'seeder'. Run 'projen integ:seeder:deploy' to capture.\" && exit 1)"
         },
         {
-          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/seeder.integ.ts\" --no-version-reporting --no-asset-metadata --no-path-metadata -o test/.tmp/seeder.integ/assert.cdk.out > /dev/null"
+          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/seeder.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/.tmp/seeder.integ/assert.cdk.out > /dev/null"
         },
         {
           "exec": "diff -r -x asset.* -x cdk.out -x manifest.json -x tree.json test/seeder.integ.snapshot/ test/.tmp/seeder.integ/assert.cdk.out/"
@@ -145,7 +163,7 @@
           "exec": "rm -fr test/.tmp/seeder.integ/deploy.cdk.out"
         },
         {
-          "exec": "cdk deploy --app \"ts-node -P tsconfig.dev.json test/seeder.integ.ts\" --no-version-reporting --no-asset-metadata --no-path-metadata '**' --require-approval=never -o test/.tmp/seeder.integ/deploy.cdk.out"
+          "exec": "cdk deploy --app \"ts-node -P tsconfig.dev.json test/seeder.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' --require-approval=never -o test/.tmp/seeder.integ/deploy.cdk.out"
         },
         {
           "exec": "rm -fr test/seeder.integ.snapshot"
@@ -172,7 +190,7 @@
       "description": "update snapshot for integration test \"seeder\"",
       "steps": [
         {
-          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/seeder.integ.ts\" --no-version-reporting --no-asset-metadata --no-path-metadata -o test/seeder.integ.snapshot > /dev/null"
+          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/seeder.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/seeder.integ.snapshot > /dev/null"
         }
       ]
     },
@@ -181,7 +199,7 @@
       "description": "watch integration test 'seeder' (without updating snapshots)",
       "steps": [
         {
-          "exec": "cdk watch --app \"ts-node -P tsconfig.dev.json test/seeder.integ.ts\" --no-version-reporting --no-asset-metadata --no-path-metadata '**' -o test/.tmp/seeder.integ/deploy.cdk.out"
+          "exec": "cdk watch --app \"ts-node -P tsconfig.dev.json test/seeder.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' -o test/.tmp/seeder.integ/deploy.cdk.out"
         }
       ]
     },
@@ -202,7 +220,7 @@
           "exec": "go env -w GOSUMDB=off"
         },
         {
-          "exec": "if [ ! -z ${CI} ]; then mkdir -p dist && rsync -a . dist --exclude .git --exclude node_modules; else npx projen package-all; fi"
+          "exec": "if [ ! -z ${CI} ]; then rsync -a . .repo --exclude .git --exclude node_modules && rm -rf dist && mv .repo dist; else npx projen package-all; fi"
         }
       ]
     },
@@ -232,22 +250,14 @@
       "description": "Run tests",
       "steps": [
         {
-          "exec": "jest --passWithNoTests --all --updateSnapshot"
+          "exec": "jest --passWithNoTests --updateSnapshot",
+          "receiveArgs": true
         },
         {
           "spawn": "eslint"
         },
         {
           "spawn": "integ:seeder:assert"
-        }
-      ]
-    },
-    "test:update": {
-      "name": "test:update",
-      "description": "Update jest snapshots",
-      "steps": [
-        {
-          "exec": "jest --updateSnapshot"
         }
       ]
     },
@@ -271,25 +281,13 @@
           "exec": "yarn upgrade npm-check-updates"
         },
         {
-          "exec": "npm-check-updates --dep dev --upgrade --target=minor --reject='@aws-cdk/aws-glue-alpha,@aws-cdk/aws-kinesisfirehose-alpha,@aws-cdk/aws-kinesisfirehose-destinations-alpha,@aws-cdk/aws-lambda-go-alpha,aws-cdk-lib,constructs'"
-        },
-        {
-          "exec": "npm-check-updates --dep optional --upgrade --target=minor --reject='@aws-cdk/aws-glue-alpha,@aws-cdk/aws-kinesisfirehose-alpha,@aws-cdk/aws-kinesisfirehose-destinations-alpha,@aws-cdk/aws-lambda-go-alpha,aws-cdk-lib,constructs'"
-        },
-        {
-          "exec": "npm-check-updates --dep peer --upgrade --target=minor --reject='@aws-cdk/aws-glue-alpha,@aws-cdk/aws-kinesisfirehose-alpha,@aws-cdk/aws-kinesisfirehose-destinations-alpha,@aws-cdk/aws-lambda-go-alpha,aws-cdk-lib,constructs'"
-        },
-        {
-          "exec": "npm-check-updates --dep prod --upgrade --target=minor --reject='@aws-cdk/aws-glue-alpha,@aws-cdk/aws-kinesisfirehose-alpha,@aws-cdk/aws-kinesisfirehose-destinations-alpha,@aws-cdk/aws-lambda-go-alpha,aws-cdk-lib,constructs'"
-        },
-        {
-          "exec": "npm-check-updates --dep bundle --upgrade --target=minor --reject='@aws-cdk/aws-glue-alpha,@aws-cdk/aws-kinesisfirehose-alpha,@aws-cdk/aws-kinesisfirehose-destinations-alpha,@aws-cdk/aws-lambda-go-alpha,aws-cdk-lib,constructs'"
+          "exec": "npm-check-updates --upgrade --target=minor --filter=@types/cfn-response,@types/jest,@types/node,@typescript-eslint/eslint-plugin,@typescript-eslint/parser,aws-cdk,eslint-config-prettier,eslint-import-resolver-node,eslint-import-resolver-typescript,eslint-plugin-import,eslint-plugin-prettier,eslint,jest-junit,jest,jsii-diff,jsii-docgen,jsii-pacmak,npm-check-updates,prettier,projen,ts-jest,ts-node,typescript,aws-cdk-lib,constructs"
         },
         {
           "exec": "yarn install --check-files"
         },
         {
-          "exec": "yarn upgrade"
+          "exec": "yarn upgrade @types/cfn-response @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk eslint-config-prettier eslint-import-resolver-node eslint-import-resolver-typescript eslint-plugin-import eslint-plugin-prettier eslint jest-junit jest jsii-diff jsii-docgen jsii-pacmak npm-check-updates prettier projen ts-jest ts-node typescript aws-cdk-lib constructs"
         },
         {
           "exec": "npx projen"
@@ -304,13 +302,13 @@
       "description": "Watch & compile in the background",
       "steps": [
         {
-          "exec": "jsii -w --silence-warnings=reserved-word --no-fix-peer-dependencies"
+          "exec": "jsii -w --silence-warnings=reserved-word"
         }
       ]
     }
   },
   "env": {
-    "PATH": "$(npx -c \"node -e \\\"console.log(process.env.PATH)\\\"\")"
+    "PATH": "$(npx -c \"node --print process.env.PATH\")"
   },
   "//": "~~ Generated by projen. To modify, edit .projenrc.js and run \"npx projen\"."
 }
